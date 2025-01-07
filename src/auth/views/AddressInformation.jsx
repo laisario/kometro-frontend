@@ -15,7 +15,6 @@ export default function AddressInformation(props) {
     control,
     error,
   } = props;
-  console.log('AAAA', isValid)
 
   return (
     <form onSubmit={handleSubmit}>

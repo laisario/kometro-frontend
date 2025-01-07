@@ -7,16 +7,17 @@ import useLoginVM from '../viewModels/useLoginVM';
 
 function LoginPage() {
   const {
-    loading,
+    isLoadingLogin,
     email,
     setEmail,
     password,
     setPassword,
-    error,
     showPassword,
     setShowPassword,
     handleSubmit,
+    errorLogin,
   } = useLoginVM()
+
   return (
     <>
       <Helmet>
@@ -41,15 +42,15 @@ function LoginPage() {
         </Typography>
 
         <LoginForm
-          loading={loading}
+          isLoadingLogin={isLoadingLogin}
           email={email}
           setEmail={setEmail}
           password={password}
           setPassword={setPassword}
-          error={error}
           showPassword={showPassword}
           setShowPassword={setShowPassword}
           handleSubmit={handleSubmit}
+          errorLogin={errorLogin}
         />
       </Container>
     </>

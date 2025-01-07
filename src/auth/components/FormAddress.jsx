@@ -34,7 +34,6 @@ const estados = [
 ];
 
 function FormAdress({ form, control, isValid }) {
-  console.log(isValid)
   const {
     estado,
   } = useWatch({ control: control })

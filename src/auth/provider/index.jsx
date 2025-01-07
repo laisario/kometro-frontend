@@ -1,15 +1,13 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import {jwtDecode} from 'jwt-decode';
 import AuthContext from '../context';
-import { axios } from '../../api';
 
 const AuthProvider = ({ children }) => {
   const token = window.localStorage.getItem('token');
   const storedClienteId = window.localStorage.getItem('clienteId');
   const [user, setUser] = useState(token ? { token } : null);
   const [clienteId, setClienteId] = useState(storedClienteId || null);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,8 +42,6 @@ const AuthProvider = ({ children }) => {
       value={{
         user,
         setUser,
-        loading,
-        setLoading,
         clienteId,
         setClienteId,
       }}

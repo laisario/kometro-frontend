@@ -5,29 +5,27 @@ import Iconify from '../../components/Iconify.jsx';
 
 export default function LoginForm(props) {
   const {
-    loading,
+    isLoadingLogin,
     email,
     setEmail,
     password,
     setPassword,
-    error,
     showPassword,
     setShowPassword,
     handleSubmit,
   } = props;
+
   
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing={3}>
-        <TextField error={!!error} name="email" label="Email" value={email} onChange={(e) => { if (error) { setError(null) } setEmail(e.target.value) }} />
+        <TextField name="email" label="Email" value={email} onChange={(e) => { if (!!error?.msg?.length) { setError(null) } setEmail(e.target.value) }} />
 
         <TextField
-          error={!!error}
-          helperText={!!error && error}
           name="password"
           label="Senha"
           value={password}
-          onChange={(e) => { if (error) { setError(null) } setPassword(e.target.value) }}
+          onChange={(e) => { if (error?.msg?.length) { setError(null) } setPassword(e.target.value) }}
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
@@ -41,7 +39,15 @@ export default function LoginForm(props) {
         />
       </Stack>
 
-      <LoadingButton disabled={!email || !password} loading={loading} sx={{ mt: 4 }} type="submit" fullWidth size="large" variant="contained" onClick={handleSubmit}>
+      <LoadingButton 
+        disabled={!email || !password} 
+        loading={isLoadingLogin} 
+        sx={{ mt: 4 }} type="submit" 
+        fullWidth 
+        size="large" 
+        variant="contained" 
+        onClick={handleSubmit}
+      >
         Entrar
       </LoadingButton>
     </form>
