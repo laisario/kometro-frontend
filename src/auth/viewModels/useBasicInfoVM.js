@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
 import useAuth from '../hooks/useAuth';
 import useCNPJ from '../hooks/useCNPJ';
 import useCPF from '../hooks/useCPF';
 
 function useBasicInfoVM() {
-  const navigate = useNavigate();
   const [tipo, setTipo] = useState('E');
   const [CNPJ, setCNPJ] = useState('');
   const [razaoSocial, setRazaoSocial] = useState('');
@@ -16,7 +14,7 @@ function useBasicInfoVM() {
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [error, setError] = useState({});
-  const { loading, registerBasics } = useAuth();
+  const { loading, registerBasicsMutation } = useAuth();
   
   const erros = !!error && Object.keys(error)
 
@@ -28,7 +26,7 @@ function useBasicInfoVM() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await registerBasics({
+    registerBasicsMutation({
       nome,
       telefone,
       cpf: cpfFormatado || CPF,
@@ -39,11 +37,6 @@ function useBasicInfoVM() {
       nomeFantasia: nomeFantasia || null,
       filial: filial || null,
     });
-    if (response?.status !== 201) {
-      setError(response?.response?.data)
-      return null
-    };
-    return navigate('/register/location', { replace: true })
   };
   
   useEffect(() => {

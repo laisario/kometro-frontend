@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { Container, Typography, useScrollTrigger } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import AuthInformation from '../views/AuthInformation';
 import useAuthInfoVM from '../viewModels/useAuthInfoVM';
 
@@ -12,10 +12,11 @@ export default function RegisterAuthPage() {
     showPassword,
     setShowPassword,
     handleSubmit,
-    erros,
     error,
     email,
-    password
+    password,
+    handlePasswordChange,
+    setError
   } = useAuthInfoVM()
   return (
     <>
@@ -39,10 +40,11 @@ export default function RegisterAuthPage() {
           showPassword={showPassword}
           setShowPassword={setShowPassword}
           handleSubmit={handleSubmit}
-          erros={erros}
           error={error}
           email={email}
           password={password}
+          handlePasswordChange={handlePasswordChange}
+          setError={setError}
         />
       </Container>
     </>

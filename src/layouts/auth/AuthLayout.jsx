@@ -7,9 +7,11 @@ import Logo from '../../components/Logo';
 const StyledRoot = styled(Container)(({ theme }) => ({
     display: 'flex',
     flex: 1,
-    height: '100%',
+    height: '100vh',
     flexDirection: 'column',
     justifyContent: 'center',
+    marginTop: 20,
+    paddingBottom: 20,
     [theme.breakpoints.up('md')]: {
       flexDirection: 'row',
       justifyContent: 'center',

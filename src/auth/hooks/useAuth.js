@@ -29,8 +29,14 @@ export default function useAuth() {
     if (!err?.response) {
       return 'Sem resposta do servidor.';
     }
-
     return errorMessagesLogin[err?.status] || 'Erro desconhecido. Tente novamente mais tarde.';
+  };
+
+  const handleErrorRegister = (err) => {
+    if (!err?.response) {
+      return 'Sem resposta do servidor.';
+    }
+    return errorMessagesRegister[err?.status] || 'Erro desconhecido. Tente novamente mais tarde.';
   };
   
   const login = async({email, password}) => {
@@ -72,6 +78,7 @@ export default function useAuth() {
     : { nome, telefone, cpf, };
 
     const response = await axios.post('/register/basics/', payload);
+    window.localStorage.setItem('clienteId', response?.data);
     setClienteId(response?.data);
     return response;
   }
@@ -79,13 +86,13 @@ export default function useAuth() {
   const { mutate: registerBasicsMutation, isLoading: isLoadingRegisterBasics} = useMutation(registerBasics,
     {
       onSuccess: (data) => {
-        window.localStorage.setItem('clienteId', clienteId);
+        navigate('/register/location', { replace: true })
       },
       onError: (error) => {
-        console.error('Register Basics Error:', error);
-        if (!err?.response) {
-          return { error: 'Sem resposta do server' };
-        }
+        const errMsg = handleErrorRegister(error);
+        enqueueSnackbar(errMsg, {
+          variant: 'error'
+        });
       },
     }
   );
@@ -97,11 +104,14 @@ export default function useAuth() {
 
   const { mutate: registerLocationMutation, isLoading: isLoadingRegisterLocation } = useMutation(registerLocation,
     {
+      onSuccess: (data) => {
+        navigate('/register/auth', { replace: true })
+      },
       onError: (error) => {
-        console.error('Register Location Error:', error);
-        if (!err?.response) {
-          return { error: 'Sem resposta do server' };
-        }
+        const errMsg = handleErrorRegister(error);
+        enqueueSnackbar(errMsg, {
+          variant: 'error'
+        });
       },
     }
   );
@@ -115,8 +125,17 @@ export default function useAuth() {
 
   const { mutate:registerAuthMutation, isLoading: isLoadingRegisterAuth} = useMutation(registerAuth,
     {
+      onSuccess: (data) => {
+        navigate('/login', { replace: true, state: { msg: 'Conta criada com sucesso! Faça login!'} });
+        enqueueSnackbar('Conta criada com sucesso! Faça login!', {
+          variant: 'success'
+        });
+      },
       onError: (error) => {
-        console.error('Register Auth Error:', error);
+        const errMsg = handleErrorRegister(error);
+        enqueueSnackbar(errMsg, {
+          variant: 'error'
+        });
       },
     }
   );

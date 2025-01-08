@@ -16,6 +16,14 @@ export default function AddressInformation(props) {
     error,
   } = props;
 
+  const {
+    rua,
+    numero,
+    bairro,
+    cidade,
+    estado
+  } = form.watch();
+
   return (
     <form onSubmit={handleSubmit}>
       <FormAdress
@@ -42,6 +50,7 @@ export default function AddressInformation(props) {
           sx={{ maxWidth: '45%' }}
           type="submit"
           fullWidth
+          disabled={!rua || !numero || !bairro || !cidade || !estado}
           size="large"
           variant="contained"
           onClick={handleSubmit}

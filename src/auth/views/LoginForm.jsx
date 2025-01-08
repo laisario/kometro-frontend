@@ -1,4 +1,4 @@
-import { Stack, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Stack, IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import Iconify from '../../components/Iconify.jsx';
 
@@ -19,11 +19,18 @@ export default function LoginForm(props) {
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing={3}>
-        <TextField name="email" label="Email" value={email} onChange={(e) => { if (!!error?.msg?.length) { setError(null) } setEmail(e.target.value) }} />
+        <TextField
+          name="email"
+          required
+          label="Email"
+          value={email}
+          onChange={(e) => { setEmail(e.target.value) }}
+        />
 
         <TextField
           name="password"
           label="Senha"
+          required
           value={password}
           onChange={(e) => { if (error?.msg?.length) { setError(null) } setPassword(e.target.value) }}
           type={showPassword ? 'text' : 'password'}
@@ -39,17 +46,17 @@ export default function LoginForm(props) {
         />
       </Stack>
 
-      <LoadingButton 
-        disabled={!email || !password} 
-        loading={isLoadingLogin} 
-        sx={{ mt: 4 }} type="submit" 
-        fullWidth 
-        size="large" 
-        variant="contained" 
-        onClick={handleSubmit}
-      >
-        Entrar
-      </LoadingButton>
+        <LoadingButton 
+          disabled={!email || !password} 
+          loading={isLoadingLogin} 
+          sx={{ mt: 4 }} type="submit" 
+          fullWidth 
+          size="large" 
+          variant="contained" 
+          onClick={handleSubmit}
+          >
+          Entrar
+        </LoadingButton>
     </form>
   );
 }

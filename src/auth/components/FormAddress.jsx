@@ -42,8 +42,10 @@ function FormAdress({ form, control, isValid }) {
       <TextField
         fullWidth
         name="CEP"
+
+        required
         label="CEP"
-        placeholder="Digite o CEP da empresa"
+        placeholder="Digite o CEP da sua região"
         {...form.register("CEP", { minLength: 8 })}
       />
       {isValid && (
@@ -53,6 +55,7 @@ function FormAdress({ form, control, isValid }) {
               fullWidth
               name="rua"
               label="Logradouro"
+              required
               InputLabelProps={{
                 shrink: true
               }}
@@ -71,6 +74,7 @@ function FormAdress({ form, control, isValid }) {
                 name="numero"
                 label="Número"
                 type='number'
+                required
                 {...form.register("numero")}
               />
             </FormControl>
@@ -80,6 +84,7 @@ function FormAdress({ form, control, isValid }) {
               fullWidth
               name="bairro"
               label="Bairro"
+              required
               InputLabelProps={{
                 shrink: true
               }}
@@ -89,6 +94,7 @@ function FormAdress({ form, control, isValid }) {
               fullWidth
               name="cidade"
               label="Cidade"
+              required
               InputLabelProps={{
                 shrink: true
               }}
@@ -98,6 +104,7 @@ function FormAdress({ form, control, isValid }) {
               <InputLabel id="label">Estado</InputLabel>
               <Select
                 labelId="label"
+                required
                 label="Estado"
                 InputLabelProps={{
                   shrink: true

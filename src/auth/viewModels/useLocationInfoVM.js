@@ -1,18 +1,16 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
 import { useForm, useWatch } from 'react-hook-form';
 import useAuth from '../hooks/useAuth';
 import useCEP from '../hooks/useCEP';
 
 function useLocationInfoVM() {
   const [error, setError] = useState({});
-  const navigate = useNavigate();
-  const { registerLocation, loading } = useAuth();
+  const { registerLocationMutation, loading } = useAuth();
   const form = useForm({
     defaultValues: {
       CEP: "",
       rua: "",
-      numero: 0,
+      numero: "",
       bairro: "",
       cidade: "",
       estado: "",
@@ -36,7 +34,7 @@ function useLocationInfoVM() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await registerLocation({
+    registerLocationMutation({
       uf: cepInfo?.estado || estado,
       cidade: cepInfo?.cidade || cidade,
       bairro: cepInfo?.bairro || bairro,
@@ -45,11 +43,6 @@ function useLocationInfoVM() {
       cep: cepInfo?.cep || CEP,
       complemento,
     });
-    if (response?.status !== 201) {
-      setError({ ...response?.response?.data })
-      return null
-    };
-    return navigate('/register/auth');
   };
 
   const erros = !!error && Object.keys(error);

@@ -76,6 +76,7 @@ export default function BasicInformation(props) {
               <TextField
                 fullWidth
                 required
+                helperText='Este campo é obrigatório.'
                 name="razaoSocial"
                 label="Razão Social"
                 value={razaoSocial}
@@ -193,6 +194,7 @@ export default function BasicInformation(props) {
           size="large"
           variant="contained"
           onClick={handleSubmit}
+          disabled={!CNPJ || !razaoSocial}
         >
           Continuar
         </LoadingButton>

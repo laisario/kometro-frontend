@@ -1,9 +1,7 @@
-import { useState } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router';
+import { Link as RouterLink } from 'react-router';
 import { Box, Stack, IconButton, InputAdornment, TextField, Alert, Link, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import Iconify from '../../components/Iconify';
-import useAuth from '../hooks/useAuth';
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
 
 
@@ -11,27 +9,35 @@ export default function AuthInformation(props) {
   const {
     loading,
     setEmail,
-    setPassword,
     showPassword,
     setShowPassword,
     handleSubmit,
-    erros,
     error,
+    setError,
     email,
     password,
+    handlePasswordChange
   } = props;
   
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing={3}>
-        <TextField error={!!error} name="email" label="Email" value={email} onChange={(e) => { if (error) { setError(null) } setEmail(e.target.value) }} />
+        <TextField 
+          error={!!error?.email}
+          helperText={error?.email}
+          name="email" 
+          label="Email" 
+          value={email} 
+          onChange={(e) => { if (error?.email) { setError(null) } setEmail(e.target.value) }} 
+        />
         <TextField
           fullWidth
-          error={!!error}
+          error={!!error?.password}
+          helperText={error?.password}
           name="password"
           label="Senha"
           value={password}
-          onChange={(e) => { if (error) { setError(null) } setPassword(e.target.value) }}
+          onChange={(e) => handlePasswordChange(e)}
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
@@ -45,7 +51,6 @@ export default function AuthInformation(props) {
           sx={{ marginBottom: 0 }}
         />
         <PasswordStrengthMeter password={password} />
-        {!!erros?.length && erros?.map((key, i) => (<Alert key={key + i} severity="error">{`${error[key]}: ${key}`}</Alert>))}
       </Stack>
 
       <Box display="flex" alignItems="center" justifyContent="space-between" mt={4}>
@@ -60,7 +65,17 @@ export default function AuthInformation(props) {
             Entrar
           </Link>
         </Typography>
-        <LoadingButton loading={loading} variant="contained" size="large" sx={{ minWidth: '45%' }} onClick={handleSubmit} endIcon={<Iconify icon={'eva:arrow-ios-forward-fill'} />}>Continuar</LoadingButton>
+        <LoadingButton
+          loading={loading} 
+          variant="contained"
+          disabled={!email || !password}
+          size="large" 
+          sx={{ minWidth: '45%' }} 
+          onClick={handleSubmit} 
+          endIcon={<Iconify icon={'eva:arrow-ios-forward-fill'} />}
+        >
+          Continuar
+        </LoadingButton>
       </Box>
     </form>
   );

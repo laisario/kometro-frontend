@@ -17,12 +17,12 @@ export default function RegisterLocationPage() {
   return (
     <>
       <Helmet>
-        <title> Localizacao | Kometro </title>
+        <title> Localização | Kometro </title>
       </Helmet>
 
       <Container maxWidth="sm">
         <Typography variant="h3" gutterBottom>
-          Localizacao
+          Localização
         </Typography>
 
         <AddressInformation
