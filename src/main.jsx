@@ -12,7 +12,7 @@ import { SnackbarProvider } from 'notistack';
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode>
     <HelmetProvider>
       <ThemeProvider>
         <BrowserRouter>
@@ -26,5 +26,5 @@ createRoot(document.getElementById('root')).render(
         </BrowserRouter>
       </ThemeProvider>
     </HelmetProvider>
-  </StrictMode>
+  // </StrictMode>
 );

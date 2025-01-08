@@ -14,7 +14,7 @@ function useBasicInfoVM() {
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [error, setError] = useState({});
-  const { loading, registerBasicsMutation } = useAuth();
+  const { registerBasicsMutation } = useAuth();
   
   const erros = !!error && Object.keys(error)
 
@@ -42,6 +42,14 @@ function useBasicInfoVM() {
   useEffect(() => {
     setError({})
   }, [CNPJ])
+
+  const shouldDisableButton = () => {
+    if (tipo === 'E') {
+      return CNPJ && razaoSocial
+    } else {
+      return CPF && nome && telefone
+    }
+  }
   
   return {
     handleSubmit,
@@ -53,7 +61,6 @@ function useBasicInfoVM() {
     erros,
     nome,
     telefone,
-    loading,
     setTipo,
     setCNPJ,
     setRazaoSocial,
@@ -73,6 +80,7 @@ function useBasicInfoVM() {
     nomeFantasia,
     filial,
     error,
+    shouldDisableButton
   }
 }
 

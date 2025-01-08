@@ -14,7 +14,6 @@ export default function BasicInformation(props) {
     tipo,
     CNPJ,
     erros,
-    loading,
     setTipo,
     setCNPJ,
     setRazaoSocial,
@@ -36,8 +35,14 @@ export default function BasicInformation(props) {
     telefone,
     nomeFantasia,
     filial,
-    error
+    error,
+    shouldDisableButton
   } = props;
+  console.log("AAAAAAAAAAa")
+  // console.log(nome)
+  // console.log(telefone)
+
+
   return (
     <form onSubmit={handleSubmit}>
       <FormControl sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2, mb: 4 }}>
@@ -130,14 +135,12 @@ export default function BasicInformation(props) {
           <TextField
             fullWidth
             error={!cpfValido && CPF?.length >= 11}
+            helperText={(!cpfValido) && 'Por favor, digite um CPF válido'}
             name="CPF"
             label="CPF"
             placeholder="Digite o seu CPF"
             value={cpfFormatado || CPF}
             onChange={(e) => {
-              if (error) {
-                setError(null);
-              }
               setCPF(e.target.value);
             }}
           />
@@ -187,14 +190,13 @@ export default function BasicInformation(props) {
         </Typography>
         <LoadingButton
           endIcon={<Iconify icon={'eva:arrow-ios-forward-fill'} />}
-          loading={loading}
           sx={{ maxWidth: '45%' }}
           type="submit"
           fullWidth
           size="large"
           variant="contained"
           onClick={handleSubmit}
-          disabled={!CNPJ || !razaoSocial}
+          disabled={!shouldDisableButton()}
         >
           Continuar
         </LoadingButton>

@@ -15,7 +15,6 @@ export default function RegisterBasicsPage() {
     nome,
     telefone,
     erros,
-    loading,
     nomeFantasia,
     filial,
     setTipo,
@@ -33,6 +32,7 @@ export default function RegisterBasicsPage() {
     cpfValido,
     cpfFormatado,
     error,
+    shouldDisableButton,
   } = useBasicInfoVM()
   return (
     <>
@@ -53,7 +53,6 @@ export default function RegisterBasicsPage() {
           handleSubmit={handleSubmit}
           tipo={tipo}
           erros={erros}
-          loading={loading}
           setTipo={setTipo}
           setCNPJ={setCNPJ}
           setRazaoSocial={setRazaoSocial}
@@ -77,6 +76,7 @@ export default function RegisterBasicsPage() {
           nomeFantasia={nomeFantasia}
           filial={filial}
           error={error}
+          shouldDisableButton={shouldDisableButton}
         />
       </Container>
     </>

@@ -15,7 +15,6 @@ export default function LoginForm(props) {
     handleSubmit,
   } = props;
 
-  
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing={3}>
@@ -32,12 +31,16 @@ export default function LoginForm(props) {
           label="Senha"
           required
           value={password}
-          onChange={(e) => { if (error?.msg?.length) { setError(null) } setPassword(e.target.value) }}
+          onChange={(e) => { setPassword(e.target.value) }}
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                <IconButton 
+                  aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}  
+                  onClick={() => setShowPassword(!showPassword)} 
+                  edge="end"
+                >
                   <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
                 </IconButton>
               </InputAdornment>
@@ -49,7 +52,8 @@ export default function LoginForm(props) {
         <LoadingButton 
           disabled={!email || !password} 
           loading={isLoadingLogin} 
-          sx={{ mt: 4 }} type="submit" 
+          sx={{ mt: 4 }}
+          type="submit"
           fullWidth 
           size="large" 
           variant="contained" 
