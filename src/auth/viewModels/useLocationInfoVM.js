@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import useAuth from '../hooks/useAuth';
 import useCEP from '../hooks/useCEP';
 
 function useLocationInfoVM() {
-  const [error, setError] = useState({});
-  const { registerLocationMutation, loading } = useAuth();
+  const { registerLocationMutation, error, setError, verifyError } = useAuth();
   const form = useForm({
     defaultValues: {
       CEP: "",
@@ -15,7 +13,9 @@ function useLocationInfoVM() {
       cidade: "",
       estado: "",
       complemento: "",
-    }
+    },
+    mode: "onBlur",
+    // reValidateMode: ['onSubmit', 'onBlur'],
   })
 
   const control = form?.control && form?.control;
@@ -45,14 +45,11 @@ function useLocationInfoVM() {
     });
   };
 
-  const erros = !!error && Object.keys(error);
 
   return {
     handleSubmit,
     isValid,
     form,
-    erros,
-    loading,
     control,
     error,
     setError,

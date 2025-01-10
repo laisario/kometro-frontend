@@ -13,17 +13,13 @@ function useBasicInfoVM() {
   const [CPF, setCPF] = useState('');
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
-  const [error, setError] = useState({});
-  const { registerBasicsMutation } = useAuth();
-  
-  const erros = !!error && Object.keys(error)
-
+  const { registerBasicsMutation, error, setError, verifyError } = useAuth();
   const {
     cnpj: cnpjFormatado,
     isValid: cnpjValido,
   } = useCNPJ(CNPJ);
   const { cpf: cpfFormatado, isValid: cpfValido } = useCPF(CPF);
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     registerBasicsMutation({
@@ -39,17 +35,6 @@ function useBasicInfoVM() {
     });
   };
   
-  useEffect(() => {
-    setError({})
-  }, [CNPJ])
-
-  const shouldDisableButton = () => {
-    if (tipo === 'E') {
-      return CNPJ && razaoSocial
-    } else {
-      return CPF && nome && telefone
-    }
-  }
   
   return {
     handleSubmit,
@@ -58,7 +43,6 @@ function useBasicInfoVM() {
     IE,
     tipo,
     CPF,
-    erros,
     nome,
     telefone,
     setTipo,
@@ -80,7 +64,7 @@ function useBasicInfoVM() {
     nomeFantasia,
     filial,
     error,
-    shouldDisableButton
+    verifyError
   }
 }
 

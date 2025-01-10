@@ -16,7 +16,8 @@ export default function RegisterAuthPage() {
     email,
     password,
     handlePasswordChange,
-    setError
+    setError,
+    verifyError
   } = useAuthInfoVM()
   return (
     <>
@@ -45,6 +46,7 @@ export default function RegisterAuthPage() {
           password={password}
           handlePasswordChange={handlePasswordChange}
           setError={setError}
+          verifyError={verifyError}
         />
       </Container>
     </>

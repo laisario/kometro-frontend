@@ -77,7 +77,9 @@ function getInscricaoEstadual(empresa) {
 
 const useCNPJ = (cnpj) => {
   const isValid = useMemo(() => validarCNPJ(cnpj), [cnpj])
-  return { cnpj: formatCNPJ(cnpj), isValid }
+  const formattedCNPJ = useMemo(() => formatCNPJ(cnpj), [cnpj])
+
+  return { cnpj: formattedCNPJ, isValid }
 }
 
 export default useCNPJ;

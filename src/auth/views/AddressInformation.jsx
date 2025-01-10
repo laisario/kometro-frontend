@@ -10,19 +10,11 @@ export default function AddressInformation(props) {
     handleSubmit,
     isValid,
     form,
-    erros,
     loading,
     control,
     error,
   } = props;
 
-  const {
-    rua,
-    numero,
-    bairro,
-    cidade,
-    estado
-  } = form.watch();
 
   return (
     <form onSubmit={handleSubmit}>
@@ -30,8 +22,8 @@ export default function AddressInformation(props) {
         isValid={isValid}
         form={form}
         control={control}
+        error={error}
       />
-      {!!erros?.length && erros?.map((key, i) => (<Alert key={key + i} severity="error">{`${error[key]}: ${key}`}</Alert>))}
       <Box display="flex" alignItems="center" justifyContent="space-between" mt={4}>
         <Typography variant="body2">
           Já tem uma conta? {''}
@@ -50,7 +42,6 @@ export default function AddressInformation(props) {
           sx={{ maxWidth: '45%' }}
           type="submit"
           fullWidth
-          disabled={!rua || !numero || !bairro || !cidade || !estado}
           size="large"
           variant="contained"
           onClick={handleSubmit}

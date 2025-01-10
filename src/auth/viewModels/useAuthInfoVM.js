@@ -2,32 +2,18 @@ import React, { useState } from 'react'
 import useAuth from '../hooks/useAuth';
 
 function useAuthInfoVM() {
-  const { registerAuthMutation } = useAuth()
+  const { registerAuthMutation, error, setError, verifyError } = useAuth()
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState({ email: "", password: "" })
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const isPasswordValid = validatePassword(password);
     const isEmailValid = validateEmail(email);
 
-    if (isPasswordValid && isEmailValid) {
+    if (isEmailValid) {
       registerAuthMutation({ email, password})
     }
-  };
-
-  const validatePassword = (password) => {
-    if (password.length < 8) {
-      setError((prevErrors) => ({
-        ...prevErrors,
-        password: "A senha deve ter pelo menos 8 caracteres.",
-      }));
-      return false;
-    }
-    setError((prevErrors) => ({ ...prevErrors, password: "" }));
-    return true;
   };
 
   const validateEmail = (email) => {
@@ -39,15 +25,13 @@ function useAuthInfoVM() {
       }));
       return false;
     }
-    setError((prevErrors) => ({ ...prevErrors, email: "" }));
+    verifyError('email')
     return true;
   };
 
 
   const handlePasswordChange = (e) => {
-    if (error?.password) {
-      setError('') 
-    }
+    verifyError('password')
     const value = e.target.value;
     setPassword(value);
   }
@@ -62,7 +46,8 @@ function useAuthInfoVM() {
     setError,
     email,
     password,
-    handlePasswordChange
+    handlePasswordChange,
+    verifyError,
   }
 }
 

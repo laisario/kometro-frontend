@@ -13,7 +13,6 @@ export default function BasicInformation(props) {
     handleSubmit,
     tipo,
     CNPJ,
-    erros,
     setTipo,
     setCNPJ,
     setRazaoSocial,
@@ -23,7 +22,6 @@ export default function BasicInformation(props) {
     setCPF,
     setNome,
     setTelefone,
-    setError,
     cnpjFormatado,
     cnpjValido,
     cpfValido,
@@ -36,12 +34,8 @@ export default function BasicInformation(props) {
     nomeFantasia,
     filial,
     error,
-    shouldDisableButton
+    verifyError
   } = props;
-  console.log("AAAAAAAAAAa")
-  // console.log(nome)
-  // console.log(telefone)
-
 
   return (
     <form onSubmit={handleSubmit}>
@@ -50,12 +44,14 @@ export default function BasicInformation(props) {
         <RadioGroup row aria-labelledby="pessoa">
           <FormControlLabel
             value="E"
-            control={<Radio checked={tipo === 'E'} onChange={(e) => setTipo(e.target.checked ? 'E' : 'P')} />}
+            control={<Radio checked={tipo === 'E'} 
+            onChange={(e) => setTipo(e.target.checked ? 'E' : 'P')} />}
             label="Pessoa jurídica"
           />
           <FormControlLabel
             value="P"
-            control={<Radio checked={tipo === 'P'} onChange={(e) => setTipo(e.target.checked ? 'P' : 'E')} />}
+            control={<Radio checked={tipo === 'P'}
+            onChange={(e) => setTipo(e.target.checked ? 'P' : 'E')} />}
             label="Pessoa física"
           />
         </RadioGroup>
@@ -65,14 +61,14 @@ export default function BasicInformation(props) {
         <FormControl sx={{ width: '100%', gap: 3, mb: 4 }}>
           <TextField
             fullWidth
-            required
-            helperText={(!cnpjValido || CNPJ?.length > 18) && 'Por favor, digite um CNPJ válido'}
-            error={!cnpjValido && CNPJ?.length > 18}
+            helperText={((!cnpjValido || CNPJ?.length > 18) && 'Por favor, digite um CNPJ válido') || (!!error['cnpj']?.length && error['cnpj'][0]) }
+            error={(!cnpjValido && CNPJ?.length > 18) || !!error['cnpj']?.length}
             name="CNPJ"
             label="CNPJ"
             placeholder="Digite o CNPJ da empresa"
             value={cnpjFormatado || CNPJ}
             onChange={(e) => {
+              verifyError('cnpj')
               setCNPJ(e.target.value);
             }}
           />
@@ -80,12 +76,13 @@ export default function BasicInformation(props) {
             <>
               <TextField
                 fullWidth
-                required
-                helperText='Este campo é obrigatório.'
+                helperText={!!error['razao_social']?.length && error['razao_social'][0]}
                 name="razaoSocial"
+                error={!!error['razao_social']?.length}
                 label="Razão Social"
                 value={razaoSocial}
                 onChange={(e) => {
+                  verifyError('razao_social')
                   setRazaoSocial(e.target.value);
                 }}
               />
@@ -94,9 +91,12 @@ export default function BasicInformation(props) {
                   <TextField
                     fullWidth
                     name="IE"
+                    helperText={!!error['ie']?.length && error['ie'][0]}
+                    error={!!error['ie']?.length}
                     label="Inscrição Estadual"
                     value={IE}
                     onChange={(e) => {
+                      verifyError('ie')
                       setIE(e.target.value);
                     }}
                   />
@@ -105,9 +105,12 @@ export default function BasicInformation(props) {
                   <TextField
                     fullWidth
                     name="nomeFantasia"
+                    error={!!error['nome_fantasia']?.length}
+                    helperText={!!error['nome_fantasia']?.length && error['nome_fantasia'][0]}
                     label="Nome Fantasia"
                     value={nomeFantasia}
                     onChange={(e) => {
+                      verifyError('nome_fantasia')
                       setNomeFantasia(e.target.value);
                     }}
                   />
@@ -116,9 +119,12 @@ export default function BasicInformation(props) {
                   <TextField
                     fullWidth
                     name="filial"
+                    helperText={!!error['filial']?.length && error['filial'][0]}
+                    error={!!error['filial']?.length}
                     label="Filial"
                     value={filial}
                     onChange={(e) => {
+                      verifyError('filial')
                       setFilial(e.target.value);
                     }}
                   />
@@ -134,13 +140,14 @@ export default function BasicInformation(props) {
         <FormControl sx={{ width: '100%', gap: 3, mb: 4 }}>
           <TextField
             fullWidth
-            error={!cpfValido && CPF?.length >= 11}
-            helperText={(!cpfValido) && 'Por favor, digite um CPF válido'}
+            error={(!cpfValido && CPF?.length >= 11) || !!error['cpf']?.length}
+            helperText={((!cpfValido) && 'Por favor, digite um CPF válido') || (!!error['cpf']?.length && error['cpf'][0])}
             name="CPF"
             label="CPF"
             placeholder="Digite o seu CPF"
             value={cpfFormatado || CPF}
             onChange={(e) => {
+              verifyError('cpf')
               setCPF(e.target.value);
             }}
           />
@@ -150,23 +157,23 @@ export default function BasicInformation(props) {
                 fullWidth
                 name="nome"
                 label="Nome"
+                error={!!error['nome']?.length}
+                helperText={!!error['nome']?.length && error['nome'][0]}
                 value={nome}
                 onChange={(e) => {
-                  if (error) {
-                    setError(null);
-                  }
+                  verifyError('nome')
                   setNome(e.target.value);
                 }}
               />
               <TextField
                 fullWidth
                 name="telefone"
+                error={!!error['telefone']?.length}
+                helperText={!!error['telefone']?.length && error['telefone'][0]}
                 label="Telefone"
                 value={telefone}
                 onChange={(e) => {
-                  if (error) {
-                    setError(null);
-                  }
+                  verifyError('telefone')
                   setTelefone(e.target.value);
                 }}
               />
@@ -174,7 +181,6 @@ export default function BasicInformation(props) {
           )}
         </FormControl>
       )}
-      {!!erros?.length && erros?.map((key, i) => (<Alert key={key + i} severity="error">{`${error[key]}: ${key}`}</Alert>))}
 
       <Box display="flex" alignItems="center" justifyContent="space-between" mt={4}>
         <Typography variant="body2">
@@ -195,8 +201,7 @@ export default function BasicInformation(props) {
           fullWidth
           size="large"
           variant="contained"
-          onClick={handleSubmit}
-          disabled={!shouldDisableButton()}
+          // disabled={!shouldDisableButton()}
         >
           Continuar
         </LoadingButton>

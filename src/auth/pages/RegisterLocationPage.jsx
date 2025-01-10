@@ -9,8 +9,6 @@ export default function RegisterLocationPage() {
     handleSubmit,
     isValid,
     form,
-    erros,
-    loading,
     control,
     error,
   } = useLocationInfoVM()
@@ -29,8 +27,6 @@ export default function RegisterLocationPage() {
           handleSubmit={handleSubmit}
           isValid={isValid}
           form={form}
-          erros={erros}
-          loading={loading}
           control={control}
           error={error}
         />

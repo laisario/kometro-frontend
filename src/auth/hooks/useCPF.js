@@ -1,3 +1,5 @@
+import { useMemo } from "react"
+
 export const regexCPF = /^\d{3}.\d{3}.\d{3}-\d{2}$/
 
 export function validarCPF(value = '') {
@@ -71,9 +73,15 @@ function matchNumbers(value = '') {
   return Array.isArray(match) ? match.map(Number) : []
 }
 
-const useCPF = (cpf) => ({
-  cpf: formatCPF(cpf),
-  isValid: validarCPF(cpf),
-})
+const useCPF = (cpf) => {
+  const formattedCPF = useMemo(() => formatCPF(cpf), [cpf])
+  const isValid = useMemo(() => validarCPF(cpf), [cpf])
+
+  return {
+    cpf: formattedCPF,
+    isValid,
+  }
+}
+
 
 export default useCPF

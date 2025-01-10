@@ -33,20 +33,27 @@ const estados = [
   'TO',
 ];
 
-function FormAdress({ form, control, isValid }) {
+function FormAdress({ form, control, isValid, error }) {
   const {
     estado,
   } = useWatch({ control: control })
+
   return (
     <FormControl sx={{ width: '100%', gap: 3, mb: 4 }}>
       <TextField
         fullWidth
         name="CEP"
-
         required
         label="CEP"
         placeholder="Digite o CEP da sua região"
-        {...form.register("CEP", { minLength: 8 })}
+        {...form.register("CEP", {
+          onChange: () => {
+            if (error?.CEP) {
+              form?.clearErrors('CEP')
+            }
+          }, 
+          minLength: 8
+        })}
       />
       {isValid && (
         <>
@@ -60,26 +67,38 @@ function FormAdress({ form, control, isValid }) {
                 shrink: true
               }}
               {...form.register("rua")}
-            />
-            <TextField
-              fullWidth
-              name="complemento"
-              label="complemento"
-          
-              {...form.register("complemento")}
+              error={!!error?.rua}
+              helperText={error?.rua?.[0]}
             />
             <FormControl sx={{ minWidth: 120 }}>
               <TextField
                 fullWidth
                 name="numero"
                 label="Número"
-                type='number'
                 required
-                {...form.register("numero")}
+                {...form.register("numero", {
+                  onChange: () => {
+                    if (!!error?.numero?.length) {
+                      form?.clearErrors('numero')
+                    }
+                  }
+                })}
+                error={!!error?.numero}
+                helperText={error?.numero?.[0]}
+
               />
             </FormControl>
           </Box>
           <Box display="flex" gap={2}>
+            <TextField
+              fullWidth
+              name="complemento"
+              label="complemento"
+              error={!!error?.complemento}
+              helperText={error?.complemento?.[0]}
+          
+              {...form.register("complemento")}
+            />
             <TextField
               fullWidth
               name="bairro"
@@ -89,7 +108,11 @@ function FormAdress({ form, control, isValid }) {
                 shrink: true
               }}
               {...form.register("bairro")}
+              error={!!error?.bairro}
+              helperText={error?.bairro?.[0]}
             />
+          </Box>
+          <Box display="flex" gap={2}>
             <TextField
               fullWidth
               name="cidade"
@@ -99,6 +122,8 @@ function FormAdress({ form, control, isValid }) {
                 shrink: true
               }}
               {...form.register("cidade")}
+              error={!!error?.cidade}
+              helperText={error?.cidade?.[0]}
             />
             <FormControl sx={{ minWidth: 120 }}>
               <InputLabel id="label">Estado</InputLabel>
@@ -111,6 +136,8 @@ function FormAdress({ form, control, isValid }) {
                 }}
                 {...form.register("estado")}
                 value={estado}
+                error={!!error?.estado}
+                helperText={error?.estado?.[0]}
               >
                 {estados.map((sigla) => (
                   <MenuItem key={sigla} value={sigla}>

@@ -16,7 +16,8 @@ export default function AuthInformation(props) {
     setError,
     email,
     password,
-    handlePasswordChange
+    handlePasswordChange,
+    verifyError
   } = props;
   
   return (
@@ -28,7 +29,7 @@ export default function AuthInformation(props) {
           name="email" 
           label="Email" 
           value={email} 
-          onChange={(e) => { if (error?.email) { setError(null) } setEmail(e.target.value) }} 
+          onChange={(e) => { verifyError('email'); setEmail(e.target.value) }} 
         />
         <TextField
           fullWidth

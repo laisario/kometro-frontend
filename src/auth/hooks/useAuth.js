@@ -15,7 +15,7 @@ const errorMessagesLogin = {
 };
 
 const errorMessagesRegister = {
-  400: 'Todos os campos obrigatórios devem ser preenchidos.',
+  // 400: 'Todos os campos obrigatórios devem ser preenchidos.',
   409: 'Este email já está em uso.',
   500: 'Erro no servidor. Tente novamente mais tarde.',
 }
@@ -24,6 +24,7 @@ export default function useAuth() {
   const { user, setUser, clienteId, setClienteId } = useContext(AuthContext);
   const { state } = useLocation();
   const navigate = useNavigate();
+  const [error, setError] = useState({});
 
   const handleErrorLogin = (err) => {
     if (!err?.response) {
@@ -36,7 +37,7 @@ export default function useAuth() {
     if (!err?.response) {
       return 'Sem resposta do servidor.';
     }
-    return errorMessagesRegister[err?.status] || 'Erro desconhecido. Tente novamente mais tarde.';
+    return errorMessagesRegister[err?.status];
   };
   
   const login = async({email, password}) => {
@@ -89,6 +90,9 @@ export default function useAuth() {
         navigate('/register/location', { replace: true })
       },
       onError: (error) => {
+        const erros = error?.response?.data
+        setError(erros)
+
         const errMsg = handleErrorRegister(error);
         enqueueSnackbar(errMsg, {
           variant: 'error'
@@ -96,6 +100,7 @@ export default function useAuth() {
       },
     }
   );
+
   const registerLocation = async ({ uf, cidade, bairro, logradouro, numero, cep }) => {
       const payload = { clienteId, uf, cidade, bairro, logradouro, numero, cep };
       const response = await axios.post('/register/location/', payload);
@@ -108,6 +113,9 @@ export default function useAuth() {
         navigate('/register/auth', { replace: true })
       },
       onError: (error) => {
+        const erros = error?.response?.data
+        setError(erros)
+
         const errMsg = handleErrorRegister(error);
         enqueueSnackbar(errMsg, {
           variant: 'error'
@@ -132,6 +140,9 @@ export default function useAuth() {
         });
       },
       onError: (error) => {
+        const erros = error?.response?.data
+        setError(erros)
+
         const errMsg = handleErrorRegister(error);
         enqueueSnackbar(errMsg, {
           variant: 'error'
@@ -144,6 +155,13 @@ export default function useAuth() {
     window.localStorage.removeItem('token');
     setUser(null);
   };
+
+
+  const verifyError = (field) => {
+    if (error) {
+      setError((prevError) => ({...prevError, [field]: ''}));
+    }
+  }
 
   return { 
     user,
@@ -159,5 +177,8 @@ export default function useAuth() {
     registerAuthMutation,
     isLoadingRegisterAuth,
     errorMsgLogin,
+    error,
+    setError,
+    verifyError,
   };
 };

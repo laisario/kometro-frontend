@@ -14,7 +14,6 @@ export default function RegisterBasicsPage() {
     CPF,
     nome,
     telefone,
-    erros,
     nomeFantasia,
     filial,
     setTipo,
@@ -26,14 +25,14 @@ export default function RegisterBasicsPage() {
     setCPF,
     setNome,
     setTelefone,
-    setError,
     cnpjFormatado,
     cnpjValido,
     cpfValido,
     cpfFormatado,
     error,
-    shouldDisableButton,
+    verifyError
   } = useBasicInfoVM()
+
   return (
     <>
       <Helmet>
@@ -52,7 +51,6 @@ export default function RegisterBasicsPage() {
         <BasicInformation
           handleSubmit={handleSubmit}
           tipo={tipo}
-          erros={erros}
           setTipo={setTipo}
           setCNPJ={setCNPJ}
           setRazaoSocial={setRazaoSocial}
@@ -62,7 +60,6 @@ export default function RegisterBasicsPage() {
           setCPF={setCPF}
           setNome={setNome}
           setTelefone={setTelefone}
-          setError={setError}
           cnpjFormatado={cnpjFormatado}
           cnpjValido={cnpjValido}
           cpfValido={cpfValido}
@@ -76,7 +73,7 @@ export default function RegisterBasicsPage() {
           nomeFantasia={nomeFantasia}
           filial={filial}
           error={error}
-          shouldDisableButton={shouldDisableButton}
+          verifyError={verifyError}
         />
       </Container>
     </>
