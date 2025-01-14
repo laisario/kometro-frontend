@@ -6,8 +6,8 @@ import App from './App';
 import AssetsPage from './assets/pages/AssetsPage.jsx';
 import AssetDetailPage from './assets/pages/AssetDetailPage.jsx';
 import DashboardPage from './dashboard/pages/DashboardPage.jsx';
-import OrdersPage from './proposals/pages/OrdersPage.jsx';
-import OrderDetailsPage from './proposals/pages/OrderDetailsPage.jsx';
+import ProposalsPage from './proposals/pages/ProposalsPage.jsx';
+import ProposalDetailsPage from './proposals/pages/ProposalDetailsPage.jsx';
 import LoginPage from './auth/pages/LoginPage.jsx';
 import RegisterBasicsPage from './auth/pages/RegisterBasicsPage.jsx';
 import RegisterAuthPage from './auth/pages/RegisterAuthPage.jsx';
@@ -22,8 +22,8 @@ export default function Router() {
         <Route path="app" element={<DashboardPage />} />
         <Route path="instrumentos" element={<AssetsPage />} />
         <Route path="instrumento/:id" element={<AssetDetailPage />} />
-        <Route path="propostas" element={<OrdersPage />} />
-        <Route path="proposta/:id" element={<OrderDetailsPage />} />
+        <Route path="propostas" element={<ProposalsPage />} />
+        <Route path="proposta/:id" element={<ProposalDetailsPage />} />
       </Route>
 
       <Route path="/" element={<AuthLayout />}>
@@ -41,7 +41,7 @@ export default function Router() {
         <Route index element={<Navigate to="/admin/app" />} />
         <Route path="app" element={<DashboardApp />} />
         <Route path="propostas" element={<Orders />} />
-        <Route path="proposta/:id/:idClient" element={<OrderDetails />} />
+        <Route path="proposta/:id/:idClient" element={<ProposalDetails />} />
         <Route path="documentos" element={<Documents />} />
         <Route path="documento/:id/:idRevisao" element={<DocumentsDetails />} />
         <Route path="documento/:id/revisoes" element={<DocumentRevisions />} />

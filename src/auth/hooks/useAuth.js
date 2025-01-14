@@ -165,6 +165,7 @@ export default function useAuth() {
 
   return { 
     user,
+    cliente: clienteId,
     logout, 
     mutateLogin,
     errorLogin,
