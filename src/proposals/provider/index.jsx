@@ -12,6 +12,8 @@ const ProposalsProvider = ({ children }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [debouncedSearchFilter, setDebouncedSearchFilter] = useState('')
+  const [error, setError] = useState({});
+  const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
   
   const formFilter = useForm({
@@ -32,7 +34,62 @@ const ProposalsProvider = ({ children }) => {
     filterByDate,
   } = useWatch({ control: formFilter.control })
   
-  const { data, error, isLoading, refetch } = useQuery(['propostas', page, rowsPerPage, debouncedSearchFilter, status, filterByDate], async () => {
+
+  const handleOpen = () => setOpen(true);
+
+  const handleClose = () => setOpen(false);
+
+  const formCreateProposal = useForm({
+    defaultValues: {
+      cliente: '',
+      informacoesAdicionais: '',
+      instrumentos: [],
+    }
+  })
+
+  const {
+    cliente,
+    informacoesAdicionais,
+    instrumentos,
+  } = useWatch({ control: formCreateProposal.control })
+
+  const createProposal = async () => {
+    await axios.post('/propostas/', { 
+      instrumentos: instrumentos?.length ? instrumentos?.map(instrumento => instrumento?.id) : null, 
+      cliente: cliente?.id ? cliente?.id : null, 
+      informacoesAdicionais: informacoesAdicionais
+    });
+  }
+  
+  const { 
+    mutate: mutateCreateProposal, 
+    isLoading: isLoadingCreateProposal
+  } = useMutation({
+    mutationFn: createProposal,
+    onSuccess: () => {
+      enqueueSnackbar('Proposta criada com sucesso!', {
+        variant: 'success'
+      });
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
+      handleClose()
+      formCreateProposal.reset()
+
+    },
+    onError: (error) => {
+      const erros = error?.response?.data
+      setError(erros)
+      enqueueSnackbar('Falha ao criar a proposta, tente novamente!', {
+        variant: 'error'
+      });
+    }
+  })
+
+  
+  const { 
+    data: allProposals, 
+    error: errorProposals, 
+    isLoading: isLoadingProposals 
+  } = useQuery(['propostas', page, rowsPerPage, debouncedSearchFilter, status, filterByDate], async () => {
     const response = await axios.get('/propostas',
       {
         params:
@@ -52,52 +109,21 @@ const ProposalsProvider = ({ children }) => {
   
   useEffect(() => { handleSearchFilter(search) }, [search, handleSearchFilter])
   
-  const aprovacaoProposta = {
-    null: 'Proposta em análise',
-    false: 'Proposta negada',
-    true: 'Proposta aprovada',
-  };
-  
-  const colorAprovacaoProposta = {
-    null: 'info',
-    false: 'error',
-    true: 'success',
-  };
-  
-  const statusColor = {
-    "E": 'info',
-    "AA": 'warning',
-    "A": 'success',
-    "R": 'error',
-  }
-  
-  const statusString = {
-    "E": 'Em elaboração',
-    "AA": 'Aguardando aprovação',
-    "A": 'Aprovada',
-    "R": 'Reprovada',
-  }
-  
-  const { mutate: deleteOrder, isLoading: isDeleting } = useMutation(async (ids) => Promise.all(ids?.map((id) => axios.delete(`/propostas/${id}`))), {
+  const { mutate: deleteOrder, isLoading: isDeleting } = useMutation({
+    mutationFn: async (ids) => Promise.all(ids?.map((id) => axios.delete(`/propostas/${id}`))), 
     onSuccess: () => {
+      enqueueSnackbar('Proposta deletada com sucesso!', {
+        variant: 'success'
+      });
       queryClient.invalidateQueries({ queryKey: ['propostas'] })
     },
-  })
-  
-  const createOrder = async ({instrumentos, cliente, ...rest}) => {
-    try {
-      await axios.post('/propostas/', { instrumentos: instrumentos?.map(instrumento => instrumento?.id), cliente: cliente?.id, ...rest });
-    } catch (err) {
-      console.log(err);
+    onError: () => {
+      enqueueSnackbar('Falha ao deletar a proposta, tente novamente!', {
+        variant: 'error'
+      });
     }
-  }
-  
-  const { mutate: mutateCreateOrder, isLoading: isLoadingCreateOrder, isSuccess: isSuccessCreateOrder } = useMutation({
-    mutationFn: createOrder,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['propostas'] })
-    },
   })
+  
   
   
   const handleChangePage = (event, newPage) => {
@@ -109,7 +135,7 @@ const ProposalsProvider = ({ children }) => {
     setPage(0);
   };
 
-  const elaborate = async (form, editProposol, setResponse, setOpenAlert, setLoading, handleClose) => {
+  const elaborate = async (form, editProposol) => {
     const formValues = form.watch()
     const formatDayjs = (date) => dayjs.isDayjs(date) ? date.format('YYYY-MM-DD') : null;
     const commonData = {
@@ -117,71 +143,80 @@ const ProposalsProvider = ({ children }) => {
       condicaoDePagamento: formValues.formaDePagamento || null,
       transporte: formValues.transporte || null,
       numero: formValues.numeroProposta || 0,
-      validade: formatDayjs(formValues.validade) || null,
+      validade: formatDayjs(formValues.validade),
       status: formValues.status || null,
-      prazoDePagamento: formatDayjs(formValues.prazoDePagamento) || null,
+      prazoDePagamento: formatDayjs(formValues.prazoDePagamento),
       edit: editProposol,
       responsavel: formValues.responsavel || null,
       diasUteis: formValues.diasUteis || null,
     };
 
-    try {
-      let response;
-      if (formValues.enderecoDeEntrega === 'enderecoCadastrado') {
-        response = await axios.patch(`/propostas/${id}/elaborar/`, {
-          ...commonData,
-          enderecoDeEntrega: data?.cliente?.endereco?.id || null,
-        });
-      } else {
-        response = await axios.patch(`/propostas/${id}/elaborar/`, {
-          ...commonData,
-          enderecoDeEntregaAdd: {
-            cep: formValues.CEP || null,
-            numero: formValues.numeroEndereco || null,
-            logradouro: formValues.rua || null,
-            bairro: formValues.bairro || null,
-            cidade: formValues.cidade || null,
-            estado: formValues.estado || null,
-            complemento: formValues.complemento || null,
-          } || null,
-        });
-      }
-      setResponse({ status: response?.status, message: response?.data?.message });
-    } catch (error) {
-      console.log(error)
-      setResponse({ status: error?.response?.status, message: "Ocorreu um erro ao elaborar a proposta, verifique se preencheu corretamente." });
-    } finally {
-      if (setLoading && handleClose) {
-        setLoading(false)
-        handleClose()
-      }
-      setOpenAlert(true);
-      await refetch()
+    let response;
+
+    if (formValues.enderecoDeEntrega === 'enderecoCadastrado') {
+      response = await axios.patch(`/propostas/${id}/elaborar/`, {
+        ...commonData,
+        enderecoDeEntrega: data?.cliente?.endereco?.id || null,
+      });
+    } else {
+      response = await axios.patch(`/propostas/${id}/elaborar/`, {
+        ...commonData,
+        enderecoDeEntregaAdd: {
+          cep: formValues.CEP || null,
+          numero: formValues.numeroEndereco || null,
+          logradouro: formValues.rua || null,
+          bairro: formValues.bairro || null,
+          cidade: formValues.cidade || null,
+          estado: formValues.estado || null,
+          complemento: formValues.complemento || null,
+        } || null,
+      });
     }
+   
   };
 
+  const { 
+    mutate: mutateElaborateProposal, 
+    isLoading: isLoadingElaborateProposal, 
+  } = useMutation({
+    mutationFn: elaborate,
+    onSuccess: (response) => {
+      enqueueSnackbar('Proposta elaborada com sucesso!' || response?.data?.message, {
+        variant: 'success'
+      });
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
+    },
+    onError: (error) => {
+      console.log(error) // para ver como vem o erro e retornar o erro no field certo do campo
+      enqueueSnackbar('Falha ao elaborar a proposta, tente novamente!', {
+        variant: 'error'
+      });
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
+    }
+  })
   return (
     <ProposalsContext.Provider
       value={{
-        data,
-        error,
-        isLoading,
+        allProposals,
+        errorProposals,
+        isLoadingProposals,
         deleteOrder,
-        refetch,
-        aprovacaoProposta,
-        colorAprovacaoProposta,
         page,
         rowsPerPage,
         handleChangePage,
         handleChangeRowsPerPage,
         formFilter,
         isDeleting,
-        statusColor,
-        statusString,
-        mutateCreateOrder,
-        isLoadingCreateOrder,
-        isSuccessCreateOrder,
-        elaborate
+        formCreateProposal,
+        mutateElaborateProposal, 
+        isLoadingElaborateProposal,
+        mutateCreateProposal,
+        isLoadingCreateProposal,
+        error,
+        setError,
+        handleOpen,
+        handleClose,
+        open
       }}
     >
       {children}

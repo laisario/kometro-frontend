@@ -77,8 +77,8 @@ export default function BasicInformation(props) {
               <TextField
                 fullWidth
                 helperText={!!error['razao_social']?.length && error['razao_social'][0]}
-                name="razaoSocial"
                 error={!!error['razao_social']?.length}
+                name="razaoSocial"
                 label="Razão Social"
                 value={razaoSocial}
                 onChange={(e) => {

@@ -10,10 +10,9 @@ import {
   Container,
   Typography,
   TableContainer,
-  Alert,
-  Snackbar,
   TablePagination,
   Checkbox,
+  Paper,
 } from '@mui/material';
 import Label from '../../components/label';
 import Iconify from '../../components/Iconify';
@@ -25,7 +24,7 @@ import TableToolbar from '../components/TableToolbar';
 import EmptyYet from '../../components/EmptyYet';
 import useProposalsVM from '../viewModels/useProposalsVM';
 import Loading from '../../components/Loading';
-import { headCells, headCellsAdmin } from '../../utils/proposals';
+import { headCells, headCellsAdmin, statusColor, statusString } from '../../utils/proposals';
 
 
 function ProposalsPage() {
@@ -35,30 +34,31 @@ function ProposalsPage() {
     handleSelectAllClick,
     handleOpen,
     handleClose,
-    handleCloseAlert,
     navigate,
-    vertical,
-    horizontal,
-    propostaEnviada,
     page,
     rowsPerPage,
     handleChangePage,
     handleChangeRowsPerPage,
     formFilter,
-    statusColor,
-    statusString,
-    refetch,
     deleteOrder,
-    isLoading,
+    isLoadingProposals,
     admin,
     isMobile,
     open,
-    setOpen,
-    setAlert,
-    data,
+    allProposals,
     selectedOrders,
-    setSelectedOrders
+    setSelectedOrders,
+    mutateCreateProposal,
+    isLoadingCreateProposal,
+    formCreateProposal,
+    allAssets,
+    isLoadingAssets,
+    allClients,
+    isLoadingClients,
+    error,
+    setError,
   } = useProposalsVM()
+
 
   return (
     <>
@@ -77,41 +77,44 @@ function ProposalsPage() {
           </Button>
         </Stack>
         
-        {isLoading
+        {isLoadingProposals
           ? <Loading />
-          : !data?.results?.length 
+          : !allProposals?.results?.length 
             ? <EmptyYet content="proposta" isMobile={isMobile} /> 
-            :(
-            <Card>
-              <TableToolbar
-                form={formFilter} 
-                numSelected={selectedOrders.length} 
-                selectedOrders={selectedOrders} 
-                setSelectedOrders={setSelectedOrders} 
-                admin={admin} 
-                deleteOrder={deleteOrder} 
-                />
+            : (
                 <Scrollbar>
-                <TableContainer sx={{ minWidth: 800 }}>
+                  <TableContainer component={Paper} sx={{ minWidth: 800 }}>
+                  <TableToolbar
+                    form={formFilter} 
+                    numSelected={selectedOrders.length} 
+                    selectedOrders={selectedOrders} 
+                    setSelectedOrders={setSelectedOrders} 
+                    admin={admin} 
+                    deleteOrder={deleteOrder} 
+                  />
                   <Table>
                     <TableHeader
                       numSelected={selectedOrders?.length}
                       onSelectAllClick={handleSelectAllClick}
-                      rowCount={data?.results?.length}
+                      rowCount={allProposals?.results?.length}
                       checkbox={admin}
                       headCells={admin ? headCellsAdmin : headCells}
                     />
                     <TableBody>
-                      {data?.results?.map((row, index) => {
+                      {allProposals?.results?.map((row, index) => {
                         const { id, dataCriacao, status, cliente, numero, total } = row;
-                        const data = dataCriacao;
                         const isItemSelected = isSelected(row.id);
                         return (
                           <TableRow
                             hover
                             key={id}
                             tabIndex={-1}
-                            onClick={() => { navigate(admin ? `/admin/proposta/${id}/${cliente?.id}` : `/dashboard/proposta/${id}`, { replace: true }) }}
+                            onClick={() => { 
+                              navigate(
+                                admin 
+                                  ? `/admin/proposta/${id}/${cliente?.id}` 
+                                  : `/dashboard/proposta/${id}`,
+                                { replace: true })}}
                           >
                             {admin &&
                               <TableCell padding="checkbox">
@@ -127,8 +130,16 @@ function ProposalsPage() {
                             }
                             <TableCell align="left">{numero}</TableCell>
 
-                            <TableCell align="left">{fDate(data)}</TableCell>
-                            {admin ? (<TableCell align="left">{cliente?.empresa?.razao_social || cliente?.nome}</TableCell>) : (<TableCell align="left">{+total > 0 ? `R$ ${total}` : "Aguardando resposta"}</TableCell>)}
+                            <TableCell align="left">{fDate(dataCriacao)}</TableCell>
+                            {admin 
+                              ? (
+                              <TableCell align="left">
+                                {cliente?.empresa?.razaoSocial || cliente?.nome}
+                              </TableCell>) 
+                              : (
+                              <TableCell align="left">
+                                {+total > 0 ? `R$ ${total}` : "Aguardando resposta"}
+                              </TableCell>)}
 
                             <TableCell align="left">
                               <Label color={statusColor[status]}>{statusString[status]}</Label>
@@ -141,7 +152,7 @@ function ProposalsPage() {
                   <TablePagination
                     rowsPerPageOptions={[5, 10, 25, 100]}
                     component="div"
-                    count={data?.count || 0}
+                    count={allProposals?.count || 0}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
@@ -150,28 +161,23 @@ function ProposalsPage() {
                   />
                 </TableContainer>
               </Scrollbar>
-            </Card>
-          )
+            )
         }
 
-        <FormCreateProposal open={open} setOpen={setOpen} setAlert={setAlert} onClose={handleClose} admin={admin} refetch={refetch} />
-
-        <Stack spacing={2} sx={{ width: '100%' }}>
-          <Snackbar
-            open={propostaEnviada}
-            anchorOrigin={{ vertical, horizontal }}
-            key={vertical + horizontal}
-            onClose={handleCloseAlert}
-          >
-            <Alert
-              onClose={handleCloseAlert}
-              severity="success"
-              sx={{ width: '100%' }}
-            >
-              Sua proposta foi enviada com sucesso!
-            </Alert>
-          </Snackbar>
-        </Stack>
+        <FormCreateProposal 
+          open={open} 
+          onClose={handleClose} 
+          admin={admin} 
+          mutateCreateProposal={mutateCreateProposal}
+          isLoadingCreateProposal={isLoadingCreateProposal}
+          formCreateProposal={formCreateProposal}
+          allAssets={allAssets}
+          isLoadingAssets={isLoadingAssets}
+          allClients={allClients}
+          isLoadingClients={isLoadingClients}
+          error={error}
+          setError={setError}
+        />
       </Container>
     </>
   );

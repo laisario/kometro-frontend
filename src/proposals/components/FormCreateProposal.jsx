@@ -9,50 +9,26 @@ import {
   DialogActions,
   Dialog,
   Autocomplete,
-  Alert,
 } from '@mui/material';
-import { useForm, useWatch } from 'react-hook-form';
-import { useContext, useState } from 'react';
-import { axios } from '../../api';
-import AssetsContext from '../../assets/context';
-import ClientsContext from '../../clients/context';
+import { verifyError } from '../../utils/error';
 
-function FormCreateProposal({ setOpen, setAlert, onClose, open, admin, refetch }) {
-  const form = useForm({
-    defaultValues: {
-      cliente: '',
-      informacoesAdicionais: '',
-      instrumentos: [],
-    }
-  })
-  const [errMsg, setErrMsg] = useState({});
-  const [loading, setIsLoading] = useState(false);
-  const { data, isLoading: isLoadingClients } = useContext(ClientsContext);
-  const {
-    cliente,
-    instrumentos,
-  } = useWatch({ control: form.control })
-  const { allAssets, isLoadingAssets } = useContext(AssetsContext);
-  const { handleSubmit, setValue } = form;
+function FormCreateProposal(props) {
+  const { 
+    onClose, 
+    open, 
+    admin,
+    mutateCreateProposal,
+    isLoadingCreateProposal,
+    formCreateProposal,
+    allAssets,
+    isLoadingAssets,
+    allClients,
+    isLoadingClients,
+    error,
+    setError,
+  } = props;
 
-  const submit = async () => {
-    try {
-      setIsLoading(true);
-      const { instrumentos, cliente, ...rest } = form.watch()
-      await axios.post('/propostas/', { instrumentos: instrumentos?.map(instrumento => instrumento?.id), cliente: cliente?.id, ...rest });
-      setIsLoading(false);
-      setAlert((prevAlert) => ({ ...prevAlert, propostaEnviada: true }));
-      setOpen(false);
-      form.reset()
-      await refetch();
-      return { error: false };
-    } catch (err) {
-      console.log(err)
-      setIsLoading(false);
-      setErrMsg(err?.response?.data);
-      return { error: true };
-    }
-  };
+  const instruments = formCreateProposal?.watch("instrumentos")
 
   return (
     <Dialog
@@ -65,22 +41,24 @@ function FormCreateProposal({ setOpen, setAlert, onClose, open, admin, refetch }
         {admin && (
           <Autocomplete
             autoHighlight
-            options={data?.results || []}
+            options={allClients || []}
             isOptionEqualToValue={(option, value) => option?.id === value?.id}
             getOptionLabel={
-              (cliente) => cliente?.empresa?.razao_social || cliente?.nome
+              (client) => client?.empresa?.razaoSocial || client?.nome
             }
             loading={isLoadingClients}
             name="cliente"
-            value={cliente || null}
+            value={formCreateProposal?.cliente || null}
             loadingText="Carregando..."
             noOptionsText="Sem resultados"
-            onChange={(event, newValue) => setValue('cliente', newValue)}
+            onChange={(event, newValue) => {verifyError("cliente", error, setError); formCreateProposal?.setValue('cliente', newValue)}}
             renderInput={(params) => (
               <TextField
                 {...params}
                 label="Cliente"
                 placeholder="Pesquisar cliente"
+                helperText={!!error['cliente']?.length && error['cliente'][0]}
+                error={!!error['cliente']?.length}
               />
             )}
             sx={{ my: 2 }}
@@ -92,31 +70,34 @@ function FormCreateProposal({ setOpen, setAlert, onClose, open, admin, refetch }
           autoHighlight
           options={allAssets?.results || []}
           isOptionEqualToValue={(option, value) => option?.id === value?.id}
-          getOptionLabel={(instrumento) => `${instrumento?.tag}: ${instrumento?.numero_de_serie} - ${instrumento?.instrumento?.tipo_de_instrumento?.descricao} - ${instrumento?.instrumento?.minimo} - ${instrumento?.instrumento?.maximo}`}
+          getOptionLabel={(instrument) => `${instrument?.tag}: ${instrument?.numeroDeSerie} - ${instrument?.instrumento?.tipoDeInstrumento?.descricao} - ${instrument?.instrumento?.minimo} - ${instrument?.instrumento?.maximo}`}
           disableCloseOnSelect
           loading={isLoadingAssets}
           renderTags={(value, getTagProps) => value?.map((tag, index) => <Chip {...getTagProps({ index })} key={tag?.tag} label={tag?.tag} />)}
           name="instrumentos"
-          value={instrumentos || null}
+          value={instruments}
           loadingText="Carregando..."
           noOptionsText="Sem resultados"
-          onChange={(event, newValue) => setValue('instrumentos', newValue)}
+          {...formCreateProposal.register("instrumentos")}
+          onChange={(event, newValue) => {verifyError("instrumentos", error, setError); formCreateProposal?.setValue('instrumentos', newValue)}}
           renderInput={(params) => (
             <TextField
               {...params}
+              helperText={!!error['instrumentos']?.length && error['instrumentos'][0]}
+              error={!!error['instrumentos']?.length}
               label={admin ? "Instrumentos do cliente" : "Instrumentos"}
               placeholder="Pesquisar instrumento"
             />
           )}
           renderOption={(props, instrumento, { selected }) => {
-            const { ...optionProps } = props;
+            const { key, ...optionProps } = props;
             return (
-              <li key={instrumento?.id} {...optionProps}>
+              <li key={key} {...optionProps}>
                 <Checkbox
                   style={{ marginRight: 8 }}
                   checked={selected}
                 />
-                {instrumento?.tag}: {instrumento?.numero_de_serie} - {instrumento?.instrumento?.tipo_de_instrumento?.descricao} - {instrumento?.instrumento?.minimo} - {instrumento?.instrumento?.maximo}
+                {instrumento?.tag}: {instrumento?.numeroDeSerie} - {instrumento?.instrumento?.tipoDeInstrumento?.descricao} - {instrumento?.instrumento?.minimo} - {instrumento?.instrumento?.maximo}
               </li>
             );
           }}
@@ -129,17 +110,21 @@ function FormCreateProposal({ setOpen, setAlert, onClose, open, admin, refetch }
           label="Informações adicionais"
           placeholder="Informações adicionais"
           fullWidth
-          {...form.register("informacoesAdicionais")}
+          {...formCreateProposal.register("informacoesAdicionais")}
 
         />
-        {!!errMsg && Object.keys(errMsg)?.map((errKey, i) => <Alert severity="error" key={i}>{errKey}: {errMsg[errKey]}</Alert>)}
       </DialogContent>
       <DialogActions sx={{ mt: 3, mb: 2 }} >
-        <Button onClick={() => { onClose(); form.reset(); setErrMsg({}) }}>Cancelar</Button>
-        <Button onClick={handleSubmit(submit)} type="submit" contained color="primary">
+        <Button onClick={() => { onClose(); formCreateProposal.reset() }}>Cancelar</Button>
+        <Button 
+          onClick={mutateCreateProposal} 
+          type="submit" 
+          variant="contained"
+        >
           Enviar proposta
         </Button>
-        {loading && <CircularProgress />}
+
+        {isLoadingCreateProposal && <CircularProgress />}
       </DialogActions>
     </Dialog>
   );

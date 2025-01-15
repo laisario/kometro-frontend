@@ -57,7 +57,6 @@ export default function OrderFilterSidebar({ openFilter, onOpenFilter, onCloseFi
                   <FormControlLabel value="AA" control={<Radio checked={form?.status === "AA"} {...form.register("status")} />} label="Aguardando aprovação" />
                   <FormControlLabel value="A" control={<Radio checked={form?.status === "A"} {...form.register("status")} />} label="Aprovada" />
                   <FormControlLabel value="R" control={<Radio checked={form?.status === "R"} {...form.register("status")} />} label="Reprovada" />
-
                 </RadioGroup>
               </FormControl>
             </div>
@@ -83,8 +82,6 @@ export default function OrderFilterSidebar({ openFilter, onOpenFilter, onCloseFi
               />
               <Button variant="contained" fullWidth onClick={() => form.setValue("filterByDate", true)} >Filtrar</Button>
             </div>
-
-
           </Stack>
         </Scrollbar>
 

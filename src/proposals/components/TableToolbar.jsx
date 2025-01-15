@@ -34,23 +34,23 @@ function TableToolbar({ numSelected, form, selectedOrders, admin, setSelectedOrd
           {numSelected.length > 1 ? `${numSelected} selecionados` : `${numSelected} selecionado`}
         </Typography>
       ) : (
-          <Grid container display="flex" justifyContent="space-between" alignItems="center">
+            <Grid container display="flex" justifyContent="space-between" alignItems="center">
               <Grid item sm={6} xs={8}>
-                  <TextField
-                    label='Busque'
-                    {...form.register("search")}
-                    name="search"
-                    placeholder={admin ? 'Cliente ou número' : 'Número'}
-                    id='search-bar'
-                    fullWidth
-                    InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <Search />
-                          </InputAdornment>
-                        ),
-                    }}
-                  />
+                <TextField
+                  label='Busque'
+                  {...form.register("search")}
+                  name="search"
+                  placeholder={admin ? 'Cliente ou número' : 'Número'}
+                  id='search-bar'
+                  fullWidth
+                  InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Search />
+                        </InputAdornment>
+                      ),
+                  }}
+                />
               </Grid>
               <Grid item>
                 <OrderFilterSidebar
@@ -61,7 +61,7 @@ function TableToolbar({ numSelected, form, selectedOrders, admin, setSelectedOrd
                   resetFilters={resetFilters}
                 />
               </Grid>
-          </Grid>
+            </Grid>
         )}
 
         {admin && numSelected > 0 && (

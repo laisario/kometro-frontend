@@ -5,6 +5,7 @@ import { useMutation } from 'react-query';
 import { enqueueSnackbar } from 'notistack';
 import { jwtDecode } from 'jwt-decode';
 import { useLocation, useNavigate } from 'react-router';
+import { verifyError } from '../../utils/error';
 
 
 const errorMessagesLogin = {
@@ -156,12 +157,6 @@ export default function useAuth() {
     setUser(null);
   };
 
-
-  const verifyError = (field) => {
-    if (error) {
-      setError((prevError) => ({...prevError, [field]: ''}));
-    }
-  }
 
   return { 
     user,

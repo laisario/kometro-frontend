@@ -3,46 +3,48 @@ import { useNavigate } from 'react-router';
 import useAuth from '../../auth/hooks/useAuth';
 import useResponsive from '../../theme/hooks/useResponsive';
 import ProposalsContext from '../context';
+import AssetsContext from '../../assets/context';
+import  ClientsContext from '../../clients/context';
 
 function useProposalsVM() {
-  const [open, setOpen] = useState(false);
-  const [alert, setAlert] = useState({ propostaEnviada: false, vertical: 'top', horizontal: 'right' });
   const [selectedOrders, setSelectedOrders] = useState([]);
   const isMobile = useResponsive('down', 'md');
   const { user: { admin } } = useAuth();
 
   const { 
-    data,
+    allProposals,
     page,
     rowsPerPage,
     handleChangePage,
     handleChangeRowsPerPage,
     formFilter,
-    statusColor,
-    statusString,
-    refetch,
     deleteOrder,
-    isLoading
+    isLoadingProposals,
+    formCreateProposal,
+    mutateCreateProposal,
+    error,
+    setError,
+    open, 
+    setOpen,
+    handleOpen,
+    handleClose
   } = useContext(ProposalsContext);
+
+  const {
+    allAssets,
+    isLoadingAssets,
+  } = useContext(AssetsContext);
+
+  const {
+    allClients,
+    isLoadingClients,
+  } = useContext(ClientsContext);
 
   const navigate = useNavigate()
 
-  const { vertical, horizontal, propostaEnviada } = alert;
-
-  const handleCloseAlert = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setAlert((prevAlert) => ({ ...prevAlert, propostaEnviada: false }));
-  };
-
-  const handleOpen = () => setOpen(true);
-
-  const handleClose = () => setOpen(false);
-
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = data?.results?.map((n) => n.id);
+      const newSelected = allProposals?.results?.map((n) => n.id);
       setSelectedOrders(newSelected);
       return;
     }
@@ -62,29 +64,29 @@ function useProposalsVM() {
     handleClose,
     handleSelectAllClick,
     handleOpen,
-    handleCloseAlert,
     navigate,
-    vertical,
-    horizontal,
-    propostaEnviada,
     page,
     rowsPerPage,
     handleChangePage,
     handleChangeRowsPerPage,
     formFilter,
-    statusColor,
-    statusString,
-    refetch,
     deleteOrder,
-    isLoading,
+    isLoadingProposals,
     admin,
     isMobile,
     open,
     setOpen,
-    setAlert,
-    data,
+    allProposals,
     selectedOrders,
-    setSelectedOrders
+    setSelectedOrders,
+    allAssets,
+    isLoadingAssets,
+    formCreateProposal,
+    allClients,
+    isLoadingClients,
+    mutateCreateProposal,
+    error,
+    setError,
   }
 }
 

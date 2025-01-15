@@ -44,9 +44,9 @@ const AssetsProvider = ({ children }) => {
 
   const { mutate: mutateDelete, isLoading: isDeleting } = useMutation({
     mutationFn: deleteAsset,
-    // onSuccess: () => {
-    //   queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
-    // },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
+    },
   })
 
   const sendCriticalAnalisys = async ({ idCalibration, analiseCliente }) => {
@@ -123,10 +123,10 @@ const AssetsProvider = ({ children }) => {
 
   const { mutate: mutateUpdate, isLoading: isUpdatingInstrument, isError: isErrorUp, isSuccess: isSuccessUp } = useMutation({
     mutationFn: updateInstrument,
-    // onSuccess: () => {
-    //   queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
-    //   queryClient.invalidateQueries({ queryKey: ['propostas'] })
-    // },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
+    },
   })
 
   const createInstrument = async (form) => {
@@ -138,9 +138,9 @@ const AssetsProvider = ({ children }) => {
 
   const { mutate: mutateCreate, isLoading: isCreating, isError: isErrorCreate, error: errorCreate, isSuccess: isSuccessCreate } = useMutation({
     mutationFn: createInstrument,
-    // onSuccess: () => {
-    //   queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
-    // },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
+    },
   })
 
   return (
