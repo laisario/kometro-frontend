@@ -13,6 +13,7 @@ import {
   FormLabel,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import 'dayjs/locale/pt-br'
 import Iconify from '../../components/Iconify';
 import Scrollbar from '../../components/scrollbar';
 

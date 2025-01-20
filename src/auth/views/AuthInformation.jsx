@@ -13,7 +13,6 @@ export default function AuthInformation(props) {
     setShowPassword,
     handleSubmit,
     error,
-    setError,
     email,
     password,
     handlePasswordChange,

@@ -7,7 +7,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import useResponsive from '../../theme/hooks/useResponsive';
 import OrderFilterSidebar from './OrderFilterSidebar';
 
-function TableToolbar({ numSelected, form, selectedOrders, admin, setSelectedOrders, deleteOrder }) {
+function TableToolbar({ numSelected, form, selectedOrders, admin, setSelectedOrders, deleteOrder, isMobile }) {
   const [filter, setFilter] = useState(false)
   const isDesktop = useResponsive('up', 'md');
   const resetFilters = () => {
@@ -34,8 +34,8 @@ function TableToolbar({ numSelected, form, selectedOrders, admin, setSelectedOrd
           {numSelected.length > 1 ? `${numSelected} selecionados` : `${numSelected} selecionado`}
         </Typography>
       ) : (
-            <Grid container display="flex" justifyContent="space-between" alignItems="center">
-              <Grid item sm={6} xs={8}>
+            <Grid container display="flex" justifyContent={!isMobile ? "space-between" : "flex-start"} alignItems="center">
+              <Grid item sm={6} xs={4}>
                 <TextField
                   label='Busque'
                   {...form.register("search")}

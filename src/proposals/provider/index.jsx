@@ -1,4 +1,3 @@
-import AssetsContext from "../context";
 import _, {debounce} from 'lodash';
 import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
@@ -34,11 +33,7 @@ const ProposalsProvider = ({ children }) => {
     filterByDate,
   } = useWatch({ control: formFilter.control })
   
-
-  const handleOpen = () => setOpen(true);
-
-  const handleClose = () => setOpen(false);
-
+  
   const formCreateProposal = useForm({
     defaultValues: {
       cliente: '',
@@ -46,14 +41,47 @@ const ProposalsProvider = ({ children }) => {
       instrumentos: [],
     }
   })
-
+  
   const {
     cliente,
     informacoesAdicionais,
     instrumentos,
   } = useWatch({ control: formCreateProposal.control })
+  
+  const { 
+    data: allProposals, 
+    error: errorProposals, 
+    isLoading: isLoadingProposals 
+  } = useQuery(
+    ['propostas', 
+    page, 
+    rowsPerPage, 
+    debouncedSearchFilter, 
+    status, 
+    filterByDate], async () => {
+    const response = await axios.get('/propostas',
+      {
+        params:
+        {
+          page_size: rowsPerPage,
+          page: page + 1,
+          search: debouncedSearchFilter,
+          data_criacao_after: dateStart ? dayjs(dateStart).format('YYYY-MM-DD') : null,
+          data_criacao_before: dateStop ? dayjs(dateStop).format('YYYY-MM-DD') : null,
+          status
+        }
+      });
+      return response?.data;
+    });
+    
+    const handleSearchFilter = debounce((value) => setDebouncedSearchFilter(value), 500);
+    
+    useEffect(() => { handleSearchFilter(search) }, [search, handleSearchFilter])
+    
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
-  const createProposal = async () => {
+    const createProposal = async () => {
     await axios.post('/propostas/', { 
       instrumentos: instrumentos?.length ? instrumentos?.map(instrumento => instrumento?.id) : null, 
       cliente: cliente?.id ? cliente?.id : null, 
@@ -84,31 +112,6 @@ const ProposalsProvider = ({ children }) => {
     }
   })
 
-  
-  const { 
-    data: allProposals, 
-    error: errorProposals, 
-    isLoading: isLoadingProposals 
-  } = useQuery(['propostas', page, rowsPerPage, debouncedSearchFilter, status, filterByDate], async () => {
-    const response = await axios.get('/propostas',
-      {
-        params:
-        {
-          page_size: rowsPerPage,
-          page: page + 1,
-          search: debouncedSearchFilter,
-          data_criacao_after: dateStart ? dayjs(dateStart).format('YYYY-MM-DD') : null,
-          data_criacao_before: dateStop ? dayjs(dateStop).format('YYYY-MM-DD') : null,
-          status
-        }
-      });
-    return response?.data;
-  });
-  
-  const handleSearchFilter = debounce((value) => setDebouncedSearchFilter(value));
-  
-  useEffect(() => { handleSearchFilter(search) }, [search, handleSearchFilter])
-  
   const { mutate: deleteOrder, isLoading: isDeleting } = useMutation({
     mutationFn: async (ids) => Promise.all(ids?.map((id) => axios.delete(`/propostas/${id}`))), 
     onSuccess: () => {
@@ -123,8 +126,6 @@ const ProposalsProvider = ({ children }) => {
       });
     }
   })
-  
-  
   
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -187,13 +188,13 @@ const ProposalsProvider = ({ children }) => {
       queryClient.invalidateQueries({ queryKey: ['propostas'] })
     },
     onError: (error) => {
-      console.log(error) // para ver como vem o erro e retornar o erro no field certo do campo
       enqueueSnackbar('Falha ao elaborar a proposta, tente novamente!', {
         variant: 'error'
       });
       queryClient.invalidateQueries({ queryKey: ['propostas'] })
     }
   })
+
   return (
     <ProposalsContext.Provider
       value={{

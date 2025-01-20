@@ -34,6 +34,7 @@ export default function BasicInformation(props) {
     nomeFantasia,
     filial,
     error,
+    setError,
     verifyError
   } = props;
 
@@ -68,7 +69,7 @@ export default function BasicInformation(props) {
             placeholder="Digite o CNPJ da empresa"
             value={cnpjFormatado || CNPJ}
             onChange={(e) => {
-              verifyError('cnpj')
+              verifyError('cnpj', error, setError)
               setCNPJ(e.target.value);
             }}
           />
@@ -76,13 +77,13 @@ export default function BasicInformation(props) {
             <>
               <TextField
                 fullWidth
-                helperText={!!error['razao_social']?.length && error['razao_social'][0]}
-                error={!!error['razao_social']?.length}
+                helperText={!!error['razaoSocial']?.length && error['razaoSocial'][0]}
+                error={!!error['razaoSocial']?.length}
                 name="razaoSocial"
                 label="Razão Social"
                 value={razaoSocial}
                 onChange={(e) => {
-                  verifyError('razao_social')
+                  verifyError('razaoSocial', error, setError)
                   setRazaoSocial(e.target.value);
                 }}
               />
@@ -96,7 +97,7 @@ export default function BasicInformation(props) {
                     label="Inscrição Estadual"
                     value={IE}
                     onChange={(e) => {
-                      verifyError('ie')
+                      verifyError('ie', error, setError)
                       setIE(e.target.value);
                     }}
                   />
@@ -105,12 +106,12 @@ export default function BasicInformation(props) {
                   <TextField
                     fullWidth
                     name="nomeFantasia"
-                    error={!!error['nome_fantasia']?.length}
-                    helperText={!!error['nome_fantasia']?.length && error['nome_fantasia'][0]}
+                    error={!!error['nomeFantasia']?.length}
+                    helperText={!!error['nomeFantasia']?.length && error['nomeFantasia'][0]}
                     label="Nome Fantasia"
                     value={nomeFantasia}
                     onChange={(e) => {
-                      verifyError('nome_fantasia')
+                      verifyError('nomeFantasia', error, setError)
                       setNomeFantasia(e.target.value);
                     }}
                   />
@@ -124,7 +125,7 @@ export default function BasicInformation(props) {
                     label="Filial"
                     value={filial}
                     onChange={(e) => {
-                      verifyError('filial')
+                      verifyError('filial', error, setError)
                       setFilial(e.target.value);
                     }}
                   />
@@ -147,7 +148,7 @@ export default function BasicInformation(props) {
             placeholder="Digite o seu CPF"
             value={cpfFormatado || CPF}
             onChange={(e) => {
-              verifyError('cpf')
+              verifyError('cpf', error, setError)
               setCPF(e.target.value);
             }}
           />
@@ -161,7 +162,7 @@ export default function BasicInformation(props) {
                 helperText={!!error['nome']?.length && error['nome'][0]}
                 value={nome}
                 onChange={(e) => {
-                  verifyError('nome')
+                  verifyError('nome', error, setError)
                   setNome(e.target.value);
                 }}
               />
@@ -173,7 +174,7 @@ export default function BasicInformation(props) {
                 label="Telefone"
                 value={telefone}
                 onChange={(e) => {
-                  verifyError('telefone')
+                  verifyError('telefone', error, setError)
                   setTelefone(e.target.value);
                 }}
               />
@@ -201,7 +202,6 @@ export default function BasicInformation(props) {
           fullWidth
           size="large"
           variant="contained"
-          // disabled={!shouldDisableButton()}
         >
           Continuar
         </LoadingButton>

@@ -15,7 +15,6 @@ import {
   Paper,
 } from '@mui/material';
 import Label from '../../components/label';
-import Iconify from '../../components/Iconify';
 import Scrollbar from '../../components/scrollbar';
 import { fDate } from '../../utils/formatTime';
 import FormCreateProposal from '../components/FormCreateProposal';
@@ -58,6 +57,7 @@ function ProposalsPage() {
     error,
     setError,
   } = useProposalsVM()
+  console.log("oi")
 
 
   return (
@@ -72,7 +72,7 @@ function ProposalsPage() {
             {admin ? 'Propostas' : 'Minhas propostas'}
           </Typography>
 
-          <Button variant="contained" onClick={handleOpen} startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button variant="contained" onClick={handleOpen} >
             Nova proposta
           </Button>
         </Stack>
@@ -90,7 +90,8 @@ function ProposalsPage() {
                     selectedOrders={selectedOrders} 
                     setSelectedOrders={setSelectedOrders} 
                     admin={admin} 
-                    deleteOrder={deleteOrder} 
+                    deleteOrder={deleteOrder}
+                    isMobile={isMobile}
                   />
                   <Table>
                     <TableHeader

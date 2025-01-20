@@ -34,9 +34,9 @@ const AssetsProvider = ({ children }) => {
     setPage(0);
   };
 
-  const handleSearch = debounce((value) => setDebouncedSearch(value));
+  const handleSearch = debounce((value) => setDebouncedSearch(value), 500);
 
-  useEffect(() => { handleSearch(search) }, [search])
+  useEffect(() => { handleSearch(search) }, [search, handleSearch])
 
   const deleteAsset = async (idInstrument) => {
     await axios.delete(`/instrumentos/${idInstrument}`);

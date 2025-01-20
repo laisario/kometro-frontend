@@ -30,6 +30,7 @@ export default function RegisterBasicsPage() {
     cpfValido,
     cpfFormatado,
     error,
+    setError,
     verifyError
   } = useBasicInfoVM()
 
@@ -73,6 +74,7 @@ export default function RegisterBasicsPage() {
           nomeFantasia={nomeFantasia}
           filial={filial}
           error={error}
+          setError={setError}
           verifyError={verifyError}
         />
       </Container>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import useAuth from '../hooks/useAuth';
 import useCNPJ from '../hooks/useCNPJ';
 import useCPF from '../hooks/useCPF';

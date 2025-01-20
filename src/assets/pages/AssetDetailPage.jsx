@@ -17,7 +17,6 @@ function AssetDetailPage() {
     asset, 
     isMobile,
   } = useAsset(id)
-  console.log("a", asset)
   
   const modelo = asset?.instrumento?.tipoDeInstrumento?.modelo
   const fabricante = asset?.instrumento?.tipoDeInstrumento?.fabricante

@@ -2,10 +2,16 @@ import React, { useState } from 'react'
 import useAuth from '../hooks/useAuth';
 
 function useAuthInfoVM() {
-  const { registerAuthMutation, error, setError, verifyError } = useAuth()
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  
+  const { 
+    registerAuthMutation, 
+    error, 
+    setError, 
+    verifyError 
+  } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +31,7 @@ function useAuthInfoVM() {
       }));
       return false;
     }
-    verifyError('email')
+    verifyError('email', error, setError)
     return true;
   };
 
@@ -33,7 +39,7 @@ function useAuthInfoVM() {
   const handlePasswordChange = (e) => {
     verifyError('password')
     const value = e.target.value;
-    setPassword(value);
+    setPassword(value, error, setError);
   }
 
   return {
