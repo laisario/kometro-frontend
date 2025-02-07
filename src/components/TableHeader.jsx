@@ -2,7 +2,7 @@ import React from 'react'
 import { Checkbox, TableCell, TableHead, TableRow } from '@mui/material';
 
 
-function TableHeader({ onSelectAllClick, numSelected, rowCount, headCells, checkbox }) {
+function TableHeader({ onSelectAllClick, numSelected, rowCount, checkbox, headCells }) {
   return (
     <TableHead>
       <TableRow>

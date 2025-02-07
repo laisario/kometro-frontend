@@ -115,12 +115,13 @@ const ProposalsProvider = ({ children }) => {
   const { mutate: deleteOrder, isLoading: isDeleting } = useMutation({
     mutationFn: async (ids) => Promise.all(ids?.map((id) => axios.delete(`/propostas/${id}`))), 
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
       enqueueSnackbar('Proposta deletada com sucesso!', {
         variant: 'success'
       });
-      queryClient.invalidateQueries({ queryKey: ['propostas'] })
     },
-    onError: () => {
+    onError: (error) => {
+      console.log(error)
       enqueueSnackbar('Falha ao deletar a proposta, tente novamente!', {
         variant: 'error'
       });

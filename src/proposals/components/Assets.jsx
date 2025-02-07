@@ -26,7 +26,8 @@ function Assets(props) {
         <Typography variant="h6" my={2}>
           {data?.instrumentos.length > 1 ? "Instrumentos" : "Instrumento"}
         </Typography>
-        {admin && isMobile
+        {admin && (
+          isMobile
           ? <IconButton onClick={addInstrument}>
             <AddIcon />
           </IconButton>
@@ -37,7 +38,7 @@ function Assets(props) {
               startIcon={<AddIcon />}
             >
             instrumento
-            </Button>
+            </Button>)
         }
       </Box>
 
@@ -53,7 +54,7 @@ function Assets(props) {
         setLoading={setLoading}
       />
 
-      {data?.instrumentos.length 
+      {data?.instrumentos?.length 
         ? <Box display="flex"  justifyContent={(loading || isRemoving) ? 'center' : 'flex-start'} gap={3} sx={{ overflowX: 'auto' }} width="100%" size={{ xs: 12, md: 4 }}>
             {(loading || isRemoving) 
               ? <CircularProgress /> 

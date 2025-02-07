@@ -37,9 +37,12 @@ function ProposalDetailsPage() {
     user,
     edit,
     setEdit,
-    elaborate
+    elaborate,
+    aproveProposal,
+    refuseProposal,
+    deleteOrderAndNavigate,
+    handleSendEmail,
   } = useProposalVM();
-  console.log('a')
 
   return (
     <>
@@ -115,7 +118,7 @@ function ProposalDetailsPage() {
                   variant="contained"
                   disabled={proposal?.status !== "AA"}
                   sx={{ marginX: 2 }}
-                  onClick={() => aprove()}
+                  onClick={() => aproveProposal()}
                   startIcon={<Iconify icon="eva:checkmark-fill" />}
                 >
                   Aprovar proposta
@@ -126,7 +129,7 @@ function ProposalDetailsPage() {
                   variant="contained"
                   color="error"
                   disabled={proposal?.status !== "AA"}
-                  onClick={() => refuse()}
+                  onClick={() => refuseProposal()}
                   startIcon={<Iconify icon="ph:x-bold" />}
                 >
                   Reprovar proposta

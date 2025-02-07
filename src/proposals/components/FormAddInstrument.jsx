@@ -31,7 +31,7 @@ function FormAddInstrument(props) {
     }
   };
 
-  const optionsAvailable = !!data?.instruments_available?.length && data?.instruments_available
+  const optionsAvailable = !!data?.instrumentsAvailable?.length && data?.instrumentsAvailable
 
   return (
     <Dialog open={open} onClose={handleClose}>

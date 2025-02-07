@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { enqueueSnackbar } from 'notistack';
 import { useContext } from 'react';
 import ProposalsContext from '../context';
@@ -7,6 +7,7 @@ import { axios } from '../../api';
 
 const useProposal = (id, cliente) => {
   const {rowsPerPage} = useContext(ProposalsContext);
+  const queryClient = useQueryClient();
 
   const { 
     data: proposal, 
@@ -52,6 +53,7 @@ const useProposal = (id, cliente) => {
       enqueueSnackbar('Proposta enviada com sucesso!', {
         variant: 'success'
       });
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
     },
     onError: () => {
       enqueueSnackbar('Falha ao enviar proposta, tente novamente!', {
@@ -66,6 +68,7 @@ const useProposal = (id, cliente) => {
       enqueueSnackbar('Proposta aprovada com sucesso!', {
         variant: 'success'
       });
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
     },
     onError: () => {
       enqueueSnackbar('Falha ao aprovar proposta, tente novamente!', {
@@ -80,6 +83,7 @@ const useProposal = (id, cliente) => {
       enqueueSnackbar('Proposta recusada com sucesso!', {
         variant: 'success'
       });
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
     },
     onError: () => {
       enqueueSnackbar('Falha ao recusar proposta, tente novamente!', {

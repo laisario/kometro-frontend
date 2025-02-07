@@ -9,7 +9,8 @@ import  ClientsContext from '../../clients/context';
 function useProposalsVM() {
   const [selectedOrders, setSelectedOrders] = useState([]);
   const isMobile = useResponsive('down', 'md');
-  const { user: { admin } } = useAuth();
+  const { user } = useAuth();
+  const admin = user?.admin
 
   const { 
     allProposals,

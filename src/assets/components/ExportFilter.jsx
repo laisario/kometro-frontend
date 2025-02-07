@@ -14,7 +14,7 @@ import {
   DialogContent,
 } from '@mui/material';
 import { axios } from '../../api';
-import CsvViewer from './CsvViewer';
+import CsvViewer from '../../components/CsvViewer';
 
 function ExportFilter({ open, handleClose, selected, handleChangeCheckbox, valueCheckbox, error, setError, selectAll }) {
   const [csvContent, setCsvContent] = useState(null)

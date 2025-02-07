@@ -3,10 +3,9 @@ import {axios} from '../../api'
 
 const useUsers = (id) => {
   const { 
-    users, 
-    errorUsers, 
-    isLoadingUsers, 
-    refetchUsers 
+    data: users, 
+    erro: errorUsers, 
+    isLoading: isLoadingUsers, 
   } = useQuery(['users', id], async () => {
     if (id) {
       const response = await axios.get(`/users/${id}`, { params: { page_size: 9999 } });
@@ -20,7 +19,6 @@ const useUsers = (id) => {
     users, 
     errorUsers, 
     isLoadingUsers, 
-    refetchUsers 
   }
 }
 

@@ -12,8 +12,8 @@ import ContentRow from '../../components/ContentRowCard';
 
 function CardInformation({ instrument, isMobile, admin, removeInstrumentProposal }) {
   const [edit, setEdit] = useState(false)
-  const [openAlert, setOpenAlert] = useState({ open: false, msg: '', color: 'success' })
   const theme = useTheme();
+  console.log(instrument)
 
   const priceOptions = {
     "C": instrument?.instrumento?.preco_calibracao_no_cliente,
@@ -24,13 +24,6 @@ function CardInformation({ instrument, isMobile, admin, removeInstrumentProposal
     setEdit(false)
   }
 
-  const handleOpenAlert = (msg, color) => setOpenAlert({ open: true, msg, color, });
-  const handleCloseAlert = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpenAlert({ open: false, msg: '', color: 'success' })
-  }
   return (
     <Card sx={{
       backgroundColor: theme.palette.background.neutral,
@@ -41,42 +34,42 @@ function CardInformation({ instrument, isMobile, admin, removeInstrumentProposal
       scroll: "auto",
       mb: 2,
     }}>
-      <EditAsset handleOpenAlert={handleOpenAlert} handleClose={handleClose} open={edit} instrument={instrument} isMobile={isMobile} />
+      <EditAsset  handleClose={handleClose} open={edit} instrument={instrument} isMobile={isMobile} />
       <CardContent p={2} sx={{
         padding: 2,
         height: '250px',
         overflow: 'auto',
       }}>
         <Box display="flex" justifyContent="space-between" gap={2} mb={1}>
-          {!!instrument?.instrumento?.tipo_de_instrumento?.descricao &&
+          {!!instrument?.instrumento?.tipoDeInstrumento?.descricao &&
             <Typography fontWeight="900" color={'grey'} variant="body1">
-              {instrument?.instrumento?.tipo_de_instrumento?.descricao}
+              {instrument?.instrumento?.tipoDeInstrumento?.descricao}
             </Typography>}
 
           {!!instrument?.posicao &&
             <Chip label={positionLabels[instrument?.posicao]} size="small" variant="outlined" />}
         </Box>
 
-        {!!instrument?.instrumento?.tipo_de_instrumento?.fabricante
-          && (<ContentRow colorValue={"black"} title="Fabricante" value={instrument?.instrumento?.tipo_de_instrumento?.fabricante} />)}
+        {!!instrument?.instrumento?.tipoDeInstrumento?.fabricante
+          && (<ContentRow colorValue={"black"} title="Fabricante" value={instrument?.instrumento?.tipoDeInstrumento?.fabricante} />)}
 
-        {!!instrument?.instrumento?.tipo_de_instrumento?.modelo
-          && (<ContentRow colorValue={"black"} title="Modelo" value={instrument?.instrumento?.tipo_de_instrumento?.modelo} />)}
+        {!!instrument?.instrumento?.tipoDeInstrumento?.modelo
+          && (<ContentRow colorValue={"black"} title="Modelo" value={instrument?.instrumento?.tipoDeInstrumento?.modelo} />)}
 
-        {!!instrument?.instrumento?.tipo_de_instrumento?.resolucao
-          && (<ContentRow colorValue={"black"} title="Resolução" value={instrument?.instrumento?.tipo_de_instrumento?.resolucao} />)}
+        {!!instrument?.instrumento?.tipoDeInstrumento?.resolucao
+          && (<ContentRow colorValue={"black"} title="Resolução" value={instrument?.instrumento?.tipoDeInstrumento?.resolucao} />)}
 
-        {!!instrument?.instrumento?.procedimento_relacionado?.codigo
-          && (<ContentRow colorValue={"black"} title="Procedimento relacionado" value={instrument?.instrumento?.procedimento_relacionado?.codigo} />)}
+        {!!instrument?.instrumento?.procedimentoRelacionado?.codigo
+          && (<ContentRow colorValue={"black"} title="Procedimento relacionado" value={instrument?.instrumento?.procedimentoRelacionado?.codigo} />)}
 
         {!!instrument?.tag
           && (<ContentRow colorValue={"black"} title="Tag" value={instrument?.tag} />)}
 
-        {!!instrument?.numero_de_serie
-          && (<ContentRow colorValue={"black"} title="Número de série" value={instrument?.numero_de_serie} />)}
+        {!!instrument?.numeroDeSerie
+          && (<ContentRow colorValue={"black"} title="Número de série" value={instrument?.numeroDeSerie} />)}
 
-        {!!instrument?.data_ultima_calibracao &&
-          (<ContentRow colorValue={"black"} title="Última calibração" value={fDate(instrument?.data_ultima_calibracao, "dd/MM/yyyy")} />)}
+        {!!instrument?.dataUltimaCalibracao &&
+          (<ContentRow colorValue={"black"} title="Última calibração" value={fDate(instrument?.dataUltimaCalibracao, "dd/MM/yyyy")} />)}
 
         {!!instrument?.data_proxima_calibracao &&
           (<ContentRow colorValue={"black"} title="Próxima calibração" value={fDate(instrument?.data_proxima_calibracao, "dd/MM/yyyy")} />)}

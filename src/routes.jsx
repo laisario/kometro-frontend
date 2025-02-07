@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from 'react-router';
 import CommonLayout from './layouts/common/CommonLayout.jsx';
 import AuthLayout from './layouts/auth/AuthLayout.jsx';
 import SimpleLayout from './layouts/simple/SimpleLayout.jsx';
-import App from './App';
 import AssetsPage from './assets/pages/AssetsPage.jsx';
 import AssetDetailPage from './assets/pages/AssetDetailPage.jsx';
 import DashboardPage from './dashboard/pages/DashboardPage.jsx';
@@ -13,6 +12,9 @@ import RegisterBasicsPage from './auth/pages/RegisterBasicsPage.jsx';
 import RegisterAuthPage from './auth/pages/RegisterAuthPage.jsx';
 import RegisterLocationPage from './auth/pages/RegisterLocationPage.jsx';
 import Page404 from './dashboard/pages/Page404.jsx';
+import DocumentsPage from './documents/pages/DocumentsPage.jsx';
+import DocumentDetailPage from './documents/pages/DocumentDetailPage.jsx';
+import DocumentRevisions from './documents/pages/DocumentRevisions.jsx';
 
 export default function Router() {
   return (
@@ -37,17 +39,17 @@ export default function Router() {
         <Route path="location" element={<RegisterLocationPage />} />
       </Route>
 
-      {/* <Route path="/admin" element={<CommonLayout />}>
+      <Route path="/admin" element={<CommonLayout />}>
         <Route index element={<Navigate to="/admin/app" />} />
-        <Route path="app" element={<DashboardApp />} />
-        <Route path="propostas" element={<Orders />} />
-        <Route path="proposta/:id/:idClient" element={<ProposalDetails />} />
-        <Route path="documentos" element={<Documents />} />
-        <Route path="documento/:id/:idRevisao" element={<DocumentsDetails />} />
+        <Route path="app" element={<DashboardPage />} />
+        <Route path="propostas" element={<ProposalsPage />} />
+        <Route path="proposta/:id/:idClient" element={<ProposalDetailsPage />} />
+        <Route path="documentos" element={<DocumentsPage />} />
+        <Route path="documento/:id/:idRevisao" element={<DocumentDetailPage />} />
         <Route path="documento/:id/revisoes" element={<DocumentRevisions />} />
-        <Route path="clientes" element={<Clients />} />
-        <Route path="cliente/:id" element={<ClientDetails />} />
-      </Route> */}
+        {/* <Route path="clientes" element={<Clients />} />
+        <Route path="cliente/:id" element={<ClientDetails />} /> */}
+      </Route>
 
       <Route element={<SimpleLayout />}>
         <Route index element={<Navigate to="/dashboard/app" />} />

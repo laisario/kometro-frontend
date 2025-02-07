@@ -57,9 +57,6 @@ function ProposalsPage() {
     error,
     setError,
   } = useProposalsVM()
-  console.log("oi")
-
-
   return (
     <>
       <Helmet>
@@ -84,85 +81,85 @@ function ProposalsPage() {
             : (
                 <Scrollbar>
                   <TableContainer component={Paper} sx={{ minWidth: 800 }}>
-                  <TableToolbar
-                    form={formFilter} 
-                    numSelected={selectedOrders.length} 
-                    selectedOrders={selectedOrders} 
-                    setSelectedOrders={setSelectedOrders} 
-                    admin={admin} 
-                    deleteOrder={deleteOrder}
-                    isMobile={isMobile}
-                  />
-                  <Table>
-                    <TableHeader
-                      numSelected={selectedOrders?.length}
-                      onSelectAllClick={handleSelectAllClick}
-                      rowCount={allProposals?.results?.length}
-                      checkbox={admin}
-                      headCells={admin ? headCellsAdmin : headCells}
+                    <TableToolbar
+                      form={formFilter} 
+                      numSelected={selectedOrders.length} 
+                      selectedOrders={selectedOrders} 
+                      setSelectedOrders={setSelectedOrders} 
+                      admin={admin} 
+                      deleteOrder={deleteOrder}
+                      isMobile={isMobile}
                     />
-                    <TableBody>
-                      {allProposals?.results?.map((row, index) => {
-                        const { id, dataCriacao, status, cliente, numero, total } = row;
-                        const isItemSelected = isSelected(row.id);
-                        return (
-                          <TableRow
-                            hover
-                            key={id}
-                            tabIndex={-1}
-                            onClick={() => { 
-                              navigate(
-                                admin 
-                                  ? `/admin/proposta/${id}/${cliente?.id}` 
-                                  : `/dashboard/proposta/${id}`,
-                                { replace: true })}}
-                          >
-                            {admin &&
-                              <TableCell padding="checkbox">
-                                <Checkbox
-                                  color="primary"
-                                  onClick={(event) => handleClick(event, row.id)}
-                                  checked={isItemSelected}
-                                  inputProps={{
-                                    'aria-labelledby': index,
-                                  }}
-                                />
+                    <Table>
+                      <TableHeader
+                        numSelected={selectedOrders?.length}
+                        onSelectAllClick={handleSelectAllClick}
+                        rowCount={allProposals?.results?.length}
+                        checkbox={admin}
+                        headCells={admin ? headCellsAdmin : headCells}
+                      />
+                      <TableBody>
+                        {allProposals?.results?.map((row, index) => {
+                          const { id, dataCriacao, status, cliente, numero, total } = row;
+                          const isItemSelected = isSelected(row.id);
+                          return (
+                            <TableRow
+                              hover
+                              key={id}
+                              tabIndex={-1}
+                              onClick={() => { 
+                                navigate(
+                                  admin 
+                                    ? `/admin/proposta/${id}/${cliente?.id}` 
+                                    : `/dashboard/proposta/${id}`
+                                  )}}
+                            >
+                              {admin &&
+                                <TableCell padding="checkbox">
+                                  <Checkbox
+                                    color="primary"
+                                    onClick={(event) => handleClick(event, row.id)}
+                                    checked={isItemSelected}
+                                    inputProps={{
+                                      'aria-labelledby': index,
+                                    }}
+                                  />
+                                </TableCell>
+                              }
+                              <TableCell align="left">{numero}</TableCell>
+
+                              <TableCell align="left">{fDate(dataCriacao)}</TableCell>
+                              {admin 
+                                ? (
+                                <TableCell align="left">
+                                  {cliente?.empresa?.razaoSocial || cliente?.nome}
+                                </TableCell>) 
+                                : (
+                                <TableCell align="left">
+                                  {+total > 0 ? `R$ ${total}` : "Aguardando resposta"}
+                                </TableCell>)}
+
+                              <TableCell align="left">
+                                <Label color={statusColor[status]}>{statusString[status]}</Label>
                               </TableCell>
-                            }
-                            <TableCell align="left">{numero}</TableCell>
-
-                            <TableCell align="left">{fDate(dataCriacao)}</TableCell>
-                            {admin 
-                              ? (
-                              <TableCell align="left">
-                                {cliente?.empresa?.razaoSocial || cliente?.nome}
-                              </TableCell>) 
-                              : (
-                              <TableCell align="left">
-                                {+total > 0 ? `R$ ${total}` : "Aguardando resposta"}
-                              </TableCell>)}
-
-                            <TableCell align="left">
-                              <Label color={statusColor[status]}>{statusString[status]}</Label>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                  <TablePagination
-                    rowsPerPageOptions={[5, 10, 25, 100]}
-                    component="div"
-                    count={allProposals?.count || 0}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    labelRowsPerPage="Linhas por páginas"
-                  />
-                </TableContainer>
-              </Scrollbar>
-            )
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                    <TablePagination
+                      rowsPerPageOptions={[5, 10, 25, 100]}
+                      component="div"
+                      count={allProposals?.count || 0}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                      labelRowsPerPage="Linhas por páginas"
+                    />
+                  </TableContainer>
+                </Scrollbar>
+              )
         }
 
         <FormCreateProposal 

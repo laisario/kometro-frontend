@@ -6,10 +6,11 @@ import { StyledRootScrollbar, StyledScrollbar } from './styles';
 
 Scrollbar.propTypes = {
   sx: PropTypes.object,
+  rootSx: PropTypes.object,
   children: PropTypes.node,
 };
 
-function Scrollbar({ children, sx, ...other }) {
+function Scrollbar({ children, rootSx, sx, ...other }) {
   const userAgent = typeof navigator === 'undefined' ? 'SSR' : navigator.userAgent;
 
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
@@ -23,7 +24,7 @@ function Scrollbar({ children, sx, ...other }) {
   }
 
   return (
-    <StyledRootScrollbar>
+    <StyledRootScrollbar sx={rootSx}>
       <StyledScrollbar timeout={500} clickOnTrack={false} sx={sx} {...other}>
         {children}
       </StyledScrollbar>

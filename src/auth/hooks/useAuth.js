@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo, useState, useCallback, useEffect } from 'react';
 import  AuthContext from '../context'
 import { axios } from '../../api';
 import { useMutation } from 'react-query';
@@ -23,7 +23,6 @@ const errorMessagesRegister = {
 
 export default function useAuth() {
   const { user, setUser, clienteId, setClienteId } = useContext(AuthContext);
-  const { state } = useLocation();
   const navigate = useNavigate();
   const [error, setError] = useState({});
 
@@ -41,6 +40,7 @@ export default function useAuth() {
     return errorMessagesRegister[err?.status];
   };
   
+
   const login = async({email, password}) => {
     const response = await axios.post('/login/', {
       username: email,
@@ -48,7 +48,6 @@ export default function useAuth() {
     });
     return response;
   };
-
   
   const { mutate: mutateLogin, isLoading: isLoadingLogin, error: errorLogin, isError: isErrorLogin } = useMutation(login,
     {
@@ -59,7 +58,7 @@ export default function useAuth() {
         window.localStorage.setItem('token', token);
         setUser({ token, nome: decoded?.nome, admin: decoded?.admin });
         
-        const redirectPath = state?.redirect || '/dashboard';
+        const redirectPath = decoded?.admin ? '/admin' : '/dashboard';
         navigate(redirectPath, { replace: true });
       },
       onError: (error) => {

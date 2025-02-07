@@ -1,17 +1,24 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import useResponsive from '../../theme/hooks/useResponsive';
 import useProposal from '../hooks/useProposal';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import useAuth from '../../auth/hooks/useAuth';
+import ProposalsContext from '../context';
 
 const useProposalVM = () => {
   const [edit, setEdit] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
-  const [response, setResponse] = useState({ status: 0, message: '' });
   const [elaborateOpen, setElaborateOpen] = useState(false);
   const { id, idClient } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate()
+
+  const { deleteOrder } = useContext(ProposalsContext)
   
+  const deleteOrderAndNavigate = () => {
+    deleteOrder([id])
+    navigate('/admin/propostas', { replace: true });
+  }
+
   const {
     removeInstrumentProposal,
     isRemoving,
@@ -25,7 +32,7 @@ const useProposalVM = () => {
     isLoadingAproveProposal,
     refuseProposal, 
     isLoadingRefuseProposal,
-    elaborate
+    elaborate,
   } = useProposal(id, idClient);
 
   const isMobile = useResponsive('down', 'md');
@@ -52,6 +59,7 @@ const useProposalVM = () => {
     edit,
     setEdit,
     elaborate,
+    deleteOrderAndNavigate,
   }
 }
 
