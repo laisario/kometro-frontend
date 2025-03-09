@@ -20,12 +20,12 @@ export const useDashboardVM = () => {
       : instrumento?.dataProximaCalibracao,
   }))
 
-  // const documentos = data?.revisoesASeremAprovadas
+  const documents = data?.revisoesASeremAprovadas
 
   return {
     user,
     data,
     instruments,
-    // documents,
+    documents,
   }
 }

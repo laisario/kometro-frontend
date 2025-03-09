@@ -40,7 +40,6 @@ function ExportFilter({ open, handleClose, selected, handleChangeCheckbox, value
           try {
             const resposta = await axios.post('/instrumentos/exportar/', selectedData);
             if (resposta.status === 200) {
-                console.log('Exportação realizada com sucesso!');
                 setCsvContent(resposta?.data)
             } else {
                 setError(true)

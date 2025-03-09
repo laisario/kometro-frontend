@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardActions, CardContent, CircularProgress, Divider } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import AttachmentIcon from '@mui/icons-material/Attachment';
 import { fDate } from '../../utils/formatTime';
 import CriticalAnalysisDialog from './CriticalAnalysisDialog';
@@ -9,7 +9,7 @@ import { statusColor, statusLabel, analiseCriticaColor, analiseCriticaLabel } fr
 import { truncateString } from '../../utils/formatString';
 import Attachment from '../../components/Attachment';
 import Certificates from './Certificates';
-import AssetsContext from '../context';
+import useAssetMutations from '../hooks/useAssetMutations'
 
 function CalibrationCard({ calibration, theme, isMobile }) {
   const [open, setOpen] = useState(false);
@@ -26,7 +26,7 @@ function CalibrationCard({ calibration, theme, isMobile }) {
   const { 
     mutateCriticalAnalisys, 
     isLoadingCriticalAnalisys, 
-  } = useContext(AssetsContext);
+  } = useAssetMutations();
 
   const toggleReadMore = (field, readMore, readUntil = 15) => {
     setReadMore((prevValues) => ({
@@ -60,7 +60,15 @@ function CalibrationCard({ calibration, theme, isMobile }) {
   const certificado = calibration?.certificados[0]
 
   return (
-    <Card sx={{ backgroundColor: theme.palette.background.neutral, minWidth: isMobile ? '100%' : '35%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+    <Card 
+      sx={{ 
+        backgroundColor: theme.palette.background.neutral, 
+        minWidth: isMobile ? '100%' : '35%', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'space-between' 
+      }}
+    >
       <CardContent>
         {(!!calibration?.data || !!calibration?.status) &&
           <ContentRow title={calibration?.ordemDeServico} value={fDate(calibration?.data, "dd/MM/yy")} />}

@@ -11,7 +11,6 @@ export default function AddressInformation(props) {
     isValid,
     form,
     loading,
-    control,
     error,
   } = props;
 
@@ -21,7 +20,6 @@ export default function AddressInformation(props) {
       <FormAdress
         isValid={isValid}
         form={form}
-        control={control}
         error={error}
       />
       <Box display="flex" alignItems="center" justifyContent="space-between" mt={4}>

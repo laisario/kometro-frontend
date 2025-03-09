@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@contentpass/zxcvbn": "^4.4.3",
+    "@cyntler/react-doc-viewer": "^1.17.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@iconify/react": "^5.1.0",
@@ -34,7 +35,10 @@
     "react-papaparse": "^4.4.0",
     "react-query": "^3.39.3",
     "react-router": "^7.1.1",
-    "simplebar-react": "^3.3.0"
+    "react-window": "^1.8.11",
+    "simplebar-react": "^3.3.0",
+    "styled-components": "^6.1.15",
+    "swiper": "^11.2.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

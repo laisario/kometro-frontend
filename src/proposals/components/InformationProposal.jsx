@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   Box,
   Button,
@@ -13,24 +13,16 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import dayjs from 'dayjs';
 import { capitalizeFirstLetter as CFL, titleCase } from '../../utils/formatString';
 import FilesSelection from './FilesSelection';
+import { paymentMethods, statusMessages, statusColor, statusString } from '../../utils/proposals';
 
 
-const formaPagamento = {
-  CD: 'Débito',
-  CC: 'Crédito',
-  P: 'Pix',
-  D: 'Dinheiro',
-  B: 'Boleto',
-};
 
-const statusMessages = {
-  "E": 'Aguardando a resposta da Kometro',
-  "AA": 'Aguardando sua aprovação',
-  "A": 'Você aprovou a proposta',
-  "R": 'VocÊ reprovou a proposta',
-}
-
-function InformationProposol({ data, isMobile, admin, statusColor, statusString }) {
+function InformationProposol(props) {
+  const { 
+    data, 
+    isMobile, 
+    admin, 
+  } = props;
   const [openAnexos, setOpenAnexos] = useState(false)
   const [openProposals, setOpenProposals] = useState(false)
 
@@ -45,8 +37,10 @@ function InformationProposol({ data, isMobile, admin, statusColor, statusString 
   const handleOpenAnexos = () => setOpenAnexos(true)
   const handleOpenProposals = () => setOpenProposals(true)
 
-  const mappedAnexos = data?.anexos?.map(({ anexo }) => ({url: anexo}))
-  const mappedProposals = data?.revisoes?.map((rev) => ({ url: rev?.pdf, rev: rev?.rev }))
+  const message = statusMessages(admin)[data?.status]
+
+  const mappedAnexos = useMemo(() => data?.anexos?.map(({ anexo }) => ({url: anexo})), [data?.anexos])
+  const mappedProposals = useMemo(() =>data?.revisoes?.map((rev) => ({ url: rev?.pdf, rev: rev?.rev })), [data?.revisoes])
 
   return (
     <Grid container justifyContent="space-between" flexDirection={isMobile ? 'column-reverse' : 'row'}>
@@ -55,41 +49,41 @@ function InformationProposol({ data, isMobile, admin, statusColor, statusString 
           <Typography variant="h6">Total: R${data?.total}</Typography>
         }
         {!!data?.dataCriacao && admin &&
-            <Typography variant="subtitle1" fontWeight="500">
-              Proposta criada: {dayjs(data?.dataCriacao).locale('pt-BR').format('D [de] MMMM [de] YYYY')}
-            </Typography>
+          <Typography variant="subtitle1" fontWeight="500">
+            Proposta criada: {dayjs(data?.dataCriacao).locale('pt-BR').format('D [de] MMMM [de] YYYY')}
+          </Typography>
         }
         {!!data?.condicaoDePagamento &&
-            <Typography variant="subtitle1" fontWeight="500">
-              Forma de pagamento: {formaPagamento[data?.condicaoDePagamento]}
-            </Typography>
+          <Typography variant="subtitle1" fontWeight="500">
+            Forma de pagamento: {paymentMethods[data?.condicaoDePagamento]}
+          </Typography>
         }
         {!!data?.prazoDePagamento &&
-            <Typography variant="subtitle1" fontWeight="500">
-              Prazo de pagamento: {dayjs(data?.prazoDePagamento).locale('pt-BR').format('D [de] MMMM [de] YYYY')}
-            </Typography>
+          <Typography variant="subtitle1" fontWeight="500">
+            Prazo de pagamento: {dayjs(data?.prazoDePagamento).locale('pt-BR').format('D [de] MMMM [de] YYYY')}
+          </Typography>
         }
         {!!data?.diasUteis &&
-            <Typography variant="subtitle1" fontWeight="500">
-              Dias úteis entrega: {data?.diasUteis > 1 ? `Em ${data?.diasUteis} dias` : `Em ${data?.diasUteis} dia`}
-            </Typography>
+          <Typography variant="subtitle1" fontWeight="500">
+            Dias úteis entrega: {data?.diasUteis > 1 ? `Em ${data?.diasUteis} dias` : `Em ${data?.diasUteis} dia`}
+          </Typography>
         }
         {!!data?.transporte &&
-            <Typography variant="subtitle1" fontWeight="500">
-              Transporte: {CFL(data?.transporte)}
-            </Typography>
+          <Typography variant="subtitle1" fontWeight="500">
+            Transporte: {CFL(data?.transporte)}
+          </Typography>
         }
         {!!data?.enderecoDeEntrega &&
-            <Typography variant="subtitle1" fontWeight="500">
-              Endereço de entrega: {data?.enderecoDeEntrega?.logradouro}, {data?.enderecoDeEntrega?.numero}
-              {!!data?.enderecoDeEntrega?.complemento && `- ${data?.enderecoDeEntrega?.complemento}`} - {data?.enderecoDeEntrega?.bairro?.nome} - {data?.enderecoDeEntrega?.cep}
-            </Typography>
+          <Typography variant="subtitle1" fontWeight="500">
+            Endereço de entrega: {data?.enderecoDeEntrega?.logradouro}, {data?.enderecoDeEntrega?.numero}
+            {!!data?.enderecoDeEntrega?.complemento && `- ${data?.enderecoDeEntrega?.complemento}`} - {data?.enderecoDeEntrega?.bairro?.nome} - {data?.enderecoDeEntrega?.cep}
+          </Typography>
         }
         {!!data?.responsavel?.username && (<Typography variant="subtitle1" fontWeight="500">Funcionário responsável: {titleCase(data?.responsavel?.username)}</Typography>)}
       </Box>
-      <Box display="flex" flexDirection={isMobile ? "row" : "column"} gap={1}>
+      <Box display="flex" mb={isMobile ? 2 : 0}  flexDirection={isMobile ? "row" : "column"} gap={1}>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <Tooltip title={statusMessages[data?.status]}>
+          <Tooltip title={message}>
             <Chip
               label={statusString[data?.status]}
               color={statusColor[data?.status]}

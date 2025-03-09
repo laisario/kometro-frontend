@@ -71,7 +71,7 @@ function matchNumbers(value = '') {
 }
 
 function getInscricaoEstadual(empresa) {
-  const inscricoes = (empresa?.estabelecimento?.inscricoes_estaduais || [])
+  const inscricoes = (empresa?.estabelecimento?.inscricoesEstaduais || [])
   return inscricoes?.filter(inscricao => inscricao?.ativo)[0]?.inscricao_estadual
 }
 

@@ -63,3 +63,5 @@ export const headCells = [
     label: 'Análise Critica',
   },
 ];
+
+export const availableFormats = 'Formatos dísponiveis: PDF, XLSX, XLSM, DOCX, DOC, PPTX, PPT'

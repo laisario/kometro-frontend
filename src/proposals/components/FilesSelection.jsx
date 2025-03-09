@@ -1,7 +1,9 @@
 import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material'
 import React from 'react'
+import Iconify from '../../components/Iconify'
 
 function FilesSelection({ handleClose, open, arr = [], title }) {
+  const isProposal = title?.toLowerCase()?.includes('proposta')
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle>{title}</DialogTitle>
@@ -14,7 +16,8 @@ function FilesSelection({ handleClose, open, arr = [], title }) {
             sx={{ mr: 1 }} 
             href={arr?.url}
           >
-            {title?.toLowerCase()?.includes('proposta') ? `Rev ${arr?.rev}` : (i + 1)}
+            <Iconify icon={isProposal ? "eva:file-text-fill" : "eva:attach-fill"} />
+            {isProposal ? `Rev ${arr?.rev}` : (i + 1)}
           </Button>
         ))}
       </DialogContent>

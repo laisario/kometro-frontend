@@ -14,7 +14,9 @@ import RegisterLocationPage from './auth/pages/RegisterLocationPage.jsx';
 import Page404 from './dashboard/pages/Page404.jsx';
 import DocumentsPage from './documents/pages/DocumentsPage.jsx';
 import DocumentDetailPage from './documents/pages/DocumentDetailPage.jsx';
-import DocumentRevisions from './documents/pages/DocumentRevisions.jsx';
+import DocumentReviews from './documents/pages/DocumentReviews.jsx';
+import ClientsPage from './clients/pages/ClientsPage.jsx';
+import ClientDetailsPage from './clients/pages/ClientDetailsPage.jsx';
 
 export default function Router() {
   return (
@@ -46,9 +48,9 @@ export default function Router() {
         <Route path="proposta/:id/:idClient" element={<ProposalDetailsPage />} />
         <Route path="documentos" element={<DocumentsPage />} />
         <Route path="documento/:id/:idRevisao" element={<DocumentDetailPage />} />
-        <Route path="documento/:id/revisoes" element={<DocumentRevisions />} />
-        {/* <Route path="clientes" element={<Clients />} />
-        <Route path="cliente/:id" element={<ClientDetails />} /> */}
+        <Route path="documento/:id/revisoes" element={<DocumentReviews />} />
+        <Route path="clientes" element={<ClientsPage />} />
+        <Route path="cliente/:id" element={<ClientDetailsPage />} />
       </Route>
 
       <Route element={<SimpleLayout />}>

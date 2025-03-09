@@ -11,6 +11,7 @@ import {
   Autocomplete,
 } from '@mui/material';
 import { verifyError } from '../../utils/error';
+import useClientAssets from '../../assets/hooks/useClientAsset';
 
 function FormCreateProposal(props) {
   const { 
@@ -20,15 +21,17 @@ function FormCreateProposal(props) {
     mutateCreateProposal,
     isLoadingCreateProposal,
     formCreateProposal,
-    allAssets,
     isLoadingAssets,
-    allClients,
+    clients,
     isLoadingClients,
     error,
     setError,
   } = props;
-
-  const instruments = formCreateProposal?.watch("instrumentos")
+  
+  const instruments = formCreateProposal?.watch("instrumentos");
+  const client = formCreateProposal?.watch('cliente');
+  
+  const { assets } = useClientAssets(client?.id);
 
   return (
     <Dialog
@@ -41,14 +44,14 @@ function FormCreateProposal(props) {
         {admin && (
           <Autocomplete
             autoHighlight
-            options={allClients || []}
+            options={clients?.results || []}
             isOptionEqualToValue={(option, value) => option?.id === value?.id}
             getOptionLabel={
               (client) => client?.empresa?.razaoSocial || client?.nome
             }
             loading={isLoadingClients}
             name="cliente"
-            value={formCreateProposal?.cliente || null}
+            value={client || null}
             loadingText="Carregando..."
             noOptionsText="Sem resultados"
             onChange={(event, newValue) => {verifyError("cliente", error, setError); formCreateProposal?.setValue('cliente', newValue)}}
@@ -68,7 +71,7 @@ function FormCreateProposal(props) {
         {<Autocomplete
           multiple
           autoHighlight
-          options={allAssets?.results || []}
+          options={assets?.results || []}
           isOptionEqualToValue={(option, value) => option?.id === value?.id}
           getOptionLabel={(instrument) => `${instrument?.tag}: ${instrument?.numeroDeSerie} - ${instrument?.instrumento?.tipoDeInstrumento?.descricao} - ${instrument?.instrumento?.minimo} - ${instrument?.instrumento?.maximo}`}
           disableCloseOnSelect

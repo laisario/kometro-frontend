@@ -23,6 +23,8 @@ import {
   Link as RouterLink 
 } from 'react-router';
 import Iconify from '../../components/Iconify';
+import EmptyYet from '../../components/EmptyYet';
+import useResponsive from '../../theme/hooks/useResponsive';
 
 AppOrderTimeline.propTypes = {
   title: PropTypes.string,
@@ -33,6 +35,8 @@ AppOrderTimeline.propTypes = {
 export default function AppOrderTimeline({ title, subheader, list, ...other }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const isMobile = useResponsive('down', 'md');
+  
   
   const redirect = () => {
     if (pathname.includes('/admin')) {
@@ -53,11 +57,16 @@ export default function AppOrderTimeline({ title, subheader, list, ...other }) {
           py: 2,
         }}
       >
-        <Timeline sx={{ p: 0 }}>
-          {list?.map((item, index) => (
-            <OrderItem key={item?.id} item={item} isLast={index === list?.length - 1} />
-          ))}
-        </Timeline>
+        {list?.length 
+          ? (
+            <Timeline sx={{ p: 0 }}>
+              {list?.map((item, index) => (
+                <OrderItem key={item?.id} item={item} isLast={index === list?.length - 1} />
+              ))}
+            </Timeline>
+          ) 
+          :  <EmptyYet isDashboard content="proposta" isMobile={isMobile} />
+        }
       </CardContent>
       <Divider />
       <Box sx={{ p: 2, textAlign: 'right' }}>

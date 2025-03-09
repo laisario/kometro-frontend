@@ -33,7 +33,6 @@ const ProposalsProvider = ({ children }) => {
     filterByDate,
   } = useWatch({ control: formFilter.control })
   
-  
   const formCreateProposal = useForm({
     defaultValues: {
       cliente: '',
@@ -66,8 +65,8 @@ const ProposalsProvider = ({ children }) => {
           page_size: rowsPerPage,
           page: page + 1,
           search: debouncedSearchFilter,
-          data_criacao_after: dateStart ? dayjs(dateStart).format('YYYY-MM-DD') : null,
-          data_criacao_before: dateStop ? dayjs(dateStop).format('YYYY-MM-DD') : null,
+          dataCriacaoAfter: dateStart ? dayjs(dateStart).format('YYYY-MM-DD') : null,
+          dataCriacaoBefore: dateStop ? dayjs(dateStop).format('YYYY-MM-DD') : null,
           status
         }
       });
@@ -82,37 +81,37 @@ const ProposalsProvider = ({ children }) => {
     const handleClose = () => setOpen(false);
 
     const createProposal = async () => {
-    await axios.post('/propostas/', { 
-      instrumentos: instrumentos?.length ? instrumentos?.map(instrumento => instrumento?.id) : null, 
-      cliente: cliente?.id ? cliente?.id : null, 
-      informacoesAdicionais: informacoesAdicionais
-    });
-  }
-  
-  const { 
-    mutate: mutateCreateProposal, 
-    isLoading: isLoadingCreateProposal
-  } = useMutation({
-    mutationFn: createProposal,
-    onSuccess: () => {
-      enqueueSnackbar('Proposta criada com sucesso!', {
-        variant: 'success'
-      });
-      queryClient.invalidateQueries({ queryKey: ['propostas'] })
-      handleClose()
-      formCreateProposal.reset()
-
-    },
-    onError: (error) => {
-      const erros = error?.response?.data
-      setError(erros)
-      enqueueSnackbar('Falha ao criar a proposta, tente novamente!', {
-        variant: 'error'
+      await axios.post('/propostas/', { 
+        instrumentos: instrumentos?.length ? instrumentos?.map(instrumento => instrumento?.id) : null, 
+        cliente: cliente?.id ? cliente?.id : null, 
+        informacoesAdicionais: informacoesAdicionais
       });
     }
-  })
+  
+    const { 
+      mutate: mutateCreateProposal, 
+      isLoading: isLoadingCreateProposal
+    } = useMutation({
+      mutationFn: createProposal,
+      onSuccess: () => {
+        enqueueSnackbar('Proposta criada com sucesso!', {
+          variant: 'success'
+        });
+        queryClient.invalidateQueries({ queryKey: ['propostas'] })
+        handleClose()
+        formCreateProposal.reset()
 
-  const { mutate: deleteOrder, isLoading: isDeleting } = useMutation({
+      },
+      onError: (error) => {
+        const erros = error?.response?.data
+        setError(erros)
+        enqueueSnackbar('Falha ao criar a proposta, tente novamente!', {
+          variant: 'error'
+        });
+      }
+    })
+
+    const { mutate: deleteOrder, isLoading: isDeleting } = useMutation({
     mutationFn: async (ids) => Promise.all(ids?.map((id) => axios.delete(`/propostas/${id}`))), 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['propostas'] })
@@ -121,7 +120,6 @@ const ProposalsProvider = ({ children }) => {
       });
     },
     onError: (error) => {
-      console.log(error)
       enqueueSnackbar('Falha ao deletar a proposta, tente novamente!', {
         variant: 'error'
       });
@@ -137,65 +135,6 @@ const ProposalsProvider = ({ children }) => {
     setPage(0);
   };
 
-  const elaborate = async (form, editProposol) => {
-    const formValues = form.watch()
-    const formatDayjs = (date) => dayjs.isDayjs(date) ? date.format('YYYY-MM-DD') : null;
-    const commonData = {
-      total: formValues.total || 0,
-      condicaoDePagamento: formValues.formaDePagamento || null,
-      transporte: formValues.transporte || null,
-      numero: formValues.numeroProposta || 0,
-      validade: formatDayjs(formValues.validade),
-      status: formValues.status || null,
-      prazoDePagamento: formatDayjs(formValues.prazoDePagamento),
-      edit: editProposol,
-      responsavel: formValues.responsavel || null,
-      diasUteis: formValues.diasUteis || null,
-    };
-
-    let response;
-
-    if (formValues.enderecoDeEntrega === 'enderecoCadastrado') {
-      response = await axios.patch(`/propostas/${id}/elaborar/`, {
-        ...commonData,
-        enderecoDeEntrega: data?.cliente?.endereco?.id || null,
-      });
-    } else {
-      response = await axios.patch(`/propostas/${id}/elaborar/`, {
-        ...commonData,
-        enderecoDeEntregaAdd: {
-          cep: formValues.CEP || null,
-          numero: formValues.numeroEndereco || null,
-          logradouro: formValues.rua || null,
-          bairro: formValues.bairro || null,
-          cidade: formValues.cidade || null,
-          estado: formValues.estado || null,
-          complemento: formValues.complemento || null,
-        } || null,
-      });
-    }
-   
-  };
-
-  const { 
-    mutate: mutateElaborateProposal, 
-    isLoading: isLoadingElaborateProposal, 
-  } = useMutation({
-    mutationFn: elaborate,
-    onSuccess: (response) => {
-      enqueueSnackbar('Proposta elaborada com sucesso!' || response?.data?.message, {
-        variant: 'success'
-      });
-      queryClient.invalidateQueries({ queryKey: ['propostas'] })
-    },
-    onError: (error) => {
-      enqueueSnackbar('Falha ao elaborar a proposta, tente novamente!', {
-        variant: 'error'
-      });
-      queryClient.invalidateQueries({ queryKey: ['propostas'] })
-    }
-  })
-
   return (
     <ProposalsContext.Provider
       value={{
@@ -210,8 +149,6 @@ const ProposalsProvider = ({ children }) => {
         formFilter,
         isDeleting,
         formCreateProposal,
-        mutateElaborateProposal, 
-        isLoadingElaborateProposal,
         mutateCreateProposal,
         isLoadingCreateProposal,
         error,

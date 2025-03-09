@@ -6,13 +6,11 @@ import {
   Button, 
   Grid, 
   Typography, 
-
 } from '@mui/material';
 import FormCreate from '../components/FormCreate';
 import Iconify from '../../components/Iconify';
 import CsvViewer from '../../components/CsvViewer';
 import Loading from '../../components/Loading';
-import EmptyYet from '../../components/EmptyYet';
 import { useDocumentsVM } from '../viewModels/useDocumentsVM';
 import TableDocuments from '../components/TableDocuments';
 
@@ -23,11 +21,8 @@ export default function DocumentsPage() {
     isLoading,
     exportDocuments,
     selectedDocuments,
-    setSelectedDocuments,
     handleOpenForm,
     mutateCreate,
-    isErrorCreate,
-    errorCreate,
     open,
     setOpen,
     isCreating,
@@ -47,7 +42,11 @@ export default function DocumentsPage() {
     deleteDocumentos,
     handleClick,
     navigate,
-    cleanSelectedDocuments
+    cleanSelectedDocuments,
+    error,
+    setError,
+    form,
+    handleClose,
   } = useDocumentsVM();
 
   return (
@@ -78,39 +77,40 @@ export default function DocumentsPage() {
 
         <FormCreate
           mutateCreate={mutateCreate}
-          isErrorCreate={isErrorCreate}
-          errorCreate={errorCreate}
+          error={error}
+          setError={setError}
           open={open}
           setOpen={setOpen}
           isCreating={isCreating}
           isSuccessCreate={isSuccessCreate}
+          form={form}
+          handleClose={handleClose}
         />
 
         {isLoading 
           ? <Loading /> 
-          : (!data?.results?.length && !filter)
-              ? <EmptyYet content="documento" isMobile={isMobile} />
-              : (
-                <TableDocuments
-                  selectedDocuments={selectedDocuments}
-                  isDeleting={isDeleting}
-                  formFilter={formFilter}
-                  isLoading={isLoading}
-                  filter={filter}
-                  setFilter={setFilter}
-                  handleSelectAllClick={handleSelectAllClick}
-                  data={data}
-                  deleteDocumentos={deleteDocumentos}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  handleChangePage={handleChangePage}
-                  handleChangeRowsPerPage={handleChangeRowsPerPage}
-                  isSelected={isSelected}
-                  navigate={navigate}
-                  handleClick={handleClick}
-                  cleanSelectedDocuments={cleanSelectedDocuments}
-                />
-              )
+          : (
+            <TableDocuments
+              selectedDocuments={selectedDocuments}
+              isDeleting={isDeleting}
+              formFilter={formFilter}
+              isLoading={isLoading}
+              filter={filter}
+              setFilter={setFilter}
+              handleSelectAllClick={handleSelectAllClick}
+              data={data}
+              deleteDocumentos={deleteDocumentos}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              handleChangePage={handleChangePage}
+              handleChangeRowsPerPage={handleChangeRowsPerPage}
+              isSelected={isSelected}
+              navigate={navigate}
+              handleClick={handleClick}
+              cleanSelectedDocuments={cleanSelectedDocuments}
+              isMobile={isMobile}
+            />
+          ) 
         }
       </Container>
       <CsvViewer csvContent={csvContent} fileName="documentos" />

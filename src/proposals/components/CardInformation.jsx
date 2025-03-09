@@ -13,12 +13,11 @@ import ContentRow from '../../components/ContentRowCard';
 function CardInformation({ instrument, isMobile, admin, removeInstrumentProposal }) {
   const [edit, setEdit] = useState(false)
   const theme = useTheme();
-  console.log(instrument)
 
   const priceOptions = {
-    "C": instrument?.instrumento?.preco_calibracao_no_cliente,
-    "T": instrument?.instrumento?.preco_calibracao_no_cliente,
-    "P": instrument?.instrumento?.preco_calibracao_no_laboratorio,
+    "C": instrument?.instrumento?.precoCalibracaoNoCliente,
+    "T": instrument?.instrumento?.precoCalibracaoNoCliente,
+    "P": instrument?.instrumento?.precoCalibracaoNoLaboratorio,
   }
   const handleClose = () => {
     setEdit(false)
@@ -71,19 +70,19 @@ function CardInformation({ instrument, isMobile, admin, removeInstrumentProposal
         {!!instrument?.dataUltimaCalibracao &&
           (<ContentRow colorValue={"black"} title="Última calibração" value={fDate(instrument?.dataUltimaCalibracao, "dd/MM/yyyy")} />)}
 
-        {!!instrument?.data_proxima_calibracao &&
-          (<ContentRow colorValue={"black"} title="Próxima calibração" value={fDate(instrument?.data_proxima_calibracao, "dd/MM/yyyy")} />)}
+        {!!instrument?.dataProximaCalibracao &&
+          (<ContentRow colorValue={"black"} title="Próxima calibração" value={fDate(instrument?.dataProximaCalibracao, "dd/MM/yyyy")} />)}
 
-        {!!instrument?.data_proxima_checagem &&
-          (<ContentRow colorValue={"black"} title="Próxima checagem" value={fDate(instrument?.data_proxima_checagem, "dd/MM/yyyy")} />)}
+        {!!instrument?.dataProximaChecagem &&
+          (<ContentRow colorValue={"black"} title="Próxima checagem" value={fDate(instrument?.dataProximaChecagem, "dd/MM/yyyy")} />)}
 
-        {!!instrument?.frequencia && (
+        {(!!instrument?.frequencia && !!instrument.posicao === "U") && (
           <ContentRow colorValue={"black"} title="Frequência" value={instrument?.frequencia > 1 ? `${instrument?.frequencia} meses` : `$${instrument?.frequencia} mês`} />)}
 
         {(!!instrument?.instrumento?.minimo || !!instrument?.instrumento?.maximo) &&
           (<ContentRow colorValue={"black"} title="Faixa atendida" isMobile={isMobile} value={`${instrument?.instrumento?.minimo} ${!!instrument?.instrumento?.maximo && `- ${instrument?.instrumento?.maximo}`} ${!!instrument?.instrumento?.unidade && `- ${instrument?.instrumento?.unidade}`}`} />)}
-        {!!instrument?.instrumento?.capacidade_de_medicao?.valor && !!instrument?.instrumento?.capacidade_de_medicao?.unidade &&
-          (<ContentRow colorValue={"black"} title="Capacidade de medição" isMobile={isMobile} value={`${instrument?.instrumento?.capacidade_de_medicao?.valor} ${instrument?.instrumento?.capacidade_de_medicao?.unidade}`} />)}
+        {!!instrument?.instrumento?.capacidadeDeMedicao?.valor && !!instrument?.instrumento?.capacidadeDeMedicao?.unidade &&
+          (<ContentRow colorValue={"black"} title="Capacidade de medição" isMobile={isMobile} value={`${instrument?.instrumento?.capacidadeDeMedicao?.valor} ${instrument?.instrumento?.capacidadeDeMedicao?.unidade}`} />)}
 
         {!!instrument?.local && (
           <ContentRow colorValue={"black"} title="Local" value={localLabels[instrument?.local]} />)}
@@ -91,24 +90,24 @@ function CardInformation({ instrument, isMobile, admin, removeInstrumentProposal
         {!!instrument?.laboratorio && (
           <ContentRow colorValue={"black"} title="Laboratório" value={instrument?.laboratorio} />)}
 
-        {!!instrument?.dias_uteis
-          && instrument?.show_business_days
-          && <ContentRow colorValue={"black"} title="Dias úteis" value={instrument?.dias_uteis} />}
+        {!!instrument?.diasUteis
+          && instrument?.showBusinessDays
+          && <ContentRow colorValue={"black"} title="Dias úteis" value={instrument?.diasUteis} />}
 
-        {(!!instrument?.instrumento?.preco_calibracao_no_cliente || !!instrument?.instrumento?.preco_calibracao_no_laboratorio || !!instrument?.preco_alternativo_calibracao) &&
-          <ContentRow colorValue={"black"} title="Preço calibração" value={`R$ ${instrument?.preco_alternativo_calibracao ? instrument?.preco_alternativo_calibracao : (priceOptions[instrument?.local] || '')}`} />}
+        {(!!instrument?.instrumento?.precoCalibracaoNoCliente || !!instrument?.instrumento?.precoCalibracaoNoLaboratorio || !!instrument?.precoAlternativoCalibracao) &&
+          <ContentRow colorValue={"black"} title="Preço calibração" value={`R$ ${instrument?.precoAlternativoCalibracao ? instrument?.precoAlternativoCalibracao : (priceOptions[instrument?.local] || '')}`} />}
 
-        {!!instrument?.pontos_de_calibracao?.length && (
-          <ContentRow colorValue={"black"} title="Pontos de calibração" isMobile={isMobile} value={instrument?.pontos_de_calibracao?.map(({ nome }) => nome).join(", ")} />)}
+        {!!instrument?.pontosDeCalibracao?.length && (
+          <ContentRow colorValue={"black"} title="Pontos de calibração" isMobile={isMobile} value={instrument?.pontosDeCalibracao?.map(({ nome }) => nome).join(", ")} />)}
 
         {!!instrument?.observacoes && (
           <ContentRow colorValue={"black"} title="Observações" isMobile={isMobile} value={instrument?.observacoes} />)}
 
       </CardContent>
       <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        {!!instrument?.instrumento?.tipo_de_servico &&
+        {!!instrument?.instrumento?.tipoDeServico &&
           <Typography fontWeight="900" color={'black'} variant="body1">
-            {instrument?.instrumento?.tipo_de_servico === 'A' ? 'Acreditado' : 'Não acreditado'}
+            {instrument?.instrumento?.tipoDeServico === 'A' ? 'Acreditado' : 'Não acreditado'}
           </Typography>}
         {admin &&
           <Box display="flex">

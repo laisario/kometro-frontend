@@ -8,11 +8,11 @@ import { isPastFromToday } from '../../utils/formatTime';
 import { enqueueSnackbar } from 'notistack';
 
 const DocumentsProvider = ({ children }) => {
-  const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [openFormRevision, setOpenFormRevision] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [error, setError] = useState({});
+  const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const formFilter = useForm({
@@ -21,6 +21,25 @@ const DocumentsProvider = ({ children }) => {
       status: "",
     }
   })
+
+  const form = useForm({
+    defaultValues: {
+      codigo: '',
+      identificador: '',
+      titulo: '',
+      status: '',
+      elaborador: '',
+      frequencia: null,
+      arquivo: null,
+      dataValidade: '',
+      dataRevisao: '',
+    }
+  })
+
+  const handleClose = () => {
+    form.reset()
+    setOpen(false);
+  };
 
   const {
     search,
@@ -37,16 +56,7 @@ const DocumentsProvider = ({ children }) => {
   useEffect(() => { handleSearch(search) }, [search, handleSearch])
 
   const create = async (form) => {
-    const response = await axios.post('/documentos/', {
-      codigo: form?.codigo,
-      identificador: form?.identificador,
-      titulo: form?.titulo,
-      status: form?.status,
-      data_revisao: form?.data_revisao,
-      data_validade: form?.data_validade,
-      criador: form?.criador,
-      frequencia: form?.frequencia,
-    });
+    const response = await axios.post('/documentos/', form);
     if (response?.data?.id) {
       const formData = new FormData()
       formData.append("arquivo", form?.arquivo)
@@ -58,7 +68,6 @@ const DocumentsProvider = ({ children }) => {
   const { 
     mutate: mutateCreate, 
     isLoading: isCreating, 
-    isError: isErrorCreate, 
     isSuccess: isSuccessCreate, 
     error: errorCreate 
   } = useMutation({
@@ -67,48 +76,13 @@ const DocumentsProvider = ({ children }) => {
       enqueueSnackbar('Documento criada com sucesso!', {
         variant: 'success'
       });
-      queryClient.invalidateQueries({ queryKey: ['documentos'] })
+      queryClient.invalidateQueries({ queryKey: ['documentos'] });
+      handleClose();
     },
     onError: (error) => {
       const erros = error?.response?.data
       setError(erros)
       enqueueSnackbar('Falha ao criar documento, tente novamente!', {
-        variant: 'error'
-      });
-    }
-  })
-
-  const createRevision = async (form) => {
-    const response = await axios.post(`/documentos/${id}/revisar/`, {
-      alteracao: form?.alteracao,
-      aprovadores: form?.aprovadores,
-    });
-    if (response?.data?.revisao_id) {
-      const formData = new FormData()
-      formData.append("arquivo", form?.arquivo)
-      await axiosForFiles.patch(`/documentos/${id}/alterar_anexo/`, formData)
-    }
-    return response
-  }
-
-  const { 
-    mutate: mutateCreateRevision, 
-    isLoading: isCreatingRevision, 
-    isError: isErrorCreateRevision, 
-    isSuccess: isSuccessCreateRevision, 
-    error: errorCreateRevision
-   } = useMutation({
-    mutationFn: createRevision,
-    onSuccess: () => {
-      enqueueSnackbar('Revisão criada com sucesso!', {
-        variant: 'success'
-      });
-      queryClient.invalidateQueries({ queryKey: ['documentos'] })
-    },
-    onError: (error) => {
-      const erros = error?.response?.data
-      setError(erros)
-      enqueueSnackbar('Falha ao criar revisão, tente novamente!', {
         variant: 'error'
       });
     }
@@ -159,18 +133,16 @@ const DocumentsProvider = ({ children }) => {
         isLoading,
         formFilter,
         mutateCreate,
-        isErrorCreate,
         errorCreate,
         isCreating,
         isSuccessCreate,
-        mutateCreateRevision,
-        isCreatingRevision,
-        isErrorCreateRevision,
-        isSuccessCreateRevision,
-        errorCreateRevision,
         expiredDocuments,
-        openFormRevision,
-        setOpenFormRevision
+        error,
+        setError,
+        open,
+        setOpen,
+        form,
+        handleClose,
       }}
     >
       {children}

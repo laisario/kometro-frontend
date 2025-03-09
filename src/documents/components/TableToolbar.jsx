@@ -45,6 +45,7 @@ function TableToolbar(props) {
         justifyContent: 'space-between',
         alignItems: 'center',
         p: isDesktop ? 1 : 2,
+        backgroundColor: 'white',
       }}
     >
       {numSelected > 0 && (
@@ -112,7 +113,7 @@ function TableToolbar(props) {
             ? <CircularProgress /> 
             : (
               <IconButton onClick={deleteDocuments}>
-              < DeleteIcon />
+                <DeleteIcon />
               </IconButton>
             )
           }

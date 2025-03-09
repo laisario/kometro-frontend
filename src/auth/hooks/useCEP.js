@@ -19,29 +19,32 @@ export function formatCEP(value = '') {
   const cep = value.replace(/\D/g, '');
 
   const format = cep.replace(
-      /(\d{5})(\d{3})/,
-      '$1-$2',
+    /(\d{5})(\d{3})/,
+    '$1-$2',
   )
 
   return format
 }
 
 const useCEP = (cep, form) => {
-  const isValid = useMemo(() =>  validarCEP(cep), [cep])
-  const { data } = useQuery(['cep', cep], async () => {
-  const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`, { withCredentials: false })
-  if (form) {
-    form.setValue("rua", response?.data?.logradouro)
-    form.setValue("bairro", response?.data?.bairro)
-    form.setValue("cidade", response?.data?.localidade)
-    form.setValue("estado", response?.data?.uf)
-    form.setValue("CEP", formatCEP(cep))
-  }
-  return response?.data
-  }, {
-    enabled: isValid
-  })
+  const isValid = useMemo(() =>  validarCEP(cep), [cep]);
 
+  const { data } = useQuery(['cep', cep], async () => {
+    const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`, { withCredentials: false })
+    
+    if (form) {
+      form.setValue("rua", response?.data?.logradouro)
+      form.setValue("bairro", response?.data?.bairro)
+      form.setValue("cidade", response?.data?.localidade)
+      form.setValue("estado", response?.data?.uf)
+      form.setValue("CEP", formatCEP(cep))
+    }
+
+    return response?.data
+
+    },
+    { enabled: isValid }
+  )
 
   return {
     rua: data?.logradouro,

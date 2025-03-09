@@ -2,6 +2,7 @@
 import { Box, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import React from 'react';
 import { useWatch } from 'react-hook-form';
+import useCEP from '../hooks/useCEP';
 
 const estados = [
   'AC',
@@ -33,10 +34,11 @@ const estados = [
   'TO',
 ];
 
-function FormAdress({ form, control, isValid, error }) {
+function FormAdress({ form, error }) {
   const {
     estado,
-  } = useWatch({ control: control })
+  } = useWatch({ control: form?.control });
+  const { isValid } = useCEP(form.watch('CEP'), form);
 
   return (
     <FormControl sx={{ width: '100%', gap: 3, mb: 4 }}>
@@ -85,7 +87,6 @@ function FormAdress({ form, control, isValid, error }) {
                 })}
                 error={!!error?.numero}
                 helperText={error?.numero?.[0]}
-
               />
             </FormControl>
           </Box>

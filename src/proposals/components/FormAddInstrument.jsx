@@ -1,34 +1,20 @@
 import { Autocomplete, Button, Checkbox, Dialog, DialogContent, DialogTitle, TextField, Chip, Box } from '@mui/material'
 import React, { useState } from 'react'
-import { axios } from '../../api'
 
 function FormAddInstrument(props) {
   const { 
     open, 
     handleClose, 
     data, 
-    isLoading, 
-    proposalAssets, 
-    idProposal, 
-    refetch, 
-    setLoading 
+    addInstrumentProposal,
+    isLoadingAdd,
   } = props;
   const [instruments, setInstruments] = useState([])
 
   const submit = async () => {
-    try {
-      setLoading(true)
-      await axios.post(`/propostas/${idProposal}/adicionar_instrumento/`, { instrumentos: [...proposalAssets, ...instruments?.map(instrument => instrument?.id)]});
-      await refetch();
-      return { error: false };
-    } catch (err) {
-      console.log(err)
-      return { error: true };
-    } finally {
-      setLoading(false)
-      setInstruments([])
-      handleClose()
-    }
+    addInstrumentProposal(instruments)
+    setInstruments([])
+    handleClose()
   };
 
   const optionsAvailable = !!data?.instrumentsAvailable?.length && data?.instrumentsAvailable
@@ -42,9 +28,9 @@ function FormAddInstrument(props) {
             autoHighlight
             options={optionsAvailable || []}
             isOptionEqualToValue={(option, value) => option?.id === value?.id}
-            getOptionLabel={(instrument) => `${instrument?.tag}: ${instrument?.numero_de_serie} - ${instrument?.instrumento?.tipo_de_instrumento?.descricao} - ${instrument.instrumento?.minimo} - ${instrument?.instrumento?.maximo}`}
+            getOptionLabel={(instrument) => `${instrument?.tag}: ${instrument?.numeroDeSerie} - ${instrument?.instrumento?.tipoDeInstrumento?.descricao} - ${instrument.instrumento?.minimo} - ${instrument?.instrumento?.maximo}`}
             disableCloseOnSelect
-            loading={isLoading}
+            loading={isLoadingAdd}
             renderTags={(value, getTagProps) => value?.map((tag, index) => <Chip {...getTagProps({ index })} key={tag?.tag} label={tag?.tag} />)}
             name="instrumentos"
             value={instruments || null}
@@ -66,7 +52,7 @@ function FormAddInstrument(props) {
                             style={{ marginRight: 8 }}
                             checked={selected}
                         />
-                        {instrument?.tag}: {instrument?.numero_de_serie} - {instrument?.instrumento?.tipo_de_instrumento?.descricao} - {instrument?.instrumento?.minimo} - {instrument?.instrumento?.maximo}
+                        {instrument?.tag}: {instrument?.numeroDeSerie} - {instrument?.instrumento?.tipoDeInstrumento?.descricao} - {instrument?.instrumento?.minimo} - {instrument?.instrumento?.maximo}
                     </li>
                 );
             }}

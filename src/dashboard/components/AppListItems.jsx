@@ -7,7 +7,8 @@ import {
   Button, 
   Divider, 
   Typography, 
-  CardHeader 
+  CardHeader, 
+  CardContent
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { useNavigate, Link as RouterLink } from 'react-router';
@@ -16,10 +17,10 @@ import Iconify from '../../components/Iconify';
 import Scrollbar from '../../components/scrollbar';
 import palette from '../../theme/palette';
 import Label from '../../components/label';
-// import { 
-//   criticalAnalysisMonths, 
-//   findCriticalAnalysisStage 
-// } from '../../../utils/documents';
+import { findCriticalAnalysisStage, criticalAnalysisMonths } from '../../utils/documents';
+import EmptyYet from '../../components/EmptyYet';
+import useResponsive from '../../theme/hooks/useResponsive';
+
 
 AppListItems.propTypes = {
   title: PropTypes.string,
@@ -29,26 +30,35 @@ AppListItems.propTypes = {
 
 export default function AppListItems({ title, subheader, list, document, ...other }) {
   const navigate = useNavigate();
+  const isMobile = useResponsive('down', 'md');
+  
   return (
-    <Card {...other}>
+    <Card  
+      sx={{
+      '& .MuiTimelineItem-missingOppositeContent:before': {
+        display: 'none',
+      },
+      }}
+    >
       <CardHeader title={title} subheader={subheader} />
-
-      <Scrollbar>
-        <Stack spacing={3} sx={{ p: 3, pr: 0 }}>
-          {list?.length ? list?.map((data) => (
-            <ListItem key={data?.id} isDocument={document} data={data} />
-          )) : <Typography textAlign="center" variant='h6'>{document ? 'Sem revisões para aprovar' : 'Nenhum instrumento cadastrado'}</Typography>}
-        </Stack>
-      </Scrollbar>
+      <CardContent>
+        {list?.length ?
+          <Scrollbar>
+            <Stack spacing={3}>
+              {list?.map((data) => (
+                <ListItem key={data?.id} isDocument={document} data={data} />
+              ))}
+            </Stack>
+          </Scrollbar>
+        : <EmptyYet isDashboard content={document ? 'revisao' : 'instrumento'} isMobile={isMobile} /> }
+      </CardContent>
 
       <Divider />
-      {!document && (
-        <Box sx={{ p: 2, textAlign: 'right' }}>
-          <Button size="small" color="inherit" onClick={() => navigate('/dashboard/instrumentos')} endIcon={<Iconify icon={'eva:arrow-ios-forward-fill'} />}>
-            Ver todos
-          </Button>
-        </Box>
-      )}
+      <Box sx={{ p: 2, textAlign: 'right' }}>
+        <Button size="small" color="inherit" onClick={() => navigate(document ? '/admin/documentos' : '/dashboard/instrumentos')} endIcon={<Iconify icon={'eva:arrow-ios-forward-fill'} />}>
+          Ver todos
+        </Button>
+      </Box>
     </Card>
   );
 }
@@ -141,10 +151,10 @@ function ListItem({ data, isDocument }) {
             </Typography>
           )}
         </Box>
-        {isDocument && data?.documento?.analise_critica ? (
-          <Label color={findCriticalAnalysisStage(data?.documento?.analise_critica)} sx={{ mr: 3 }}>
+        {isDocument && data?.documento?.analiseCritica ? (
+          <Label color={findCriticalAnalysisStage(data?.documento?.analiseCritica)} sx={{ mr: 3 }}>
             <Typography variant="caption">
-              Análise Crítica: <b style={{ color: findCriticalAnalysisStage(data?.documento?.analise_critica) }}>{criticalAnalysisMonths(data?.documento?.analise_critica)}</b>
+              Análise Crítica: <b style={{ color: findCriticalAnalysisStage(data?.documento?.analiseCritica) }}>{criticalAnalysisMonths(data?.documento?.analiseCritica)}</b>
             </Typography>
           </Label>)
           : !!formatData?.data && (

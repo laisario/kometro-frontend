@@ -7,7 +7,6 @@ import { axios } from '../../api';
 import DocumentsContext from '../context';
 
 export const useDocumentsVM = () => {
-  const [open, setOpen] = useState(false);
   const [selectedDocuments, setSelectedDocuments] = useState([]);
   const [csvContent, setCsvContent] = useState(null);
   const [filter, setFilter] = useState(false);
@@ -26,12 +25,15 @@ export const useDocumentsVM = () => {
     isLoading,
     formFilter,
     mutateCreate,
-    isErrorCreate,
     errorCreate,
     isCreating,
     isSuccessCreate,
-    openFormRevision,
-    setOpenFormRevision
+    error,
+    setError,
+    open,
+    setOpen,
+    form,
+    handleClose,
   } = useContext(DocumentsContext);
 
   const handleOpenForm = () => {
@@ -99,13 +101,14 @@ export const useDocumentsVM = () => {
     isLoading,
     formFilter,
     mutateCreate,
-    isErrorCreate,
     errorCreate,
     isCreating,
     isSuccessCreate,
-    openFormRevision,
-    setOpenFormRevision,
     selectedDocuments,
-    cleanSelectedDocuments
+    cleanSelectedDocuments,
+    error,
+    setError,
+    form,
+    handleClose,
   }
 }

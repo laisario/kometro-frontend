@@ -1,48 +1,54 @@
 import React from 'react';
 import {
-  Alert,
+  Avatar,
   Box,
   Button,
+  CircularProgress,
   Container,
-  IconButton,
   Paper,
   Stack,
   Tooltip,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
-import CloseIcon from '@mui/icons-material/Close';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import Iconify from '../../components/Iconify';
 import { fDate } from '../../utils/formatTime';
-// refatorar
 import Assets from '../components/Assets';
 import AdditionalInformation from '../components/AdditionalInformation';
 import InformationProposal from '../components/InformationProposal';
 import FormElaborate from '../components/FormElaborate';
 import useProposalVM from '../viewModels/useProposalVM';
-import { statusColor, statusString } from '../../utils/proposals';
+import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 
 
 function ProposalDetailsPage() {
   const {
     isMobile,
     proposal,
-    refetchProposal,
-    isLoadingProposal,
     removeInstrumentProposal,
     isRemoving,
     elaborateOpen,
     setElaborateOpen,
     user,
-    edit,
     setEdit,
-    elaborate,
     aproveProposal,
     refuseProposal,
     deleteOrderAndNavigate,
-    handleSendEmail,
+    sendProposalToEmail,
+    isLoadingSendProposal,
+    addInstrumentProposal,
+    isLoadingAdd,
+    elaborateProposal,
+    isLoadingElaborateProposal,
+    isSuccessElaborate,
+    isDeleting,
+    isLoadingAproveProposal,
+    isLoadingRefuseProposal
   } = useProposalVM();
+
+  const theme = useTheme()
 
   return (
     <>
@@ -69,15 +75,14 @@ function ProposalDetailsPage() {
               : !!proposal?.dataCriacao &&
               <Typography variant="h6" gutterBottom>
                 {fDate(proposal?.dataCriacao)}
-              </Typography>
-            }
+              </Typography>}
           </Box>
 
           {user?.admin ? (
             <Box display="flex" gap={2} mt={isMobile ? 1 : 0} >
               <Tooltip title="Deletar proposta">
                 <Button onClick={deleteOrderAndNavigate} color="secondary">
-                  <Iconify icon="eva:trash-2-fill" />
+                  {isDeleting ? <CircularProgress size='20px' color="inherit" /> : <Iconify icon="eva:trash-2-fill" />}
                 </Button>
               </Tooltip>
               {proposal?.status === 'E' ? (
@@ -94,7 +99,11 @@ function ProposalDetailsPage() {
                   color='secondary' 
                   variant="contained" 
                   onClick={() => { setEdit(true); setElaborateOpen(true) }} 
-                  endIcon={<Iconify icon="eva:edit-fill" />}
+                  endIcon={
+                    isLoadingElaborateProposal 
+                      ? <CircularProgress size='20px' color="inherit" />  
+                      : <Iconify icon="eva:edit-fill" />
+                  }
                 >
                   Editar proposta
                 </Button>
@@ -104,8 +113,12 @@ function ProposalDetailsPage() {
                   variant="contained" 
                   color="primary" 
                   disabled={proposal?.status === "E"} 
-                  onClick={handleSendEmail} 
-                  endIcon={<ForwardToInboxIcon />}
+                  onClick={sendProposalToEmail} 
+                  endIcon={
+                    isLoadingSendProposal 
+                      ? <CircularProgress size='20px' color="inherit" /> 
+                      : <ForwardToInboxIcon />
+                  }
                 >
                   Enviar para cliente
                 </Button>
@@ -119,7 +132,11 @@ function ProposalDetailsPage() {
                   disabled={proposal?.status !== "AA"}
                   sx={{ marginX: 2 }}
                   onClick={() => aproveProposal()}
-                  startIcon={<Iconify icon="eva:checkmark-fill" />}
+                  startIcon={
+                    isLoadingAproveProposal 
+                      ? <CircularProgress size='20px' color="inherit" /> 
+                      : <Iconify icon="eva:checkmark-fill" />
+                  }
                 >
                   Aprovar proposta
                 </Button>
@@ -130,7 +147,10 @@ function ProposalDetailsPage() {
                   color="error"
                   disabled={proposal?.status !== "AA"}
                   onClick={() => refuseProposal()}
-                  startIcon={<Iconify icon="ph:x-bold" />}
+                  startIcon={isLoadingRefuseProposal
+                      ? <CircularProgress size='20px' color="inherit" /> 
+                      : <Iconify icon="ph:x-bold" />
+                  }
                 >
                   Reprovar proposta
                 </Button>
@@ -139,33 +159,40 @@ function ProposalDetailsPage() {
           )}
         </Stack>
 
-        {!!proposal && (
-          <FormElaborate
-            open={elaborateOpen}
-            data={proposal}
-            setElaborate={setElaborateOpen}
-            editProposol={edit}
-            elaborate={elaborate}
-          />
-        )}
+        <FormElaborate
+          open={elaborateOpen}
+          data={proposal}
+          setElaborate={setElaborateOpen}
+          elaborateProposal={elaborateProposal}
+          isLoadingElaborateProposal={isLoadingElaborateProposal}
+          isSuccessElaborate={isSuccessElaborate}
+        />
 
         <Paper sx={{ padding: 4 }}>
           {proposal?.status === "E" 
-            ? <Typography variant='subtitle1'>
-              As informações da proposta aparecerão aqui após a elaboração pela equipe
-            </Typography> : (
+            ? <Box p={1} bgcolor={theme?.palette?.info?.lighter} borderRadius={1}  display="flex" flexDirection="row" alignItems="center" gap={1}>
+                <Avatar variant='rounded' sx={{width: 30, height: 30, backgroundColor: theme?.palette?.info?.light}}>
+                  <HourglassBottomIcon fontSize='small' />
+                </Avatar>
+                <Typography variant='body2' color={theme?.palette?.info?.dark}>
+                  <b>{user?.admin ? 'O cliente fez uma solicitação!' : 'Recebemos sua solicitação!'}</b>
+                  {user?.admin 
+                    ? ' A equipe está preenchendo os detalhes da proposta. Assim que estiver pronta, você poderá visualizá-la aqui.' 
+                    : ' O Complete as informações para que ele possa revisar.'
+                  }
+                </Typography> 
+            </Box>
+            : (
             <InformationProposal
               data={proposal}
               isMobile={isMobile}
               admin={user?.admin}
-              statusString={statusString}
-              statusColor={statusColor}
             />
           )}
           <Assets
             data={proposal}
-            refetch={refetchProposal}
-            isLoading={isLoadingProposal}
+            addInstrumentProposal={addInstrumentProposal}
+            isLoadingAdd={isLoadingAdd}
             isMobile={isMobile}
             admin={user?.admin}
             removeInstrumentProposal={removeInstrumentProposal}

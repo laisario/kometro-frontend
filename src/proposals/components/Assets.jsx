@@ -1,21 +1,20 @@
 import { Box, Button, CircularProgress, IconButton, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import AddIcon from '@mui/icons-material/Add';
-// refatorar
 import CardInformation from './CardInformation'
 import FormAddInstrument from './FormAddInstrument';
+import EmptyYet from '../../components/EmptyYet';
 
 function Assets(props) {
   const { 
     data, 
     isMobile, 
     admin, 
-    refetch, 
-    isLoading, 
     removeInstrumentProposal, 
-    isRemoving 
+    isRemoving,
+    addInstrumentProposal,
+    isLoadingAdd,
   } = props;
-  const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const addInstrument = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -46,36 +45,35 @@ function Assets(props) {
         open={open}
         handleClose={handleClose}
         idClient={data?.cliente?.id}
-        proposalAssets={data?.instrumentos?.map(({ id }) => id)}
-        idProposal={data?.id}
         data={data}
-        isLoading={isLoading}
-        refetch={refetch}
-        setLoading={setLoading}
+        addInstrumentProposal={addInstrumentProposal}
+        isLoadingAdd={isLoadingAdd}
       />
 
       {data?.instrumentos?.length 
-        ? <Box display="flex"  justifyContent={(loading || isRemoving) ? 'center' : 'flex-start'} gap={3} sx={{ overflowX: 'auto' }} width="100%" size={{ xs: 12, md: 4 }}>
-            {(loading || isRemoving) 
-              ? <CircularProgress /> 
-              : data?.instrumentos?.map(
-                (instrument, index) => (
-                    <CardInformation
-                      instrument={instrument}
-                      key={index}
-                      isMobile={isMobile}
-                      admin={admin}
-                      removeInstrumentProposal={removeInstrumentProposal}
-                    />
-                )
-            )}
-          </Box>
-          : <Typography
-              textAlign="center" 
-              variant='h6'
+        ? <Box
+            display="flex"  
+            justifyContent={(isLoadingAdd || isRemoving) ? 'center' : 'flex-start'} 
+            gap={3} 
+            sx={{ overflowX: 'auto' }} 
+            width="100%" 
+            size={{ xs: 12, md: 4 }}
             >
-            Proposta sem instrumento, adicione um!
-            </Typography>
+              {(isLoadingAdd || isRemoving) 
+                ? <CircularProgress /> 
+                : data?.instrumentos?.map(
+                  (instrument, index) => (
+                      <CardInformation
+                        instrument={instrument}
+                        key={index}
+                        isMobile={isMobile}
+                        admin={admin}
+                        removeInstrumentProposal={removeInstrumentProposal}
+                      />
+                  )
+              )}
+            </Box>
+          : <EmptyYet content="instrumentosProposta" isMobile={isMobile} />
         }
     </Box>
   )

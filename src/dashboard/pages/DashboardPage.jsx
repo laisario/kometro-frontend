@@ -12,7 +12,9 @@ import { useDashboardVM } from '../viewModels/useDashboardVM';
 export default function DashboardPage() {
   const {
     data,
-    instruments
+    instruments,
+    user,
+    documents
   } = useDashboardVM()
 
   return (
@@ -88,14 +90,14 @@ export default function DashboardPage() {
             <Grid item xs={12} md={7} lg={8}>
               <AppListItems
                 title={user?.admin ? "Revisões a serem aprovadas" : "Instrumentos recentes"}
-                list={user?.admin ? documentos : instruments}
+                list={user?.admin ? documents : instruments}
                 document={user?.admin}
               />
             </Grid>
 
             <Grid item xs={12} md={5} lg={4}>
               <AppOrderTimeline
-                title="Últimas propostas"
+                title="Propostas recentes"
                 list={data?.ultimasPropostas?.map((proposta) => ({
                   id: proposta?.id,
                   title: `Proposta ${proposta?.numero}`,

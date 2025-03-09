@@ -12,7 +12,7 @@ const useProposalVM = () => {
   const { user } = useAuth();
   const navigate = useNavigate()
 
-  const { deleteOrder } = useContext(ProposalsContext)
+  const { deleteOrder, isDeleting } = useContext(ProposalsContext)
   
   const deleteOrderAndNavigate = () => {
     deleteOrder([id])
@@ -32,12 +32,14 @@ const useProposalVM = () => {
     isLoadingAproveProposal,
     refuseProposal, 
     isLoadingRefuseProposal,
-    elaborate,
+    addInstrumentProposal,
+    isLoadingAdd,
+    elaborateProposal,
+    isLoadingElaborateProposal,
+    isSuccessElaborate,
   } = useProposal(id, idClient);
 
   const isMobile = useResponsive('down', 'md');
-
-
 
   return {
     isMobile,
@@ -58,8 +60,13 @@ const useProposalVM = () => {
     user,
     edit,
     setEdit,
-    elaborate,
     deleteOrderAndNavigate,
+    addInstrumentProposal,
+    isLoadingAdd,
+    elaborateProposal,
+    isLoadingElaborateProposal,
+    isSuccessElaborate,
+    isDeleting
   }
 }
 

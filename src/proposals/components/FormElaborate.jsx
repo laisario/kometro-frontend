@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -33,42 +33,50 @@ import { truncateString } from '../../utils/formatString';
 import useUsers from '../../auth/hooks/useUsers';
 
 
-function FormElaborate({ data, open, setElaborate, editProposol, elaborate }) {
+function FormElaborate(props) {
+  const { 
+    data, 
+    open, 
+    setElaborate, 
+    elaborateProposal,
+    isLoadingElaborateProposal,
+  } = props;
   const [anexos, setAnexos] = useState([])
   const [loadingAnexo, setLoadingAnexo] = useState(false)
-  const [loading, setLoading] = useState(false)
 
-  const form = useForm({
-    defaultValues: {
-      numeroProposta: data?.numero || 0,
-      transporte: data?.transporte || '',
-      total: data?.total || '',
-      formaDePagamento: data?.condicao_de_pagamento || '',
-      CEP: data?.endereco_de_entrega?.cep || "",
-      rua: data?.endereco_de_entrega?.logradouro || "",
-      numeroEndereco: data?.endereco_de_entrega?.numero || "",
-      bairro: data?.endereco_de_entrega?.bairro?.nome || "",
-      cidade: data?.endereco_de_entrega?.bairro?.cidade || "",
-      estado: data?.endereco_de_entrega?.estado || "",
-      complemento: data?.endereco_de_entrega?.complemento || "",
-      status: data?.status || "",
-      enderecoDeEntrega: data?.endereco_de_entrega ? "enderecoCadastrado" : null,
-      validade: data?.validade || null,
-      prazoDePagamento: data?.prazo_de_pagamento || null,
-      responsavel: data?.responsavel?.id || null,
-      diasUteis: data?.dias_uteis || null,
-    },
-  });
+  const defaultValues = useMemo(() => ({
+    transporte: data?.transporte || '',
+    formaDePagamento: data?.condicaoDePagamento,
+    enderecoDeEntrega: "enderecoCadastrado" || '',
+    validade: data?.validade || null,
+    prazoDePagamento: data?.prazoDePagamento || null,
+    responsavel: data?.responsavel?.id || null,
+    diasUteis: data?.diasUteis || null,
+    CEP: data?.enderecoDeEntrega?.cep || "",
+    rua: data?.enderecoDeEntrega?.logradouro || "",
+    numero: data?.enderecoDeEntrega?.numero || "",
+    bairro: data?.enderecoDeEntrega?.bairro?.nome || "",
+    cidade: data?.enderecoDeEntrega?.bairro?.cidade || "",
+    estado: data?.enderecoDeEntrega?.estado || "",
+    complemento: data?.enderecoDeEntrega?.complemento || "",
+  }), [data])
 
+  const form = useForm({ defaultValues });
+
+  useEffect(() => {
+    form?.reset(defaultValues)
+  }, [defaultValues])
+  
   const {
     enderecoDeEntrega,
     validade,
     prazoDePagamento,
     formaDePagamento,
-    responsavel
+    responsavel,
   } = useWatch({ control: form.control })
-
+  
   const { users } = useUsers();
+  
   const ref = useRef(null)
 
   const handleChangeAnexo = (event) => {
@@ -80,7 +88,7 @@ function FormElaborate({ data, open, setElaborate, editProposol, elaborate }) {
       const { data: anexo, status } = await axiosForFiles.patch(`/propostas/${data?.id}/anexar/`, formData)
       setLoadingAnexo(false)
       if (status === 201) {
-        setAnexos(oldAnexos => [...oldAnexos, anexo])
+        setAnexos((oldAnexos) => ([...oldAnexos, anexo]))
       }
     })
   }
@@ -93,7 +101,7 @@ function FormElaborate({ data, open, setElaborate, editProposol, elaborate }) {
     const { status } = await axiosForFiles.patch(`/propostas/${data?.id}/desanexar/`, formData)
     setLoadingAnexo(false)
     if (status === 200) {
-      setAnexos((oldAnexos) => oldAnexos.filter((an) => an?.id !== anexo?.id))
+      setAnexos((oldAnexos) => oldAnexos?.filter((an) => an?.id !== anexo?.id))
     }
   }
 
@@ -172,7 +180,7 @@ function FormElaborate({ data, open, setElaborate, editProposol, elaborate }) {
                 {users?.map((user) => <MenuItem key={user?.id} value={user?.id}>{user?.username}</MenuItem>)}
               </Select>
             </FormControl>
-            {data?.show_business_days && (<TextField
+            {data?.showBusinessDays && (<TextField
               id="diasUteis"
               label="Dias Úteis"
               name="diasUteis"
@@ -208,7 +216,11 @@ function FormElaborate({ data, open, setElaborate, editProposol, elaborate }) {
               />
             </RadioGroup>
           </FormControl>
-          {enderecoDeEntrega === 'novoEndereco' && <FormAdress form={form} />}
+          {enderecoDeEntrega === 'novoEndereco' && (
+            <FormAdress 
+              form={form} 
+            />
+          )}
           <Box>
             <Typography>Anexos</Typography>
             <Box display="flex" gap={2} flexWrap="nowrap" overflow="auto" flexShrink={0}>
@@ -242,7 +254,7 @@ function FormElaborate({ data, open, setElaborate, editProposol, elaborate }) {
           </Box>
           <Box display="flex" alignItems="center" justifyContent="space-between" mt={4}>
             <Button onClick={handleClose}>Cancelar</Button>
-            {loading ? <CircularProgress /> : <Button
+            {isLoadingElaborateProposal ? <CircularProgress /> : <Button
               endIcon={<Iconify icon={'eva:arrow-ios-forward-fill'} />}
               sx={{ maxWidth: '45%' }}
               type="submit"
@@ -250,8 +262,11 @@ function FormElaborate({ data, open, setElaborate, editProposol, elaborate }) {
               size="large"
               variant="contained"
               onClick={() => {
-                setLoading(true)
-                form.handleSubmit(elaborate(form, editProposol))
+                form.handleSubmit((submitData) => elaborateProposal({
+                  addressClient: data?.cliente?.endereco?.id,
+                  data: submitData, 
+                }))()
+                handleClose()
               }}
             >
               Salvar

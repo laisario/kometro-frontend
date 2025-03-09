@@ -11,7 +11,7 @@ function TableToolbar({ numSelected, form, selectedOrders, admin, setSelectedOrd
   const [filter, setFilter] = useState(false)
   const isDesktop = useResponsive('up', 'md');
   const resetFilters = () => {
-      form.reset()
+    form.reset()
   }
 
   return (
@@ -21,7 +21,7 @@ function TableToolbar({ numSelected, form, selectedOrders, admin, setSelectedOrd
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          p: isDesktop ? 1 : 2
+          p: isDesktop ? 1 : 2,
         }}
     >
       {admin && numSelected > 0 ? (

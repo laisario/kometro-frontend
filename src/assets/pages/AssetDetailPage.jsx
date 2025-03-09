@@ -16,8 +16,8 @@ function AssetDetailPage() {
   const {
     asset, 
     isMobile,
-  } = useAsset(id)
-  
+  } = useAsset(id);
+
   const modelo = asset?.instrumento?.tipoDeInstrumento?.modelo
   const fabricante = asset?.instrumento?.tipoDeInstrumento?.fabricante
 
@@ -34,15 +34,20 @@ function AssetDetailPage() {
                 {asset?.tag}
               </Typography>
             }
-            {!!asset?.numero_de_serie &&
+            {!!asset?.numeroDeSerie &&
               <Typography variant="h6" gutterBottom>
-                {asset?.numero_de_serie}
+                {asset?.numeroDeSerie}
               </Typography>
             }
           </Box>
         </Stack>
         <Paper sx={{ padding: 4 }}>
-          <Stack flexDirection={isMobile ? 'column' : 'row'} gap={2} divider={<Divider orientation={isMobile ? "horizontal" : "vertical"} flexItem />} justifyContent='space-between'>
+          <Stack
+            flexDirection={isMobile ? 'column' : 'row'} 
+            gap={2} 
+            divider={<Divider orientation={isMobile ? "horizontal" : "vertical"} flexItem />} 
+            justifyContent='space-between'
+          >
             <Box width="100%">
               {(!!asset?.instrumento?.tipoDeInstrumento?.descricao || !!modelo) && <ContentRow title={asset?.instrumento.tipoDeInstrumento.descricao} value={!!modelo && modelo} />}
               {!!fabricante && <ContentRow title="Fabricante" value={fabricante} />}

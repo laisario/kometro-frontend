@@ -1,10 +1,11 @@
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import useAuth from '../../auth/hooks/useAuth';
 import useResponsive from '../../theme/hooks/useResponsive';
 import ProposalsContext from '../context';
 import AssetsContext from '../../assets/context';
 import  ClientsContext from '../../clients/context';
+import { useWatch } from 'react-hook-form';
 
 function useProposalsVM() {
   const [selectedOrders, setSelectedOrders] = useState([]);
@@ -31,13 +32,20 @@ function useProposalsVM() {
     handleClose
   } = useContext(ProposalsContext);
 
+  
   const {
     allAssets,
     isLoadingAssets,
   } = useContext(AssetsContext);
+  
+  const {
+    cliente
+  } = useWatch({ control: formCreateProposal.control })
+  
+  const clientAssets = useMemo(() => allAssets?.results?.filter((asset) => asset?.cliente?.id === cliente?.id ) , [cliente])
 
   const {
-    allClients,
+    clients,
     isLoadingClients,
   } = useContext(ClientsContext);
 
@@ -83,7 +91,7 @@ function useProposalsVM() {
     allAssets,
     isLoadingAssets,
     formCreateProposal,
-    allClients,
+    clients,
     isLoadingClients,
     mutateCreateProposal,
     error,

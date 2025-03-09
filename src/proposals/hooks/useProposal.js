@@ -3,6 +3,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useContext } from 'react';
 import ProposalsContext from '../context';
 import { axios } from '../../api';
+import dayjs from 'dayjs';
 
 
 const useProposal = (id, cliente) => {
@@ -28,6 +29,7 @@ const useProposal = (id, cliente) => {
     enabled: !!id
   });
 
+
   const removeInstrument = async (instrumentId) => {
     await axios.post(`/propostas/${id}/remover_instrumento/`, { instrumento_id: instrumentId });
   }
@@ -35,13 +37,36 @@ const useProposal = (id, cliente) => {
   const { mutate: removeInstrumentProposal, isLoading: isRemoving } = useMutation({
     mutationFn: removeInstrument,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
       enqueueSnackbar('Instrumento removido com sucesso!', {
         variant: 'success'
       });
-      queryClient.invalidateQueries({ queryKey: ['propostas'] })
     },
     onError: () => {
       enqueueSnackbar('Falha ao remover instrumento, tente novamente!', {
+        variant: 'error'
+      });
+    }
+  })
+
+  const addInstrument = async (instruments) => {
+    const proposalAssets = proposal?.instrumentos?.map(({ id }) => id);
+    await axios.post(
+      `/propostas/${proposal?.id}/adicionar_instrumento/`,
+      { instrumentos: [...proposalAssets, ...instruments?.map(instrument => instrument?.id)]}
+    );
+  }
+
+  const { mutate: addInstrumentProposal, isLoading: isLoadingAdd } = useMutation({
+    mutationFn: addInstrument,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
+      enqueueSnackbar('Instrumento adicionado com sucesso!', {
+        variant: 'success'
+      });
+    },
+    onError: () => {
+      enqueueSnackbar('Falha ao adicionar instrumento, tente novamente!', {
         variant: 'error'
       });
     }
@@ -53,7 +78,6 @@ const useProposal = (id, cliente) => {
       enqueueSnackbar('Proposta enviada com sucesso!', {
         variant: 'success'
       });
-      queryClient.invalidateQueries({ queryKey: ['propostas'] })
     },
     onError: () => {
       enqueueSnackbar('Falha ao enviar proposta, tente novamente!', {
@@ -65,10 +89,10 @@ const useProposal = (id, cliente) => {
   const { mutate: aproveProposal, isLoading: isLoadingAproveProposal } = useMutation({
     mutationFn: async() => await axios.post(`/propostas/${id}/aprovar/`),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
       enqueueSnackbar('Proposta aprovada com sucesso!', {
         variant: 'success'
       });
-      queryClient.invalidateQueries({ queryKey: ['propostas'] })
     },
     onError: () => {
       enqueueSnackbar('Falha ao aprovar proposta, tente novamente!', {
@@ -80,10 +104,10 @@ const useProposal = (id, cliente) => {
   const { mutate: refuseProposal, isLoading: isLoadingRefuseProposal } = useMutation({
     mutationFn: async() => await axios.post(`/propostas/${id}/reprovar/`),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
       enqueueSnackbar('Proposta recusada com sucesso!', {
         variant: 'success'
       });
-      queryClient.invalidateQueries({ queryKey: ['propostas'] })
     },
     onError: () => {
       enqueueSnackbar('Falha ao recusar proposta, tente novamente!', {
@@ -92,45 +116,60 @@ const useProposal = (id, cliente) => {
     }
   })
 
-  const elaborate = async (form, editProposol) => {
-    const formValues = form.watch()
+  const elaborate = async ({ addressClient, data }) => {
+    const formValues = data;
+
     const formatDayjs = (date) => dayjs.isDayjs(date) ? date.format('YYYY-MM-DD') : null;
     const commonData = {
-      total: formValues.total || 0,
-      condicaoDePagamento: formValues.formaDePagamento || null,
-      transporte: formValues.transporte || null,
-      numero: formValues.numeroProposta || 0,
-      validade: formatDayjs(formValues.validade),
-      status: formValues.status || null,
-      prazoDePagamento: formatDayjs(formValues.prazoDePagamento),
-      edit: editProposol,
-      responsavel: formValues.responsavel || null,
-      diasUteis: formValues.diasUteis || null,
+      total: formValues?.total || 0,
+      condicaoDePagamento: formValues?.formaDePagamento || null,
+      transporte: formValues?.transporte || null,
+      numero: formValues?.numeroProposta || 0,
+      validade: formatDayjs(formValues?.validade),
+      status: formValues?.status || null,
+      prazoDePagamento: formatDayjs(formValues?.prazoDePagamento),
+      responsavel: formValues?.responsavel || null,
+      diasUteis: formValues?.diasUteis || null,
     };
 
-    let response;
-
-    if (formValues.enderecoDeEntrega === 'enderecoCadastrado') {
-      response = await axios.patch(`/propostas/${id}/elaborar/`, {
+    if (formValues?.enderecoDeEntrega === 'enderecoCadastrado') {
+      return axios.patch(`/propostas/${id}/elaborar/`, {
         ...commonData,
-        enderecoDeEntrega: data?.cliente?.endereco?.id || null,
-      });
-    } else {
-      response = await axios.patch(`/propostas/${id}/elaborar/`, {
-        ...commonData,
-        enderecoDeEntregaAdd: {
-          cep: formValues.CEP || null,
-          numero: formValues.numeroEndereco || null,
-          logradouro: formValues.rua || null,
-          bairro: formValues.bairro || null,
-          cidade: formValues.cidade || null,
-          estado: formValues.estado || null,
-          complemento: formValues.complemento || null,
-        } || null,
+        enderecoDeEntrega: addressClient || null,
       });
     }
-   
+    return axios.patch(`/propostas/${id}/elaborar/`, {
+      ...commonData,
+      enderecoDeEntregaAdd: {
+        cep: formValues?.CEP || null,
+        numero: formValues?.numero || null,
+        logradouro: formValues?.rua || null,
+        bairro: formValues?.bairro || null,
+        cidade: formValues?.cidade || null,
+        estado: formValues?.estado || null,
+        complemento: formValues?.complemento || null,
+      } || null,
+    });
   };
+
+  const { 
+    mutate: elaborateProposal, 
+    isLoading: isLoadingElaborateProposal,
+    isSuccess: isSuccessElaborate,
+  } = useMutation({
+    mutationFn: elaborate,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['propostas'] })
+      enqueueSnackbar('Proposta elaborada com sucesso!', {
+        variant: 'success'
+      });
+    },
+    onError: () => {
+      enqueueSnackbar('Falha ao elaborar proposta, tente novamente!', {
+        variant: 'error'
+      });
+    }
+  })
 
   return {
     removeInstrumentProposal,
@@ -145,7 +184,11 @@ const useProposal = (id, cliente) => {
     isLoadingAproveProposal,
     refuseProposal, 
     isLoadingRefuseProposal,
-    elaborate
+    addInstrumentProposal,
+    isLoadingAdd,
+    elaborateProposal,
+    isLoadingElaborateProposal,
+    isSuccessElaborate
   }
 }
 

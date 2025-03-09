@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import {
   Box,
   Button,
@@ -24,6 +24,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useForm, useWatch } from 'react-hook-form';
 import Row from './Row'
+import AssetsContext from '../assets/context';
+import useAssetMutations from '../assets/hooks/useAssetMutations';
 
 function AddArrayField({ label, fieldName, form }) {
   const [inputValue, setInputValue] = useState('');
@@ -71,21 +73,30 @@ function AddArrayField({ label, fieldName, form }) {
   );
 }
 
-function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, mutate, isLoading, }) {
+function EditAsset(props) {
+  const { 
+    handleClose, 
+    open, 
+    instrument, 
+    isMobile, 
+    create, 
+    clientId 
+  } = props;
+  
+  
   const form = useForm({
     defaultValues: {
-      tag: instrument?.tag ? instrument?.tag : '',
-      numeroDeSerie: instrument?.numero_de_serie ? instrument?.numero_de_serie : '',
-      dataUltimaCalibracao: instrument?.data_ultima_calibracao ? instrument?.data_ultima_calibracao : null,
-      dataProximaChecagem: instrument?.data_proxima_checagem ? instrument?.data_proxima_checagem : null,
-      precoAlternativoCalibracao: instrument?.preco_alternativo_calibracao ? instrument?.preco_alternativo_calibracao : '',
-      diasUteis: instrument?.dias_uteis ? instrument?.dias_uteis : null,
-      capacidadeMedicao: instrument?.instrumento?.capacidade_de_medicao?.valor ? instrument?.instrumento?.capacidade_de_medicao?.valor : 0,
-      unidadeMedicao: instrument?.instrumento?.capacidade_de_medicao?.unidade ? instrument?.instrumento?.capacidade_de_medicao?.unidade : '',
+      tag: instrument?.tag ? instrument?.tlocal: instrument?.numeroDeSerie ? instrument?.numeroDeSerie : '',
+      dataUltimaCalibracao: instrument?.dataUltimaCalibracao ? instrument?.dataUltimaCalibracao : null,
+      dataProximaChecagem: instrument?.dataProximaChecagem ? instrument?.dataProximaChecagem : null,
+      precoAlternativoCalibracao: instrument?.precoAlternativoCalibracao ? instrument?.precoAlternativoCalibracao : '',
+      diasUteis: instrument?.diasUteis ? instrument?.diasUteis : null,
+      capacidadeMedicao: instrument?.instrumento?.capacidadeDeMedicao?.valor ? instrument?.instrumento?.capacidadeDeMedicao?.valor : 0,
+      unidadeMedicao: instrument?.instrumento?.capacidadeDeMedicao?.unidade ? instrument?.instrumento?.capacidadeDeMedicao?.unidade : '',
       local: instrument?.local ? instrument?.local : "P",
-      precoCalibracaoLaboratorio: instrument?.instrumento?.preco_calibracao_no_laboratorio || null,
-      precoCalibracaoCliente: instrument?.instrumento?.preco_calibracao_no_cliente || null,
-      pontosCalibracao: instrument?.pontos_de_calibracao?.length ? instrument?.pontos_de_calibracao?.map(ponto => ponto?.nome) : [],
+      precoCalibracaoLaboratorio: instrument?.instrumento?.precoCalibracaoNoLaboratorio || null,
+      precoCalibracaoCliente: instrument?.instrumento?.precoCalibracaoNoCliente || null,
+      pontosCalibracao: instrument?.pontosDeCalibracao?.length ? instrument?.pontosDeCalibracao?.map(ponto => ponto?.nome) : [],
       minimo: instrument?.instrumento?.minimo ? instrument?.instrumento?.minimo : null,
       maximo: instrument?.instrumento?.maximo ? instrument?.instrumento?.maximo : null,
       unidade: instrument?.instrumento?.unidade ? instrument?.instrumento?.unidade : null,
@@ -93,41 +104,57 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
       laboratorio: instrument?.laboratorio ? instrument?.laboratorio : '',
       frequencia: instrument?.frequencia ? instrument.frequencia : 0,
       observacoes: instrument?.observacoes ? instrument?.observacoes : '',
-      tipoDeServico: instrument?.instrumento?.tipo_de_servico ? instrument?.instrumento?.tipo_de_servico : 'A',
-      procedimentoRelacionado: instrument?.instrumento?.procedimento_relacionado?.codigo ? instrument?.instrumento?.procedimento_relacionado?.codigo : null,
-      descricao: instrument?.instrumento?.tipo_de_instrumento?.descricao ? instrument?.instrumento?.tipo_de_instrumento?.descricao : '',
-      modelo: instrument?.instrumento?.tipo_de_instrumento?.modelo ? instrument?.instrumento?.tipo_de_instrumento?.modelo : '',
-      fabricante: instrument?.instrumento?.tipo_de_instrumento?.fabricante ? instrument?.instrumento?.tipo_de_instrumento?.fabricante : '',
-      resolucao: instrument?.instrumento?.tipo_de_instrumento?.resolucao ? instrument?.instrumento?.tipo_de_instrumento?.resolucao : 0,
+      tipoDeServico: instrument?.instrumento?.tipoDeServico ? instrument?.instrumento?.tipoDeServico : 'A',
+      procedimentoRelacionado: instrument?.instrumento?.procedimentoRelacionado?.codigo ? instrument?.instrumento?.procedimentoRelacionado?.codigo : null,
+      descricao: instrument?.instrumento?.tipoDeInstrumento?.descricao ? instrument?.instrumento?.tipoDeInstrumento?.descricao : '',
+      modelo: instrument?.instrumento?.tipoDeInstrumento?.modelo ? instrument?.instrumento?.tipoDeInstrumento?.modelo : '',
+      fabricante: instrument?.instrumento?.tipoDeInstrumento?.fabricante ? instrument?.instrumento?.tipoDeInstrumento?.fabricante : '',
+      resolucao: instrument?.instrumento?.tipoDeInstrumento?.resolucao ? instrument?.instrumento?.tipoDeInstrumento?.resolucao : 0,
     }
   })
+
+  const handleCleanCreateForm = () => {
+    form?.reset()
+  };
+
+  const { 
+    mutateUpdate, 
+    mutateCreate,
+    isLoadingUpdate, 
+    isLoadingCreate,
+    error,
+    setError,
+  } = useAssetMutations(handleCleanCreateForm, handleClose);
+
   const {
     dataUltimaCalibracao,
     local,
     posicao,
     dataProximaChecagem,
     tipoDeServico,
-  } = useWatch({ control: form.control })
+    laboratorio
+  } = useWatch({ control: form?.control })
+
   const { handleSubmit } = form;
+
+  console.log(error)
+
   const saveChanges = () => {
-    const formValues = form.watch()
-    const data = { ...formValues }
     if (create) {
-        data.client = clientId
+      handleSubmit((data) => mutateCreate({...data, client: clientId}))()
     } else {
-        data.instrumento = instrument?.id
+      handleSubmit((data) => mutateUpdate({...data, instrumento: instrument?.id}))()
     }
-    mutate(data)
-    form.reset()
-    handleClose()
   }
+
+  // falta por erros no datepicker
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
       <Dialog onClose={handleClose} open={open} fullScreen={isMobile}>
         <DialogTitle>{create ? 'Adicionar novo instrumento:' : 'Editar instrumento:'}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
-          <form onSubmit={handleSubmit(saveChanges)}>
+          <form onSubmit={saveChanges}>
             <Row>
               <TextField
                 id="descricao"
@@ -135,18 +162,25 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                 name="descricao"
                 variant="outlined"
                 sx={{ width: '60%' }}
-                {...form.register("descricao")}
+                {...form.register("descricao", {
+                  onChange: (e) => {if (error?.instrumento?.tipo_de_instrumento?.descricao) setError({})},
+                })}
+                error={!!error?.instrumento?.tipo_de_instrumento?.descricao}
+                helperText={!!error?.instrumento?.tipo_de_instrumento?.descricao && error?.instrumento?.tipo_de_instrumento?.descricao}
                 size="small"
                 required
               />
-
               <TextField
                 id="modelo"
                 label="Modelo"
                 name="modelo"
                 variant="outlined"
                 sx={{ width: '40%' }}
-                {...form.register("modelo")}
+                {...form.register("modelo", {
+                  onChange: (e) => {if (error?.instrumento?.tipo_de_instrumento?.modelo) setError({})},
+                })}
+                error={!!error?.instrumento?.tipo_de_instrumento?.modelo}
+                helperText={!!error?.instrumento?.tipo_de_instrumento?.modelo && error?.instrumento?.tipo_de_instrumento?.modelo}
                 size="small"
               />
             </Row>
@@ -157,7 +191,11 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                 name="fabricante"
                 variant="outlined"
                 sx={{ width: '40%' }}
-                {...form.register("fabricante")}
+                {...form.register("fabricante", {
+                  onChange: (e) => {if (error?.instrumento?.tipo_de_instrumento?.fabricante) setError({})},
+                })}
+                error={!!error?.instrumento?.tipo_de_instrumento?.fabricante}
+                helperText={!!error?.instrumento?.tipo_de_instrumento?.fabricante && error?.instrumento?.tipo_de_instrumento?.fabricante}
                 size="small"
               />
               <TextField
@@ -166,7 +204,11 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                 name="resolucao"
                 variant="outlined"
                 sx={{ width: '30%' }}
-                {...form.register("resolucao")}
+                {...form.register("resolucao", {
+                  onChange: (e) => {if (error?.instrumento?.tipo_de_instrumento?.resolucao) setError({})},
+                })}
+                error={!!error?.instrumento?.tipo_de_instrumento?.resolucao}
+                helperText={!!error?.instrumento?.tipo_de_instrumento?.resolucao && error?.instrumento?.tipo_de_instrumento?.resolucao}
                 size="small"
                 type='number'
               />
@@ -176,7 +218,11 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                 name="tag"
                 variant="outlined"
                 sx={{ width: '30%' }}
-                {...form.register("tag")}
+                {...form.register("tag", {
+                  onChange: (e) => {if (error?.tag) setError({})},
+                })}
+                error={!!error?.tag}
+                helperText={!!error?.tag && error?.tag}
                 size="small"
                 required
               />
@@ -188,16 +234,24 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                 name="numeroDeSerie"
                 variant="outlined"
                 sx={{ width: isMobile ? '45%' : '50%' }}
-                {...form.register("numeroDeSerie")}
+                {...form.register("numeroDeSerie", {
+                  onChange: (e) => {if (error?.numero_de_serie) setError({})},
+                })}
+                error={!!error?.numero_de_serie}
+                helperText={!!error?.numero_de_serie && error?.numero_de_serie}
                 size="small"
               />
               <TextField
                 label="Procedimento relacionado"
                 variant="outlined"
                 sx={{ width: isMobile ? '55%' : '50%' }}
-                {...form.register("procedimentoRelacionado")}
+                {...form.register("procedimentoRelacionado", {
+                  onChange: (e) => {if (error?.procedimento_relacionado) setError({})},
+                })}
                 placeholder="Procedimento relacionado"
                 size="small"
+                error={!!error?.procedimento_relacionado}
+                helperText={!!error?.procedimento_relacionado && error?.procedimento_relacionado}
               />
             </Row>
             <Row>
@@ -220,13 +274,17 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
               <FormControl sx={{ width: local === "T" ? '40%' : '50%' }}>
                 <InputLabel>Local</InputLabel>
                 <Select
-                    {...form.register("local")}
-                    label="Local"
-                    value={local}
+                  {...form.register("local", {
+                    onChange: (e) => {if (error?.local) setError({})},
+                  })}
+                  error={!!error?.local}
+                  helperText={!!error?.local && error?.local}
+                  label="Local"
+                  value={local}
                 >
-                    <MenuItem value="P">Instalações Permanente</MenuItem>
-                    <MenuItem value="C">Instalações Clientes</MenuItem>
-                    <MenuItem value="T">Terceirizada</MenuItem>
+                  <MenuItem value="P">Instalações Permanente</MenuItem>
+                  <MenuItem value="C">Instalações Clientes</MenuItem>
+                  <MenuItem value="T">Terceirizada</MenuItem>
                 </Select>
               </FormControl>
               {local === "T" && <TextField
@@ -235,13 +293,21 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                 type="number"
                 variant="outlined"
                 sx={{ width: isMobile ? '100%' : '20%' }}
-                {...form.register("diasUteis")}
+                {...form.register("diasUteis", {
+                  onChange: (e) => {if (error?.dias_uteis) setError({})},
+                })}
+                error={!!error?.dias_uteis}
+                helperText={!!error?.dias_uteis && error?.dias_uteis}
               />}
               <TextField
                 label="Laboratorio"
                 variant="outlined"
-                sx={{ width: local === "T" ? '40%' : '50%' }}
-                {...form.register("laboratorio")}
+                sx={{ width: laboratorio === "T" ? '40%' : '50%' }}
+                {...form.register("laboratorio", {
+                  onChange: (e) => {if (error?.laboratorio) setError({})},
+                })}
+                error={!!error?.laboratorio}
+                helperText={!!error?.laboratorio && error?.laboratorio}
               />
             </Row>
             <Row>
@@ -250,26 +316,36 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                 label="Capacidade de medição"
                 name="capacidadeMedicao"
                 variant="outlined"
-                {...form.register("capacidadeMedicao")}
+                {...form.register("capacidadeMedicao", {
+                  onChange: (e) => {if (error?.instrumento?.capacidade_de_medicao?.valor) setError({})},
+                })}
+                error={!!error?.instrumento?.capacidade_de_medicao?.valor}
+                helperText={!!error?.instrumento?.capacidade_de_medicao?.valor && error?.instrumento?.capacidade_de_medicao?.valor}
                 size="small"
                 sx={{ width: isMobile ? '70%' : '50%' }}
-                required
               />
               <TextField
                 label="Unidade"
                 variant="outlined"
                 sx={{ width: isMobile ? '30%' : '50%' }}
-                {...form.register("unidadeMedicao")}
+                {...form.register("unidadeMedicao", {
+                  onChange: (e) => {if (error?.instrumento?.capacidade_de_medicao?.unidade) setError({})},
+                })}
+                error={!!error?.instrumento?.capacidade_de_medicao?.unidade}
+                helperText={!!error?.instrumento?.capacidade_de_medicao?.unidade && error?.instrumento?.capacidade_de_medicao?.unidade}
                 placeholder="Unidade de medição"
                 size="small"
-                required
               />
             </Row>
             <Row>
               <FormControl sx={{ width: posicao === 'U' ? '35%' : '50%' }}>
                 <InputLabel>Tipo de servico</InputLabel>
                 <Select
-                  {...form.register("tipoDeServico")}
+                    {...form.register("tipoDeServico", {
+                    onChange: (e) => {if (error?.instrumento?.tipo_de_servico) setError({})},
+                  })}
+                  error={!!error?.instrumento?.tipo_de_servico}
+                  helperText={!!error?.instrumento?.tipo_de_servico && error?.instrumento?.tipo_de_servico}
                   label="Tipo de servico"
                   value={tipoDeServico}
                 >
@@ -280,7 +356,11 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
               <FormControl sx={{ width: posicao === 'U' ? '35%' : '50%' }}>
                 <InputLabel>Posição</InputLabel>
                 <Select
-                  {...form.register("posicao")}
+                  {...form.register("posicao", {
+                    onChange: (e) => {if (error?.posicao) setError({})},
+                  })}
+                  error={!!error?.posicao}
+                  helperText={!!error?.posicao && error?.posicao}
                   label="Posição"
                   value={posicao}
                 >
@@ -297,8 +377,11 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                   name="frequencia"
                   label="Frequência"
                   type='number'
-                  helperText="Em meses"
-                  {...form.register("frequencia")}
+                  {...form.register("frequencia", {
+                    onChange: (e) => {if (error?.frequencia) setError({})},
+                  })}
+                  error={!!error?.frequencia}
+                  helperText={!!error?.frequencia ? error?.frequencia : "Em meses"}
                   sx={{ width: '30%' }}
                 />
               )}
@@ -315,7 +398,11 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                 label="Mínimo"
                 name="minimo"
                 variant="outlined"
-                {...form.register("minimo")}
+                {...form.register("minimo", {
+                  onChange: (e) => {if (error?.instrumento?.minimo) setError({})},
+                })}
+                error={!!error?.instrumento?.minimo}
+                helperText={!!error?.instrumento?.minimo && error?.instrumento?.minimo}
                 size="small"
                 type="number"
                 sx={{ width: isMobile ? '30%' : '50%' }}
@@ -326,7 +413,11 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                 name="maximo"
                 variant="outlined"
                 type='number'
-                {...form.register("maximo")}
+                {...form.register("maximo", {
+                  onChange: (e) => {if (error?.instrumento?.maximo) setError({})},
+                })}
+                error={!!error?.instrumento?.maximo}
+                helperText={!!error?.instrumento?.maximo && error?.instrumento?.maximo}
                 size="small"
                 sx={{ width: isMobile ? '30%' : '50%' }}
               />
@@ -334,7 +425,11 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                 label="Unidade"
                 variant="outlined"
                 sx={{ width: isMobile ? '30%' : '50%' }}
-                {...form.register("unidade")}
+                {...form.register("unidade", {
+                  onChange: (e) => {if (error?.instrumento?.unidade) setError({})},
+                })}
+                error={!!error?.instrumento?.unidade}
+                helperText={!!error?.instrumento?.unidade && error?.instrumento?.unidade}
                 placeholder="Unidade"
                 size="small"
               />
@@ -347,12 +442,16 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                 label="Laboratório"
                 variant="outlined"
                 InputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">R$</InputAdornment>
-                    ),
+                  startAdornment: (
+                    <InputAdornment position="start">R$</InputAdornment>
+                  ),
                 }}
                 sx={{ width: isMobile ? '100%' : '40%' }}
-                {...form.register("precoCalibracaoLaboratorio")}
+                {...form.register("precoCalibracaoLaboratorio", {
+                  onChange: (e) => {if (error?.instrumento?.preco_calibracao_no_laboratorio) setError({})},
+                })}
+                error={!!error?.instrumento?.preco_calibracao_no_laboratorio}
+                helperText={!!error?.instrumento?.preco_calibracao_no_laboratorio && error?.instrumento?.preco_calibracao_no_laboratorio}
                 size="small"
               />
               <TextField
@@ -364,18 +463,26 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
                     ),
                 }}
                 sx={{ width: isMobile ? '100%' : '40%' }}
-                {...form.register("precoCalibracaoCliente")}
+                {...form.register("precoCalibracaoCliente", {
+                  onChange: (e) => {if (error?.instrumento?.preco_calibracao_no_cliente) setError({})},
+                })}
+                error={!!error?.instrumento?.preco_calibracao_no_cliente}
+                helperText={!!error?.instrumento?.preco_calibracao_no_cliente && error?.instrumento?.preco_calibracao_no_cliente}
                 size="small"
               />
               <TextField
                 label="Alternativo"
                 variant="outlined"
                 sx={{ width: isMobile ? '100%' : '40%' }}
-                {...form.register("precoAlternativoCalibracao")}
+                {...form.register("precoAlternativoCalibracao", {
+                  onChange: (e) => {if (error?.preco_alternativo_calibracao) setError({})},
+                })}
+                error={!!error?.preco_alternativo_calibracao}
+                helperText={!!error?.preco_alternativo_calibracao && error?.preco_alternativo_calibracao}
                 size="small"
                 InputProps={{
                     startAdornment: (
-                        <InputAdornment position="start">R$</InputAdornment>
+                      <InputAdornment position="start">R$</InputAdornment>
                     ),
                 }}
               />
@@ -384,7 +491,11 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
               <TextField
                 label="Observações"
                 variant="outlined"
-                {...form.register("observacoes")}
+                {...form.register("observacoes", {
+                  onChange: (e) => {if (error?.observacoes) setError({})},
+                })}
+                error={!!error?.observacoes}
+                helperText={!!error?.observacoes && error?.observacoes}
                 placeholder="Observaçoes"
                 fullWidth
                 multiline
@@ -395,7 +506,10 @@ function EditAsset({ handleClose, open, instrument, isMobile, create, clientId, 
         </DialogContent>
         <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button onClick={handleClose}>Cancelar</Button>
-          {isLoading ? <CircularProgress /> : <Button variant='contained' onClick={saveChanges}>{create ? 'Criar' : 'Salvar mudanças'}</Button>}
+          {isLoadingUpdate || isLoadingCreate 
+            ? <CircularProgress /> 
+            : <Button variant='contained' onClick={saveChanges}>{create ? 'Criar' : 'Salvar mudanças'}</Button>
+          }
         </DialogActions>
       </Dialog>
     </LocalizationProvider>

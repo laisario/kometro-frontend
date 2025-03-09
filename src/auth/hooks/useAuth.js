@@ -4,7 +4,7 @@ import { axios } from '../../api';
 import { useMutation } from 'react-query';
 import { enqueueSnackbar } from 'notistack';
 import { jwtDecode } from 'jwt-decode';
-import { useLocation, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { verifyError } from '../../utils/error';
 
 
@@ -107,7 +107,10 @@ export default function useAuth() {
       return response;
   };
 
-  const { mutate: registerLocationMutation, isLoading: isLoadingRegisterLocation } = useMutation(registerLocation,
+  const { 
+    mutate: registerLocationMutation, 
+    isLoading: isLoadingRegisterLocation 
+  } = useMutation(registerLocation,
     {
       onSuccess: (data) => {
         navigate('/register/auth', { replace: true })
@@ -131,7 +134,10 @@ export default function useAuth() {
     return response;
   };
 
-  const { mutate:registerAuthMutation, isLoading: isLoadingRegisterAuth} = useMutation(registerAuth,
+  const { 
+    mutate:registerAuthMutation, 
+    isLoading: isLoadingRegisterAuth
+  } = useMutation(registerAuth,
     {
       onSuccess: (data) => {
         navigate('/login', { replace: true, state: { msg: 'Conta criada com sucesso! Faça login!'} });
@@ -155,7 +161,6 @@ export default function useAuth() {
     window.localStorage.removeItem('token');
     setUser(null);
   };
-
 
   return { 
     user,

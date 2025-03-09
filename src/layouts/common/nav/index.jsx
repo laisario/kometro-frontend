@@ -86,28 +86,32 @@ export default function Nav({ openNav, onCloseNav, admin }) {
 
         <NavSection data={admin ? navConfigAdmin : navConfigClient} />
       </Box>
-      {!admin && <Stack alignItems="center" spacing={3} px={2}>
-        <Box
-          component="img"
-          src="/assets/illustrations/illustration_avatar.png"
-          sx={{ width: 100 }}
-        />
+      {!admin 
+        ? (
+          <Stack alignItems="center" spacing={3} px={2}>
+            <Box
+              component="img"
+              src="/assets/illustrations/illustration_avatar.png"
+              sx={{ width: 100 }}
+            />
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography gutterBottom variant="h6">
+                Precisando
+                  de uma calibração ai?
+              </Typography>
 
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography gutterBottom variant="h6">
-            Precisando
-              de uma calibração ai?
-          </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                Calibre seus instrumentos a partir de R$ 35,00
+              </Typography>
+            </Box>
 
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Calibre seus instrumentos a partir de R$ 35,00
-          </Typography>
-        </Box>
-
-        <Button href="#/dashboard/propostas" startIcon={<Iconify icon="eva:plus-fill" />} variant="contained">
-          Nova proposta
-        </Button>
-      </Stack>}
+            <Button href="/dashboard/propostas" startIcon={<Iconify icon="eva:plus-fill" />} variant="contained">
+              Nova proposta
+            </Button>
+          </Stack>
+        )
+        : <Box />
+      }
     </Scrollbar>
   );
 
