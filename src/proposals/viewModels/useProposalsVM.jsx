@@ -39,12 +39,6 @@ function useProposalsVM() {
   } = useContext(AssetsContext);
   
   const {
-    cliente
-  } = useWatch({ control: formCreateProposal.control })
-  
-  const clientAssets = useMemo(() => allAssets?.results?.filter((asset) => asset?.cliente?.id === cliente?.id ) , [cliente])
-
-  const {
     clients,
     isLoadingClients,
   } = useContext(ClientsContext);

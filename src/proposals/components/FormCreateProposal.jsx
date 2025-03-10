@@ -21,7 +21,6 @@ function FormCreateProposal(props) {
     mutateCreateProposal,
     isLoadingCreateProposal,
     formCreateProposal,
-    isLoadingAssets,
     clients,
     isLoadingClients,
     error,
@@ -31,7 +30,8 @@ function FormCreateProposal(props) {
   const instruments = formCreateProposal?.watch("instrumentos");
   const client = formCreateProposal?.watch('cliente');
   
-  const { assets } = useClientAssets(client?.id);
+  const { assets, isLoadingAssets } = useClientAssets(admin ? client?.id : clients?.results[0]?.id);
+  console.log(assets, 'aaaaaaaa', clients?.results[0]?.id)
 
   return (
     <Dialog

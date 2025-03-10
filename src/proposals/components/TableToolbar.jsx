@@ -43,6 +43,7 @@ function TableToolbar({ numSelected, form, selectedOrders, admin, setSelectedOrd
                   placeholder={admin ? 'Cliente ou número' : 'Número'}
                   id='search-bar'
                   fullWidth
+                  size='small'
                   InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">

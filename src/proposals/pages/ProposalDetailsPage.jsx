@@ -177,8 +177,8 @@ function ProposalDetailsPage() {
                 <Typography variant='body2' color={theme?.palette?.info?.dark}>
                   <b>{user?.admin ? 'O cliente fez uma solicitação!' : 'Recebemos sua solicitação!'}</b>
                   {user?.admin 
-                    ? ' A equipe está preenchendo os detalhes da proposta. Assim que estiver pronta, você poderá visualizá-la aqui.' 
-                    : ' O Complete as informações para que ele possa revisar.'
+                    ? ' Complete as informações para que ele possa revisar.'
+                    : ' A equipe está preenchendo os detalhes da proposta. Assim que estiver pronta, você poderá visualizá-la aqui.' 
                   }
                 </Typography> 
             </Box>

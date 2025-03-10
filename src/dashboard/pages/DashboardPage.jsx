@@ -16,7 +16,7 @@ export default function DashboardPage() {
     user,
     documents
   } = useDashboardVM()
-
+  console.log(data)
   return (
     <>
       <Helmet>

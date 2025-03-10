@@ -1,4 +1,4 @@
-import { Stack, Box, Button, Divider, CircularProgress, Snackbar } from '@mui/material'
+import { Stack, Box, Button, Divider, CircularProgress } from '@mui/material'
 import React from 'react'
 import AddIcon from '@mui/icons-material/Add';
 import Calibrations from './Calibrations';
@@ -38,7 +38,6 @@ function CalibrationPanel({ isMobile, instrument }) {
     <Stack flexDirection={isMobile ? 'column' : 'row'} width="100%" gap={2} divider={<Divider orientation={isMobile ? "horizontal" : "vertical"} flexItem />} justifyContent='space-between'>
       <Box sx={{ display: 'flex', flexDirection: 'column', width: isMobile ? '100%' : '50%', gap: 2 }}>
         <Stack flexDirection='row' gap={1} >
-          {/* <TextField size='small' fullWidth={isMobile} value={search} onChange={(e) => setSearch(e?.target?.value)} placeholder='Pesquise uma OS' /> */}
           <Button startIcon={<AddIcon />} variant='contained' onClick={handleOpenForm}>calibração</Button>
           <Form
             isMobile={isMobile}

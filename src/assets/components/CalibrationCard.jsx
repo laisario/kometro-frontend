@@ -23,6 +23,7 @@ function CalibrationCard({ calibration, theme, isMobile }) {
     readMoreCertificate: false,
   });
   
+  console.log(readMore)
   const { 
     mutateCriticalAnalisys, 
     isLoadingCriticalAnalisys, 
@@ -137,7 +138,7 @@ function CalibrationCard({ calibration, theme, isMobile }) {
           </Box>)}
         <Certificates
           certificados={calibration?.certificados || []}
-          open={readMore?.readMoreCertificate}
+          open={readMore?.readMoreCertificate?.readMore}
           handleClose={readLessCertificates}
           isMobile={isMobile}
         />

@@ -50,8 +50,6 @@ function ProposalsPage() {
     mutateCreateProposal,
     isLoadingCreateProposal,
     formCreateProposal,
-    allAssets,
-    isLoadingAssets,
     clients,
     isLoadingClients,
     error,
@@ -170,8 +168,6 @@ function ProposalsPage() {
           mutateCreateProposal={mutateCreateProposal}
           isLoadingCreateProposal={isLoadingCreateProposal}
           formCreateProposal={formCreateProposal}
-          allAssets={allAssets}
-          isLoadingAssets={isLoadingAssets}
           clients={clients}
           isLoadingClients={isLoadingClients}
           error={error}
