@@ -17,6 +17,8 @@ function Form(props) {
     mutate,
     form,
     isLoadingCreation,
+    error,
+    setError
   } = props;
 
   return (
@@ -42,14 +44,22 @@ function Form(props) {
             id="ordemDeServico"
             label="Ordem de serviço"
             sx={{ width: isMobile ? '100%' : '50%' }}
-            {...form?.register("ordemDeServico")}
+            {...form?.register("ordemDeServico", {
+              onChange: (e) => {if (error?.ordem_de_servico) setError({})},
+            })}
+            error={!!error?.ordem_de_servico}
+            helperText={!!error?.ordem_de_servico && error?.ordem_de_servico}
           />
           <TextField
             autoFocus
             id="local"
             label="Local"
             sx={{ width: isMobile ? '100%' : '50%' }}
-            {...form?.register("local")}
+            {...form?.register("local", {
+              onChange: (e) => {if (error?.local) setError({})},
+            })}
+            error={!!error?.local}
+            helperText={!!error?.local && error?.local}
           />
           <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
             <DatePicker
@@ -67,14 +77,22 @@ function Form(props) {
             id="maiorErro"
             label="Maior erro"
             fullWidth
-            {...form?.register("maiorErro")}
+            {...form?.register("maiorErro", {
+              onChange: (e) => {if (error?.maior_erro) setError({})},
+            })}
+            error={!!error?.maior_erro}
+            helperText={!!error?.maior_erro && error?.maior_erro}
           />
           <TextField
             autoFocus
             id="incerteza"
             label="Incerteza"
             fullWidth
-            {...form?.register("incerteza")}
+            {...form?.register("incerteza", {
+              onChange: (e) => {if (error?.incerteza) setError({})},
+            })}
+            error={!!error?.incerteza}
+            helperText={!!error?.incerteza && error?.incerteza}
           />
           {!isMobile && (
             <TextField
@@ -82,7 +100,11 @@ function Form(props) {
               id="criterioDeAceitacao"
               label="Critério de aceitação"
               fullWidth
-              {...form?.register("criterioDeAceitacao")}
+              {...form?.register("criterioDeAceitacao", {
+                onChange: (e) => {if (error?.criterio_de_aceitacao) setError({})},
+              })}
+              error={!!error?.criterio_de_aceitacao}
+              helperText={!!error?.criterio_de_aceitacao && error?.criterio_de_aceitacao}
             />
           )}
         </Row>
@@ -93,7 +115,11 @@ function Form(props) {
               id="criterioDeAceitacao"
               label="Critério de aceitação"
               fullWidth
-              {...form?.register("criterioDeAceitacao")}
+              {...form?.register("criterioDeAceitacao", {
+                onChange: (e) => {if (error?.criterio_de_aceitacao) setError({})},
+              })}
+              error={!!error?.criterio_de_aceitacao}
+              helperText={!!error?.criterio_de_aceitacao && error?.criterio_de_aceitacao}
             />
           )}
           <TextField
@@ -101,7 +127,11 @@ function Form(props) {
             id="referenciaCriterioDeAceitacao"
             label="Referência critério de aceitação"
             fullWidth
-            {...form?.register("referenciaDoCriterio")}
+            {...form?.register("referenciaDoCriterio", {
+              onChange: (e) => {if (error?.referencia_do_criterio) setError({})},
+            })}
+            error={!!error?.referencia_do_criterio}
+            helperText={!!error?.referencia_do_criterio && error?.referencia_do_criterio}
           />
         </Row>
         <TextField
@@ -111,7 +141,11 @@ function Form(props) {
           fullWidth
           multiline
           rows={1}
-          {...form?.register("observacoes")}
+          {...form?.register("observacoes", {
+            onChange: (e) => {if (error?.observacoes) setError({})},
+          })}
+          error={!!error?.observacoes}
+          helperText={!!error?.observacoes && error?.observacoes}
         />
       </DialogContent>
       <DialogActions>

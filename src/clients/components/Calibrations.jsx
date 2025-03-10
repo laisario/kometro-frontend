@@ -1,5 +1,6 @@
 import { 
   Avatar, 
+  CircularProgress, 
   Divider, 
   List, 
   ListItem, 
@@ -16,7 +17,8 @@ function Calibrations(props) {
   const { 
     calibrations, 
     setSelectedCalibration, 
-    selectedCalibration
+    selectedCalibration,
+    isLoadingCalibrations,
   } = props;
   
   function renderRow(props) {
@@ -35,13 +37,14 @@ function Calibrations(props) {
       </div>
     );
   }
+
   return (
     <List sx={{
       width: '100%',
       overflow: 'auto',
       maxHeight: 'auto'
     }}>
-      {!calibrations?.length 
+      {isLoadingCalibrations ? <CircularProgress /> : !calibrations?.length 
         ? <Typography color='grey' fontWeight={400} textAlign='center'>Nenhuma calibração cadastrada</Typography> 
         : (
           <FixedSizeList

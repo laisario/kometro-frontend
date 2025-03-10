@@ -20,6 +20,8 @@ function PreviewCalibration(props) {
     openCreateCertificate,
     setOpenCreateCertificate,
     form,
+    error,
+    setError,
   } = props;
 
   return (
@@ -50,6 +52,8 @@ function PreviewCalibration(props) {
             openCreateCertificate={openCreateCertificate}
             setOpenCreateCertificate={setOpenCreateCertificate}
             form={form}
+            error={error}
+            setError={setError}
           />
       )
       }

@@ -7,9 +7,21 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import useResponsive from '../../theme/hooks/useResponsive';
 import OrderFilterSidebar from './OrderFilterSidebar';
 
-function TableToolbar({ numSelected, form, selectedOrders, admin, setSelectedOrders, deleteOrder, isMobile }) {
-  const [filter, setFilter] = useState(false)
+function TableToolbar(props) {
+  const [filter, setFilter] = useState(false);
+
+  const { 
+    numSelected, 
+    form, 
+    selectedOrders, 
+    admin, 
+    setSelectedOrders, 
+    deleteOrder, 
+    isMobile
+  } = props;
+
   const isDesktop = useResponsive('up', 'md');
+
   const resetFilters = () => {
     form.reset()
   }

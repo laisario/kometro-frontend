@@ -21,6 +21,7 @@ import InformationProposal from '../components/InformationProposal';
 import FormElaborate from '../components/FormElaborate';
 import useProposalVM from '../viewModels/useProposalVM';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
+import Loading from '../../components/Loading'
 
 
 function ProposalDetailsPage() {
@@ -28,7 +29,6 @@ function ProposalDetailsPage() {
     isMobile,
     proposal,
     removeInstrumentProposal,
-    isRemoving,
     elaborateOpen,
     setElaborateOpen,
     user,
@@ -37,15 +37,17 @@ function ProposalDetailsPage() {
     refuseProposal,
     deleteOrderAndNavigate,
     sendProposalToEmail,
-    isLoadingSendProposal,
     addInstrumentProposal,
-    isLoadingAdd,
     elaborateProposal,
-    isLoadingElaborateProposal,
     isSuccessElaborate,
+    isRemoving,
+    isLoadingSendProposal,
+    isLoadingElaborateProposal,
     isDeleting,
+    isLoadingAdd,
     isLoadingAproveProposal,
-    isLoadingRefuseProposal
+    isLoadingRefuseProposal,
+    isLoadingProposal,
   } = useProposalVM();
 
   const theme = useTheme()
@@ -55,7 +57,10 @@ function ProposalDetailsPage() {
       <Helmet>
         <title>Proposta | Kometro </title>
       </Helmet>
-      <Container>
+      {isLoadingProposal 
+        ? <Loading />
+        : (
+        <Container>
         <Stack 
           direction={isMobile ? "column" : "row"} 
           alignItems={isMobile ? "flex-start" : "center"} 
@@ -200,7 +205,8 @@ function ProposalDetailsPage() {
           />
           {proposal?.informacoesAdicionais && <AdditionalInformation data={proposal} />}
         </Paper>
-      </Container>
+        </Container>
+      )}
     </>
   )
 }

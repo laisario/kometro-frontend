@@ -137,8 +137,6 @@ function EditAsset(props) {
 
   const { handleSubmit } = form;
 
-  console.log(error)
-
   const saveChanges = () => {
     if (create) {
       handleSubmit((data) => mutateCreate({...data, client: clientId}))()

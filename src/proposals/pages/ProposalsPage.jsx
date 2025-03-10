@@ -76,7 +76,7 @@ function ProposalsPage() {
         
         {isLoadingProposals
           ? <Loading />
-          : 
+          : (
             <Scrollbar>
               <TableContainer component={Paper} sx={{ minWidth: 800 }}>
                 <TableToolbar
@@ -103,7 +103,7 @@ function ProposalsPage() {
                         const isItemSelected = isSelected(row.id);
                         return (
                           <TableRow
-                          hover
+                            hover
                             key={id}
                             tabIndex={-1}
                             onClick={() => { 
@@ -122,7 +122,7 @@ function ProposalsPage() {
                                   inputProps={{
                                     'aria-labelledby': index,
                                   }}
-                                  />
+                                />
                               </TableCell>
                             }
                             <TableCell align="left">{numero}</TableCell>
@@ -159,6 +159,7 @@ function ProposalsPage() {
                 </>}
               </TableContainer>
             </Scrollbar>
+          ) 
         }
 
         <FormCreateProposal 

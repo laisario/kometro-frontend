@@ -23,7 +23,6 @@ function CalibrationCard({ calibration, theme, isMobile }) {
     readMoreCertificate: false,
   });
   
-  console.log(readMore)
   const { 
     mutateCriticalAnalisys, 
     isLoadingCriticalAnalisys, 

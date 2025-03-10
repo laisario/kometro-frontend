@@ -31,6 +31,9 @@ function CalibrationPanel({ isMobile, instrument }) {
     openCreateCertificate,
     setOpenCreateCertificate,
     formCreate,
+    error,
+    isLoadingCalibrations,
+    setError
   } = useCalibrations(null, instrument )
 
   
@@ -47,6 +50,7 @@ function CalibrationPanel({ isMobile, instrument }) {
             mutate={mutateCreation}
             form={formCreate}
             isLoadingCreation={isLoadingCreation}
+            error={error}
           />
         </Stack>
         {isLoadingCreation 
@@ -56,7 +60,8 @@ function CalibrationPanel({ isMobile, instrument }) {
               calibrations={calibrations} 
               isMobile={isMobile} 
               selectedCalibration={selectedCalibration} 
-              setSelectedCalibration={setSelectedCalibration} 
+              setSelectedCalibration={setSelectedCalibration}
+              isLoadingCalibrations={isLoadingCalibrations}
             />
           )
         }
@@ -78,6 +83,8 @@ function CalibrationPanel({ isMobile, instrument }) {
         openCreateCertificate={openCreateCertificate}
         setOpenCreateCertificate={setOpenCreateCertificate}
         form={form}
+        error={error}
+        setError={setError}
       />
     </Stack>
   )

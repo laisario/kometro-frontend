@@ -31,7 +31,6 @@ function FormCreateProposal(props) {
   const client = formCreateProposal?.watch('cliente');
   
   const { assets, isLoadingAssets } = useClientAssets(admin ? client?.id : clients?.results[0]?.id);
-  console.log(assets, 'aaaaaaaa', clients?.results[0]?.id)
 
   return (
     <Dialog

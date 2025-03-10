@@ -53,14 +53,18 @@ export default function OrderFilterSidebar({ openFilter, onOpenFilter, onCloseFi
                   row
                   aria-labelledby="status-filter"
                   name="status"
+                  value={form?.watch(status)}
+                  onChange={(e) => form?.setValue('status', e?.target?.value)}
                 >
-                  <FormControlLabel value="E" control={<Radio checked={form?.status === "E"} {...form.register("status")} />} label="Em elaboração" />
-                  <FormControlLabel value="AA" control={<Radio checked={form?.status === "AA"} {...form.register("status")} />} label="Aguardando aprovação" />
-                  <FormControlLabel value="A" control={<Radio checked={form?.status === "A"} {...form.register("status")} />} label="Aprovada" />
-                  <FormControlLabel value="R" control={<Radio checked={form?.status === "R"} {...form.register("status")} />} label="Reprovada" />
+                  <FormControlLabel value="E" control={<Radio {...form.register("status")} />} label="Em elaboração" />
+                  <FormControlLabel value="AA" control={<Radio {...form.register("status")} />} label="Aguardando aprovação" />
+                  <FormControlLabel value="A" control={<Radio {...form.register("status")} />} label="Aprovada" />
+                  <FormControlLabel value="R" control={<Radio {...form.register("status")} />} label="Reprovada" />
                 </RadioGroup>
               </FormControl>
             </div>
+
+            <Divider />
 
             <div>
               <Typography variant="subtitle1" gutterBottom>

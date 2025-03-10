@@ -65,8 +65,8 @@ const ProposalsProvider = ({ children }) => {
           page_size: rowsPerPage,
           page: page + 1,
           search: debouncedSearchFilter,
-          dataCriacaoAfter: dateStart ? dayjs(dateStart).format('YYYY-MM-DD') : null,
-          dataCriacaoBefore: dateStop ? dayjs(dateStop).format('YYYY-MM-DD') : null,
+          data_criacao_after: dateStart ? dayjs(dateStart).format('YYYY-MM-DD') : null,
+          data_criacao_before: dateStop ? dayjs(dateStop).format('YYYY-MM-DD') : null,
           status
         }
       });

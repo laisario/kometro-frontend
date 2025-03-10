@@ -13,10 +13,11 @@ const useCalibrations = (id, instrumento) => {
   const [openForm, setOpenForm] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openCreateCertificate, setOpenCreateCertificate] = useState(false);
+  const [error, setError] = useState({});
 
   const queryClient = useQueryClient();
   
-  const { data, error, isLoading  } = useQuery(['calibracoes', debouncedSearch, instrumento, id], async () => {
+  const { data, isLoading: isLoadingCalibrations  } = useQuery(['calibracoes', debouncedSearch, instrumento, id], async () => {
     if (id) {
       const response = await axios.get(`/calibracoes/${id}`, { params: { page_size: 9999 } });
       return response?.data;
@@ -78,7 +79,6 @@ const useCalibrations = (id, instrumento) => {
       });
     },
     onError: (error) => {
-      console.log(error)
       enqueueSnackbar('Erro ao deletar calibração. Tente novamente!', {
         variant: 'error'
       });
@@ -109,10 +109,10 @@ const useCalibrations = (id, instrumento) => {
         variant: 'success'
       });
       form.reset();
-      setOpenForm(false)
+      setOpenForm(false);
     },
     onError: (error) => {
-      console.log(error)
+      setError(error?.response?.data);
       enqueueSnackbar('Erro ao criar calibração. Tente novamente!', {
         variant: 'error'
       });
@@ -140,7 +140,7 @@ const useCalibrations = (id, instrumento) => {
       });
     },
     onError: (error) => {
-      console.log(error)
+      setError(error?.response?.data);
       enqueueSnackbar('Erro ao editar calibração. Tente novamente!', {
         variant: 'error'
       });
@@ -175,7 +175,7 @@ const useCalibrations = (id, instrumento) => {
       });
     }, 
     onError: (error) => {
-      console.log(error)
+      setError(error?.response?.data);
       enqueueSnackbar('Erro ao adicionar certificado. Tente novamente!', {
         variant: 'error'
       });
@@ -198,7 +198,6 @@ const useCalibrations = (id, instrumento) => {
       });
     },
     onError: (error) => {
-      console.log(error)
       enqueueSnackbar('Erro ao deletar certificado. Tente novamente!', {
         variant: 'error'
       });
@@ -208,7 +207,6 @@ const useCalibrations = (id, instrumento) => {
   return {
     data,
     error,
-    isLoading,
     search,
     setSearch,
     errorCreating,
@@ -234,6 +232,9 @@ const useCalibrations = (id, instrumento) => {
     openCreateCertificate,
     setOpenCreateCertificate,
     formCreate,
+    error,
+    setError,
+    isLoadingCalibrations,
   }
 }
 

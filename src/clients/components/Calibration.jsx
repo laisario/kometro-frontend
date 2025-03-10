@@ -40,6 +40,8 @@ function Calibration(props) {
     openCreateCertificate,
     setOpenCreateCertificate,
     form,
+    error,
+    setError
   } = props;
 
   const handleClose = () => {
@@ -87,6 +89,8 @@ function Calibration(props) {
               isMobile={isMobile}
               handleClose={handleClose}
               form={form}
+              error={error}
+              setError={setError}
             />
             {isDeleting 
               ? <CircularProgress /> 
