@@ -8,6 +8,7 @@ import CalibrationCard from '../components/CalibrationCard';
 import ContentRow from '../../components/ContentRowCard';
 import { positionLabels, colorPositionInstrument, localLabels } from '../../utils/assets';
 import useAsset from '../hooks/useAsset';
+import Loading from '../../components/Loading';
 
 function AssetDetailPage() {
   const { id } = useParams();
@@ -16,6 +17,7 @@ function AssetDetailPage() {
   const {
     asset, 
     isMobile,
+    isLoadingAsset
   } = useAsset(id);
 
   const modelo = asset?.instrumento?.tipoDeInstrumento?.modelo
@@ -26,7 +28,8 @@ function AssetDetailPage() {
       <Helmet>
         <title> Instrumento | Kometro </title>
       </Helmet>
-      <Container>
+      {isLoadingAsset ? <Loading /> : (
+        <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Box direction="column">
             {!!asset?.tag &&
@@ -112,7 +115,8 @@ function AssetDetailPage() {
             </>
           )}
         </Paper>
-      </Container>
+        </Container>
+      )}
     </>
   );
 }

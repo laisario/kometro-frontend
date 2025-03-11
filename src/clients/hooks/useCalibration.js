@@ -135,6 +135,7 @@ const useCalibrations = (id, instrumento) => {
       queryClient.invalidateQueries({ queryKey: ['calibracoes'] });
       queryClient.invalidateQueries({ queryKey: ['instrumentos'] });
       setOpenEdit(false);
+      setSelectedCalibration({});
       enqueueSnackbar('Calibração editada com sucesso!', {
         variant: 'success'
       });

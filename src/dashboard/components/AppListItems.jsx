@@ -14,7 +14,6 @@ import { alpha } from '@mui/material/styles';
 import { useNavigate, Link as RouterLink } from 'react-router';
 import { isExpired, fDate } from '../../utils/formatTime';
 import Iconify from '../../components/Iconify';
-import Scrollbar from '../../components/scrollbar';
 import palette from '../../theme/palette';
 import Label from '../../components/label';
 import { findCriticalAnalysisStage, criticalAnalysisMonths } from '../../utils/documents';
@@ -33,23 +32,24 @@ export default function AppListItems({ title, subheader, list, document, ...othe
   const isMobile = useResponsive('down', 'md');
   
   return (
-    <Card  
-      sx={{
-      '& .MuiTimelineItem-missingOppositeContent:before': {
-        display: 'none',
-      },
-      }}
-    >
+    <Card>
       <CardHeader title={title} subheader={subheader} />
-      <CardContent>
+      <CardContent 
+        sx={{
+          '& .MuiTimelineItem-missingOppositeContent:before': {
+            display: 'none',
+          },
+          py: 2,
+          overflow: 'auto'
+        }}
+      >
+
         {list?.length ?
-          <Scrollbar>
-            <Stack spacing={3}>
-              {list?.map((data) => (
-                <ListItem key={data?.id} isDocument={document} data={data} />
-              ))}
-            </Stack>
-          </Scrollbar>
+          <Stack spacing={2}>
+            {list?.map((data) => (
+              <ListItem key={data?.id} isDocument={document} data={data} />
+            ))}
+          </Stack>
         : <EmptyYet isDashboard content={document ? 'revisao' : 'instrumento'} isMobile={isMobile} /> }
       </CardContent>
 
@@ -146,7 +146,7 @@ function ListItem({ data, isDocument }) {
             {formattedData?.subtitle}
           </Typography>
           {isDocument && data?.cliente && (
-            <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               {formattedData?.cliente?.empresa} - {formattedData?.cliente?.nome}
             </Typography>
           )}
