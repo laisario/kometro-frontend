@@ -1,20 +1,20 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async';
 import { Container, Grid, Stack, Typography } from '@mui/material';
-import { useLocation, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import ReviewCard from '../components/ReviewCard';
 import useDocumentVM from '../viewModels/useDocumentVM';
 
 function DocumentReviews() {
-  const { state } = useLocation();
   const { id } = useParams();
   const {
     mutateApproveReview,
     isLoadingApproveReview,
-    revisoes
+    revisoes,
+    document,
+    user
   } = useDocumentVM(id);
-  const user = state?.data?.user
-  const titulo = state?.data?.titulo
+  const titulo = document?.titulo
   return (
     <>
       <Helmet>
@@ -31,7 +31,7 @@ function DocumentReviews() {
             <Grid item key={revisao?.id} xs={12} sm={6}>
               <ReviewCard
                 revisao={revisao} 
-                key={revisao.id} 
+                key={revisao?.id} 
                 user={user}
                 mutateApproveReview={mutateApproveReview}
                 isLoadingApproveReview={isLoadingApproveReview}

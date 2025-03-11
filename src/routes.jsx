@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router';
+import { HashRouter, Routes, Route, Navigate } from 'react-router';
 import CommonLayout from './layouts/common/CommonLayout.jsx';
 import AuthLayout from './layouts/auth/AuthLayout.jsx';
 import SimpleLayout from './layouts/simple/SimpleLayout.jsx';
@@ -20,46 +20,48 @@ import ClientDetailsPage from './clients/pages/ClientDetailsPage.jsx';
 
 export default function Router() {
   return (
-    <Routes>
-      <Route path="/dashboard"  element={<CommonLayout />}>
-        <Route index element={<Navigate to="/dashboard/app" />} />
-        <Route path="app" element={<DashboardPage />} />
-        <Route path="instrumentos" element={<AssetsPage />} />
-        <Route path="instrumento/:id" element={<AssetDetailPage />} />
-        <Route path="propostas" element={<ProposalsPage />} />
-        <Route path="proposta/:id" element={<ProposalDetailsPage />} />
-      </Route>
+    <HashRouter>
+      <Routes>
+        <Route path="/dashboard"  element={<CommonLayout />}>
+          <Route index element={<Navigate to="/dashboard/app" />} />
+          <Route path="app" element={<DashboardPage />} />
+          <Route path="instrumentos" element={<AssetsPage />} />
+          <Route path="instrumento/:id" element={<AssetDetailPage />} />
+          <Route path="propostas" element={<ProposalsPage />} />
+          <Route path="proposta/:id" element={<ProposalDetailsPage />} />
+        </Route>
 
-      <Route path="/" element={<AuthLayout />}>
-        <Route index element={<Navigate to="/login" />} />
-        <Route path="login" element={<LoginPage />} />
-      </Route>
-      <Route path="/register" element={<AuthLayout />}>
-        <Route index element={<Navigate to="/register/basics" />} />
-        <Route path="basics" element={<RegisterBasicsPage />} />
-        <Route path="auth" element={<RegisterAuthPage />} />
-        <Route path="location" element={<RegisterLocationPage />} />
-      </Route>
+        <Route path="/" element={<AuthLayout />}>
+          <Route index element={<Navigate to="/login" />} />
+          <Route path="login" element={<LoginPage />} />
+        </Route>
+        <Route path="/register" element={<AuthLayout />}>
+          <Route index element={<Navigate to="/register/basics" />} />
+          <Route path="basics" element={<RegisterBasicsPage />} />
+          <Route path="auth" element={<RegisterAuthPage />} />
+          <Route path="location" element={<RegisterLocationPage />} />
+        </Route>
 
-      <Route path="/admin" element={<CommonLayout />}>
-        <Route index element={<Navigate to="/admin/app" />} />
-        <Route path="app" element={<DashboardPage />} />
-        <Route path="propostas" element={<ProposalsPage />} />
-        <Route path="proposta/:id/:idClient" element={<ProposalDetailsPage />} />
-        <Route path="documentos" element={<DocumentsPage />} />
-        <Route path="documento/:id/:idRevisao" element={<DocumentDetailPage />} />
-        <Route path="documento/:id/revisoes" element={<DocumentReviews />} />
-        <Route path="clientes" element={<ClientsPage />} />
-        <Route path="cliente/:id" element={<ClientDetailsPage />} />
-      </Route>
+        <Route path="/admin" element={<CommonLayout />}>
+          <Route index element={<Navigate to="/admin/app" />} />
+          <Route path="app" element={<DashboardPage />} />
+          <Route path="propostas" element={<ProposalsPage />} />
+          <Route path="proposta/:id/:idClient" element={<ProposalDetailsPage />} />
+          <Route path="documentos" element={<DocumentsPage />} />
+          <Route path="documento/:id/:idRevisao" element={<DocumentDetailPage />} />
+          <Route path="documento/:id/revisoes" element={<DocumentReviews />} />
+          <Route path="clientes" element={<ClientsPage />} />
+          <Route path="cliente/:id" element={<ClientDetailsPage />} />
+        </Route>
 
-      <Route element={<SimpleLayout />}>
-        <Route index element={<Navigate to="/dashboard/app" />} />
-        <Route path="404" element={<Page404 />} />
-        <Route path="*" element={<Navigate to="/404" />} />
-      </Route>
+        <Route element={<SimpleLayout />}>
+          <Route index element={<Navigate to="/dashboard/app" />} />
+          <Route path="404" element={<Page404 />} />
+          <Route path="*" element={<Navigate to="/404" />} />
+        </Route>
 
-      <Route path="*" element={<Navigate to="/404" replace />} /> 
-    </Routes>
+        <Route path="*" element={<Navigate to="/404" replace />} /> 
+      </Routes>
+    </HashRouter>
   );
 }

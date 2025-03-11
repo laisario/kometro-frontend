@@ -29,10 +29,10 @@ function ReviewCard(props) {
         <Typography variant='body2' color="text.secondary">
           Aprovadores: {revisao?.aprovadores?.map((ap) => ap?.username).slice().join(", ")}
         </Typography>
-        <Typography variant='body2' sx={{ mt: 1 }}>
+        <Box sx={{ mt: 1, fontSize: 14 }}>
           <strong>Alteração:</strong>
           <p style={{ lineHeight: 0 }} dangerouslySetInnerHTML={{ __html: revisao?.alteracao }} />
-        </Typography>
+        </Box>
         <Divider />
       </CardContent>
       {!!revisao?.aprovacoes?.length && (
@@ -60,7 +60,7 @@ function ReviewCard(props) {
       )}
       {!!error && <Alert severity="error">{error}</Alert>}
       <CardActions sx={{ display: 'flex', flexDirection: 'row', justifyContent: "flex-end" }}>
-        {approversIds?.includes(user.id) &&
+        {approversIds?.includes(user?.id) &&
           <Button
             size="small" 
             onClick={() => mutateApproveReview({revisao, userApproved})}

@@ -8,7 +8,7 @@ const AuthProvider = ({ children }) => {
   const storedClienteId = window.localStorage.getItem('clienteId');
   const [user, setUser] = useState(token ? { token } : null);
   const [clienteId, setClienteId] = useState(storedClienteId || null);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     if (token) {

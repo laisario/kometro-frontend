@@ -105,7 +105,7 @@ export default function Nav({ openNav, onCloseNav, admin }) {
               </Typography>
             </Box>
 
-            <Button href="/dashboard/propostas" startIcon={<Iconify icon="eva:plus-fill" />} variant="contained">
+            <Button href="#/dashboard/propostas" startIcon={<Iconify icon="eva:plus-fill" />} variant="contained">
               Nova proposta
             </Button>
           </Stack>

@@ -33,7 +33,7 @@ export default function AssetCard({ asset, setSelected, selected }) {
       <Divider />
       <Stack sx={{ p: 3 }} gap={1}>
         {!!asset?.instrumento?.tipoDeInstrumento?.descricao &&
-          <Link href={`/dashboard/instrumento/${asset?.id}`} color="inherit" underline="hover">
+          <Link href={`#/dashboard/instrumento/${asset?.id}`} color="inherit" underline="hover">
             <Typography variant="subtitle1">
               {asset?.instrumento?.tipoDeInstrumento?.descricao}
             </Typography>
