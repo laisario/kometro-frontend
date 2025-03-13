@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { 
   Card, 
   Checkbox, 
@@ -41,8 +41,10 @@ function ClientsPage() {
     navigate,
     handleClick,
     isDeleting,
+    user
   } = useClientsVM();
 
+  const isThereClients = useMemo(() => !!clients?.results?.length, [clients?.results]);
   return (
     <>
       <Helmet>
@@ -59,9 +61,8 @@ function ClientsPage() {
 
         {isLoadingClients
           ? <Loading />
-          : !clients?.results?.length
-            ? <EmptyYet content="cliente" isMobile={isMobile} />
-            : (
+          : isThereClients
+          ? (
             <Scrollbar>
               <TableToolbar
                 numSelected={selectedClients?.length}
@@ -94,7 +95,7 @@ function ClientsPage() {
                           key={row.id}
                           onClick={() => { navigate(`/admin/cliente/${row?.id}`) }}
                           sx={{ cursor: 'pointer' }}
-                        >
+                          >
                           <TableCell padding="checkbox">
                             <Checkbox
                               color="primary"
@@ -126,6 +127,7 @@ function ClientsPage() {
               </TableContainer>
             </Scrollbar>
           )
+          : <EmptyYet content="cliente" isMobile={isMobile} />
         }
       </Container>
     </>

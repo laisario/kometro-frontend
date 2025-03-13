@@ -110,5 +110,6 @@ export const useDocumentsVM = () => {
     setError,
     form,
     handleClose,
+    user,
   }
 }

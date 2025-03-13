@@ -47,6 +47,7 @@ export default function DocumentsPage() {
     setError,
     form,
     handleClose,
+    user,
   } = useDocumentsVM();
 
   return (
@@ -109,6 +110,7 @@ export default function DocumentsPage() {
               handleClick={handleClick}
               cleanSelectedDocuments={cleanSelectedDocuments}
               isMobile={isMobile}
+              user={user}
             />
           ) 
         }

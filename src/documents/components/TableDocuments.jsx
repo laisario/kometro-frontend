@@ -38,6 +38,7 @@ function TableDocuments(props) {
     navigate,
     cleanSelectedDocuments,
     isMobile,
+    user,
   } = props;
 
   const handleDelete = () => {

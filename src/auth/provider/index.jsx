@@ -8,7 +8,7 @@ const AuthProvider = ({ children }) => {
   const storedClienteId = window.localStorage.getItem('clienteId');
   const [user, setUser] = useState(token ? { token } : null);
   const [clienteId, setClienteId] = useState(storedClienteId || null);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (token) {
@@ -17,25 +17,25 @@ const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  // const redirectUsers = useCallback((user) => {
-  //   const adminRoutes = ['/admin'];
-  //   const authenticatedRoutes = ['/dashboard', '/admin'];
-  //   if (!user && authenticatedRoutes.some((route) => window.location.hash.includes(route))) {
-  //     return navigate('/login', { state: { redirect: window.location.hash.slice(1) } });
-  //   }
-  //   if (user?.admin === true && !adminRoutes.some((route) => window.location.hash.includes(route))) {
-  //     return navigate('/admin/app');
-  //   }
-  //   if (user?.admin === false && adminRoutes.some((route) => window.location.hash.includes(route))) {
-  //     return navigate('/dashboard');
-  //   }
+  const redirectUsers = useCallback((user) => {
+    const adminRoutes = ['/admin'];
+    const authenticatedRoutes = ['/dashboard', '/admin'];
+    if (!user && authenticatedRoutes.some((route) => window.location.hash.includes(route))) {
+      return navigate('/login', { state: { redirect: window.location.hash.slice(1) } });
+    }
+    if (user?.admin === true && !adminRoutes.some((route) => window.location.hash.includes(route))) {
+      return navigate('/admin/app');
+    }
+    if (user?.admin === false && adminRoutes.some((route) => window.location.hash.includes(route))) {
+      return navigate('/dashboard');
+    }
 
-  //   return null
-  // }, [navigate])
+    return null
+  }, [navigate])
 
-  // useEffect(() => {
-  //   redirectUsers(user)
-  // }, [user, redirectUsers]);
+  useEffect(() => {
+    redirectUsers(user)
+  }, [user, redirectUsers]);
 
   return (
     <AuthContext.Provider
