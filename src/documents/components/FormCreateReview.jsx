@@ -36,7 +36,8 @@ function FormCreateReview(props) {
   const {
     arquivo,
     aprovadores,
-    alteracao
+    alteracao,
+    tipo
   } = useWatch({ control: form.control })
   
   const handleChange = (event) => {
@@ -46,8 +47,8 @@ function FormCreateReview(props) {
       form.setValue("arquivo", files[0]);
     }
   };
-
-
+  
+  
   const usersWithoutCreator = users?.filter((user) => user.id !== idCreator)
   return (
     <Dialog
@@ -57,11 +58,12 @@ function FormCreateReview(props) {
         component: 'form',
         onSubmit: async (event) => {
           event.preventDefault();
+          console.log(form.watch())
           form.handleSubmit(mutateCreateReview)();
         },
       }}
     >
-      <DialogTitle>Revise o documento</DialogTitle>
+      <DialogTitle>{tipo === 'revalidar' ? 'Revalide o documento' : 'Revise o documento'}</DialogTitle>
       <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", flexDirection: "column" }}>
         {isCreatingReview
           ? <CircularProgress />
@@ -76,7 +78,7 @@ function FormCreateReview(props) {
                   multiline
                   type="text"
                   fullWidth
-                  label="Alterações realizadas"
+                  label={tipo === 'revalidar' ? 'Observações' : 'Alterações realizadas'}
                   {...form.register("alteracao", {
                     onChange: (e) => {if (error?.alteracao) setError(null)},
                   })}
@@ -115,7 +117,7 @@ function FormCreateReview(props) {
                   helperText={!!error?.arquivo && error?.arquivo}
                   sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap'}}
                 >
-                  <FormLabel id="upload-btn">Documento alterado: </FormLabel>
+                  <FormLabel id="upload-btn">Documento {tipo === 'revalidar' ? 'revalidado:' : 'alterado:'}</FormLabel>
                   <Button component="label" size="small" variant="contained" startIcon={<CloudUploadIcon />}>
                     Enviar arquivo
                     <input
@@ -127,7 +129,7 @@ function FormCreateReview(props) {
                         onChange: (e) => {if (error?.arquivo) setError(null)},
                       })}
                       onChange={handleChange}
-                      />
+                    />
                   </Button>
                   {!!arquivo &&
                     <Button
@@ -157,7 +159,7 @@ function FormCreateReview(props) {
             disabled={!(arquivo && alteracao && aprovadores)} 
             type="submit"
           >
-            Criar revisão
+            {tipo === 'revalidar' ? 'Criar revalidação' : 'Criar revisão'}
           </Button>
           )}
       </DialogActions>

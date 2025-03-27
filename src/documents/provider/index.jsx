@@ -32,7 +32,6 @@ const DocumentsProvider = ({ children }) => {
       frequencia: null,
       arquivo: null,
       dataValidade: '',
-      dataRevisao: '',
     }
   })
 
@@ -51,7 +50,7 @@ const DocumentsProvider = ({ children }) => {
     return response?.data
   });
 
-  const handleSearch = debounce((value) => setDebouncedSearch(value), 500);
+  const handleSearch = debounce((value) => setDebouncedSearch(value), 1500);
 
   useEffect(() => { handleSearch(search) }, [search, handleSearch])
 

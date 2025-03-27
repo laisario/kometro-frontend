@@ -88,12 +88,13 @@ export default function DocumentDetailPage() {
                     statusColor={statusColor} 
                     setOpenFormReview={setOpenFormReview} 
                     user={user} 
+                    form={formReview}
                     />
                   {!!revisoes?.length &&
                     <Box>
                       <Box display="flex" flexDirection="row" justifyContent="space-between">
                         <Typography variant="h5" margin={2}>
-                          Revisões
+                          Histórico
                         </Typography>
                         {revisoes?.length > 1 && (
                           <Button 
@@ -103,7 +104,7 @@ export default function DocumentDetailPage() {
                               { sate: { data: { user, titulo: document?.titulo } } }
                             )}
                           >
-                            Ver todas
+                            Ver tudo
                           </Button>
                         )}
                       </Box>

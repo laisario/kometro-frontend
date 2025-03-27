@@ -4,7 +4,6 @@ import {
   Checkbox, 
   Container, 
   Grid, 
-  Paper, 
   Table, 
   TableBody, 
   TableCell, 
@@ -16,7 +15,6 @@ import {
 import { Helmet } from 'react-helmet-async';
 import TableToolbar from '../components/TableToolbar';
 import TableHeader from '../../components/TableHeader';
-import Scrollbar from '../../components/scrollbar/Scrollbar';
 import Loading from '../../components/Loading';
 import EmptyYet from '../../components/EmptyYet';
 import useClientsVM from '../viewModels/useClientsVM';
@@ -44,7 +42,7 @@ function ClientsPage() {
     user
   } = useClientsVM();
 
-  const isThereClients = useMemo(() => !!clients?.results?.length, [clients?.results]);
+  const areThereClients = useMemo(() => !!clients?.results?.length, [clients?.results]);
   return (
     <>
       <Helmet>
@@ -61,9 +59,9 @@ function ClientsPage() {
 
         {isLoadingClients
           ? <Loading />
-          : isThereClients
+          : areThereClients
           ? (
-            <Scrollbar>
+            <Card>
               <TableToolbar
                 numSelected={selectedClients?.length}
                 deleteClients={() => { deleteClients(selectedClients); setSelectedClients([]) }}
@@ -71,7 +69,7 @@ function ClientsPage() {
                 isLoadingClients={isLoadingClients}
                 isDeleting={isDeleting}
               />
-              <TableContainer component={Paper} sx={{ minWidth: 800 }}>
+              <TableContainer sx={{ minWidth: 800 }}>
                 <Table
                   aria-labelledby="tabelaClientes"
                 >
@@ -83,7 +81,7 @@ function ClientsPage() {
                     admin={user?.admin}
                     checkbox
                   />
-                  <TableBody>
+                  <TableBody sx={{ overflowX: 'auto' }}>
                     {clients?.results?.map((row, index) => {
                       const isItemSelected = isSelected(row?.id);
                       return (
@@ -114,18 +112,18 @@ function ClientsPage() {
                     })}
                   </TableBody>
                 </Table>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 50, 100]}
-                  component="div"
-                  count={clients?.count || 0}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  labelRowsPerPage="Linhas por páginas"
-                />
               </TableContainer>
-            </Scrollbar>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25, 50, 100]}
+                component="div"
+                count={clients?.count || 0}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPage="Linhas por páginas"
+              />
+            </Card>
           )
           : <EmptyYet content="cliente" isMobile={isMobile} />
         }

@@ -81,7 +81,7 @@ ListItem.propTypes = {
 const formatData = (data, isDocument) => {
   if (isDocument) {
     return {
-      title: `Documento: ${data?.documento?.titulo}`,
+      title: `${data?.tipo === 'revalidar' ? 'Revalidação' : 'Revisão'}: ${data?.documento?.titulo}`,
       subtitle: data?.alteracao,
       url: `/admin/documento/${data?.documento?.id}/${data?.id}`,
       ...data,

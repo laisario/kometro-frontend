@@ -73,7 +73,7 @@ const ProposalsProvider = ({ children }) => {
       return response?.data;
     });
     
-    const handleSearchFilter = debounce((value) => setDebouncedSearchFilter(value), 500);
+    const handleSearchFilter = debounce((value) => setDebouncedSearchFilter(value), 1500);
     
     useEffect(() => { handleSearchFilter(search) }, [search, handleSearchFilter])
     

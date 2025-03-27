@@ -29,6 +29,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import useProcedures from '../hooks/useProcedures';
 import useUsers from '../../auth/hooks/useUsers';
 import { availableFormats } from '../../utils/documents';
+import useResponsive from '../../theme/hooks/useResponsive';
 
 
 export default function FormCreate(props) {
@@ -43,6 +44,7 @@ export default function FormCreate(props) {
     handleClose,
   } = props;
 
+  const isMobile = useResponsive('down', 'md');
   const { procedures } = useProcedures();
   const { users } = useUsers();
 
@@ -59,7 +61,6 @@ export default function FormCreate(props) {
     codigo,
     identificador,
     titulo,
-    dataRevisao,
     dataValidade,
     elaborador,
     frequencia,
@@ -81,7 +82,6 @@ export default function FormCreate(props) {
                 identificador,
                 titulo,
                 status,
-                dataRevisao: dayjs(dataRevisao).format('YYYY-MM-DD') || null,
                 dataValidade: dayjs(dataValidade).format('YYYY-MM-DD') || null,
                 criador: elaborador,
                 frequencia,
@@ -130,13 +130,12 @@ export default function FormCreate(props) {
                     helperText={!!error?.identificador && error?.identificador}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={isMobile ? 12 : 6}>
                   <TextField
                     autoFocus
                     {...form.register("titulo", {
                       onChange: (e) => {if (error?.titulo) setError(null)},
                     })}
-                    margin="dense"
                     id="titulo"
                     name="titulo"
                     label="Título"
@@ -145,69 +144,32 @@ export default function FormCreate(props) {
                     helperText={!!error?.titulo && error?.titulo}
                   />
                 </Grid>
-                <Grid item xs={6}>
-                  <DatePicker
-                    label="Revisão"
-                    value={dataRevisao ? dayjs(dataRevisao) : null}
-                    onChange={newValue => {
-                      if (error?.data_revisao) setError(null)
-                      form.setValue("dataRevisao", newValue)
-                    }}
-                    fullWidth
-                    slotProps={{
-                      textField: {
-                        variant: 'outlined',
-                        error: !!error?.data_revisao,
-                        helperText: !!error?.data_revisao && error?.data_revisao,
-                      },
-                    }}
-                  />
+                <Grid item xs={isMobile ? 12 : 6}>
+                  <FormControl fullWidth>
+                    <InputLabel id="elaborador">Elaborador</InputLabel>
+                    <Select
+                      autoFocus
+                      {...form.register("elaborador", {
+                        onChange: (e) => {if (error?.elaborador) setError(null)},
+                      })}
+                      value={elaborador}
+                      margin="dense"
+                      id="elaborador"
+                      name="elaborador"
+                      label="elaborador"
+                      fullWidth
+                      error={!!error?.elaborador}
+                      helperText={!!error?.elaborador && error?.elaborador}
+                    >
+                      {users?.map(({ username, id }) => (
+                        <MenuItem key={id} value={id}>
+                          {username}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid>
                 <Grid item xs={6}>
-                  <DatePicker
-                    value={dataValidade ? dayjs(dataValidade) : null}
-                    onChange={newValue => {
-                      if (error?.data_validade) setError(null)
-                      form.setValue("dataValidade", newValue)
-                    }}
-                    label="Validade"
-                    fullWidth
-                    slotProps={{
-                      textField: {
-                        variant: 'outlined',
-                        error: !!error?.data_validade,
-                        helperText: !!error?.data_validade && error?.data_validade,
-                      },
-                    }}
-                  />
-                </Grid>
-                <Grid item container alignItems="center" spacing={1}>
-                  <Grid item xs={6} sm={8}>
-                    <FormControl fullWidth>
-                      <InputLabel id="elaborador">Elaborador</InputLabel>
-                      <Select
-                        autoFocus
-                        {...form.register("elaborador", {
-                          onChange: (e) => {if (error?.elaborador) setError(null)},
-                        })}
-                        value={elaborador}
-                        margin="dense"
-                        id="elaborador"
-                        name="elaborador"
-                        label="elaborador"
-                        fullWidth
-                        error={!!error?.elaborador}
-                        helperText={!!error?.elaborador && error?.elaborador}
-                      >
-                        {users?.map(({ username, id }) => (
-                          <MenuItem key={id} value={id}>
-                            {username}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                <Grid item xs={6} sm={4}>
                   <TextField
                     autoFocus
                     id="frquencia"
@@ -219,12 +181,27 @@ export default function FormCreate(props) {
                       onChange: (e) => {if (error?.frequencia) setError(null)},
                     })}
                     fullWidth
-                    margin="dense"
                     error={!!error?.frequencia}
                     helperText={!!error?.frequencia && error?.frequencia}
                   />
                 </Grid>
-              </Grid>
+                <Grid item xs={6}>
+                  <DatePicker
+                    value={dataValidade ? dayjs(dataValidade) : null}
+                    onChange={newValue => {
+                      if (error?.data_validade) setError(null)
+                      form.setValue("dataValidade", newValue)
+                    }}
+                    label="Validade"
+                    slotProps={{
+                      textField: {
+                        variant: 'outlined',
+                        error: !!error?.data_validade,
+                        helperText: !!error?.data_validade && error?.data_validade,
+                      },
+                    }}
+                  />
+                </Grid>
             </Grid>
             <FormControl
               sx={{ 

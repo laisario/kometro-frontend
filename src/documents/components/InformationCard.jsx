@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardActions, CardContent, Chip, Typography } from '@mui/material'
+import { Box, Button, Card, CardActions, CardContent, Chip, Divider, Typography } from '@mui/material'
 import React from 'react'
 import titleCase from '../../utils/formatTitle';
 import { fDate } from '../../utils/formatTime';
@@ -10,12 +10,13 @@ function InformationCard(props) {
     status, 
     statusColor, 
     setOpenFormReview, 
-    user 
+    user,
+    form,
   } = props;
   const isCreator = data?.criador?.id === user?.id
   return (
-    <Card variant="outlined">
-      <CardContent sx={{ bgcolor: 'background.paper', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+    <Card sx={{bgcolor: 'background.paper'}}>
+      <CardContent sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
         <Box>
           {data?.titulo &&
             <Typography variant="h5" component="div">
@@ -28,37 +29,32 @@ function InformationCard(props) {
             </Typography>
           }
           {data?.criador &&
-            <Typography sx={{ mt: 1.5 }} variant="body2">
-              <strong>Elaborador:</strong> {titleCase(data?.criador?.username)}
+            <Typography sx={{ mt: 1.5 }} variant="body1">
+              Elaborador: <strong>{titleCase(data?.criador?.username)}</strong>
             </Typography>
           }
           {data?.codigo?.codigo &&
-            <Typography sx={{ mt: 1 }} variant="body2">
-              <strong>Código: </strong>{data?.codigo?.codigo}
+            <Typography sx={{ mt: 1 }} variant="body1">
+              Código: <strong>{data?.codigo?.codigo}</strong>
             </Typography>
           }
           {!!data?.analiseCritica &&
-            <Typography sx={{ mt: 1 }} variant="body2">
-              <strong>Análise Crítica: </strong>{titleCase(criticalAnalysisMonths(data?.analiseCritica))}
-            </Typography>
-          }
-          {data?.dataRevisao &&
-            <Typography sx={{ mt: 1 }} variant="body2">
-              <strong>Revisão: </strong>{fDate(data?.dataRevisao)}
+            <Typography sx={{ mt: 1 }} variant="body1">
+              Análise Crítica: <strong>{titleCase(criticalAnalysisMonths(data?.analiseCritica))}</strong>
             </Typography>
           }
           {data?.dataValidade &&
-            <Typography sx={{ mt: 1 }} variant="body2">
-              <strong>Validade: </strong>{fDate(data?.dataValidade)}
+            <Typography sx={{ mt: 1 }} variant="body1">
+              Validade: <strong>{fDate(data?.dataValidade)}</strong>
             </Typography>
           }
           {!!data?.frequencia &&
-            <Typography sx={{ mt: 1 }} variant="body2">
-              <strong>Frequência: </strong>{data?.frequencia > 1 ? `${data?.frequencia} anos` : `${data?.frequencia} ano`}
+            <Typography sx={{ mt: 1 }} variant="body1">
+              Frequência:  <strong>{data?.frequencia > 1 ? `${data?.frequencia} anos` : `${data?.frequencia} ano`}</strong>
             </Typography>
           }
-          {!!data?.revisoes.length && <Typography sx={{ mt: 1 }} variant="body2">
-            <strong>Número revisões: </strong>{data?.revisoes?.length}
+          {!!data?.revisoes.length && <Typography sx={{ mt: 1 }} variant="body1">
+          Número revisões: <strong>{data?.revisoes?.length}</strong>
           </Typography>}
         </Box>
         <Box>
@@ -68,13 +64,24 @@ function InformationCard(props) {
       </CardContent>
       <CardActions sx={{ display: 'flex', flexDirection: 'row', justifyContent: "flex-end" }}>
         {isCreator &&
-          <Button 
-            variant="outlined" 
-            size="medium" 
-            onClick={() => setOpenFormReview(true)}
-          >
-            Revisar
-          </Button>
+          (<>
+            <Button 
+              variant="outlined" 
+              size="small" 
+              onClick={() => {setOpenFormReview(true); form.setValue('tipo', 'revalidar') }}
+              color='secondary'
+              >
+              Revalidar
+            </Button>
+            <Button 
+              variant="contained" 
+              size="small" 
+              color='secondary'
+              onClick={() => {setOpenFormReview(true); form.setValue('tipo', 'revisar')} }
+              >
+              Revisar
+            </Button>
+          </>)
         }
       </CardActions>
     </Card>

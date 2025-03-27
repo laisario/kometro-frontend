@@ -3,12 +3,12 @@ import { alpha, styled } from '@mui/material/styles';
 
 export const StyledRootScrollbar = styled(SimpleBar)(() => ({
   flexGrow: 1,
-  height: '100%',
+  // height: '100%',
   overflow: 'hidden',
 }));
 
 export const StyledScrollbar = styled('div')(({ theme }) => ({
-  maxHeight: '100%',
+  // maxHeight: '100%',
   '& .simplebar-scrollbar': {
     '&:before': {
       backgroundColor: alpha(theme.palette.grey[600], 0.48),

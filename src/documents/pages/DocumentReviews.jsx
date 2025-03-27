@@ -18,12 +18,12 @@ function DocumentReviews() {
   return (
     <>
       <Helmet>
-        <title>Revisões | Kometro</title>
+        <title>Histórico | Kometro</title>
       </Helmet>
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Revisões {!!titulo && `do documento: ${titulo}`}
+            Histórico: {!!titulo && titulo}
           </Typography>
         </Stack>
         <Grid container spacing={2}>

@@ -28,7 +28,7 @@ const ClientsProvider = ({ children }) => {
     search,
   } = useWatch({ control: formFilter.control });
 
-  const handleSearch = debounce((search) => setDebouncedSearch(search), 500);
+  const handleSearch = debounce((search) => setDebouncedSearch(search), 1500);
 
   useEffect(() => { handleSearch(search) }, [search, handleSearch]);
 

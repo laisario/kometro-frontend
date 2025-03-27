@@ -16,7 +16,8 @@ export const useDocument = (id) => {
     defaultValues: {
       arquivo: null,
       alteracao: '',
-      aprovadores: []
+      aprovadores: [],
+      tipo: '',
     }
   })
   
@@ -43,6 +44,7 @@ export const useDocument = (id) => {
     const response =  await axios.post(`/documentos/${id}/revisar/`, {
       alteracao: formReview.watch('alteracao'),
       aprovadores: formReview.watch('aprovadores'),
+      tipo: formReview.watch('tipo'),
     });
     if (response?.data?.revisaoId) {
       const formData = new FormData()
@@ -51,7 +53,7 @@ export const useDocument = (id) => {
     }
     return response
   }
-  
+  // alterar mensagens de aleerta quando eh revisao ou revalidacao && arrumar descricao pra ficar melhor a tag typography
   const { 
     mutate: mutateCreateReview, 
     isLoading: isCreatingReview, 
@@ -64,7 +66,7 @@ export const useDocument = (id) => {
       formReview.reset();
       setOpenFormReview(false);
       navigate(`/admin/documento/${id}/${data?.data?.revisaoId}`, { replace: true });
-      enqueueSnackbar('Revisão criada com sucesso!', {
+      enqueueSnackbar(`${data?.data?.revisao?.tipo === 'revalidar' ? 'Revalidação criada com sucesso!' : 'Revisão criada com sucesso!'}`, {
         variant: 'success'
       });
     },

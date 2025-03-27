@@ -88,7 +88,7 @@ export default function DashboardPage() {
 
             <Grid item xs={12} md={7} lg={8}>
               <AppListItems
-                title={user?.admin ? "Revisões a serem aprovadas" : "Instrumentos recentes"}
+                title={user?.admin ? "Aprovações pendentes" : "Instrumentos recentes"}
                 list={user?.admin ? documents : instruments}
                 document={user?.admin}
               />

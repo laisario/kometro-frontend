@@ -1,6 +1,8 @@
 import { Search } from '@mui/icons-material';
 import { 
+  Button,
   CircularProgress, 
+  Divider, 
   FormControl, 
   FormControlLabel, 
   FormLabel, 
@@ -9,6 +11,7 @@ import {
   InputAdornment, 
   Radio, 
   RadioGroup, 
+  Stack, 
   TextField, 
   Toolbar, 
   Tooltip,
@@ -19,6 +22,8 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import React from 'react'
 import useResponsive from '../../theme/hooks/useResponsive';
+import Iconify from '../../components/Iconify';
+import FilterSidebar from '../../components/FilterSidebar';
 
 function TableToolbar(props) {
   const { 
@@ -59,7 +64,7 @@ function TableToolbar(props) {
       )}
       {numSelected === 0 &&
         <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item sm={6} xs={filter ? 12 : 10}>
+          <Grid item sm={6}>
             <TextField
               label='Busque título'
               id='search-bar'
@@ -75,36 +80,33 @@ function TableToolbar(props) {
               {...form.register("search")}
             />
           </Grid>
-          {filter && (
-            <Grid item sm={4} xs={12} my={!isDesktop && 1}>
-              <FormControl>
-                <FormLabel id="status-filter">Status</FormLabel>
-                <RadioGroup
-                  row
-                  aria-labelledby="status-filter"
-                  name="status"
-                >
-                  <FormControlLabel value="V" control={<Radio checked={status === "V"} {...form.register("status")} />} label="Vigente" />
-                  <FormControlLabel value="O" control={<Radio checked={status === "O"} {...form.register("status")} />} label="Obsoleto" />
-                  <FormControlLabel value="C" control={<Radio checked={status === "C"} {...form.register("status")} />} label="Cancelado" />
-                </RadioGroup>
-              </FormControl>
-            </Grid>
-          )}
-            <Grid item sm={1}>
-              {filter && (
-                <Tooltip title="Limpar filtros">
-                  <IconButton onClick={clearFilters}>
-                    <ClearAllIcon />
-                  </IconButton>
-                </Tooltip>
+          <Grid item>
+            <FilterSidebar
+              openFilter={filter}
+              onOpenFilter={() => setFilter(true)}
+              onCloseFilter={() => setFilter(false)}
+              form={form}
+              resetFilters={clearFilters}
+              children={(
+                <Stack spacing={3} sx={{ p: 3 }}>
+                  <div>
+                    <FormControl>
+                      <FormLabel id="status-filter">Status</FormLabel>
+                      <RadioGroup
+                        aria-labelledby="status-filter"
+                        name="status"
+                      >
+                        <FormControlLabel value="V" control={<Radio checked={status === "V"} {...form.register("status")} />} label="Vigente" />
+                        <FormControlLabel value="O" control={<Radio checked={status === "O"} {...form.register("status")} />} label="Obsoleto" />
+                        <FormControlLabel value="C" control={<Radio checked={status === "C"} {...form.register("status")} />} label="Cancelado" />
+                      </RadioGroup>
+                    </FormControl>
+                  </div>
+                  <Divider />
+                </Stack>
               )}
-              <Tooltip title="Filtrar">
-                <IconButton onClick={() => setFilter((oldFilter) => !oldFilter)}>
-                  <FilterListIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
+            />
+          </Grid>
         </Grid>
       }
       {numSelected > 0 && (

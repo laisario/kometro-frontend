@@ -18,25 +18,36 @@ function ReviewCard(props) {
   const approversIds = useMemo(() => revisao?.aprovadores?.map((approver) => approver?.id ), [revisao])
  
   return (
-    <Card variant="outlined" sx={{ px: 4, marginBottom: 4 }}>
-      <CardContent sx={{ bgcolor: 'background.paper' }}>
+    <Card sx={{ 
+      px: 4, 
+      minHeight: '254px', 
+      marginBottom: 4, 
+      bgcolor: 'background.paper',
+      display: 'flex', 
+      justifyContent: 'center', 
+      flexDirection: 'column'
+    }}>
+      <CardContent>
         <Typography variant="body1">
-          <strong>Revisado {fDate(revisao?.dataRevisao)}</strong>
+          <strong>{revisao?.tipo === 'revalidar' ? 'Revalidado' : 'Revisado'} {fDate(revisao?.dataRevisao)}</strong>
         </Typography>
         <Typography variant='body2' color="text.secondary">
-          Por: {revisao?.revisor?.username}
+          Por: <strong>{revisao?.revisor?.username}</strong>
         </Typography>
-        <Typography variant='body2' color="text.secondary">
-          Aprovadores: {revisao?.aprovadores?.map((ap) => ap?.username).slice().join(", ")}
+        <Typography  variant='body2' color="text.secondary">
+          Aprovadores: <strong>{revisao?.aprovadores?.map((ap) => ap?.username).slice().join(", ")}</strong>
         </Typography>
-        <Box sx={{ mt: 1, fontSize: 14 }}>
-          <strong>Alteração:</strong>
-          <p style={{ lineHeight: 0 }} dangerouslySetInnerHTML={{ __html: revisao?.alteracao }} />
-        </Box>
-        <Divider />
+        <Typography 
+          color='text.secondary' 
+          variant="body2"
+        >
+          {revisao?.tipo === 'revalidar' ? 'Observação: ' : 'Alteração: '}
+          <strong>{revisao?.alteracao}</strong>
+        </Typography>
       </CardContent>
       {!!revisao?.aprovacoes?.length && (
-          <Box sx={{ px: 2 }}>
+        <Box sx={{ px: 2 }}>
+            <Divider sx={{mb: 2}} />
             <Typography variant='body2'><strong>Aprovações:</strong></Typography>
             <Box display="flex" sx={{mt: 1}} flexDirection="row">
               {revisao?.aprovacoes.map((aprovacao, index) => (
