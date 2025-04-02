@@ -125,7 +125,6 @@ function EditAsset(props) {
     error,
     setError,
   } = useAssetMutations(handleCleanCreateForm, handleClose);
-
   const {
     dataUltimaCalibracao,
     local,
@@ -503,7 +502,7 @@ function EditAsset(props) {
           </form>
         </DialogContent>
         <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Button onClick={handleClose}>Cancelar</Button>
+          <Button onClick={() => {handleClose(); setError({})}}>Cancelar</Button>
           {isLoadingUpdate || isLoadingCreate 
             ? <CircularProgress /> 
             : <Button variant='contained' onClick={saveChanges}>{create ? 'Criar' : 'Salvar mudanças'}</Button>

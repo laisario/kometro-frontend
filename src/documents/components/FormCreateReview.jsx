@@ -58,7 +58,6 @@ function FormCreateReview(props) {
         component: 'form',
         onSubmit: async (event) => {
           event.preventDefault();
-          console.log(form.watch())
           form.handleSubmit(mutateCreateReview)();
         },
       }}

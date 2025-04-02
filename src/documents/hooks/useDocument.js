@@ -53,7 +53,7 @@ export const useDocument = (id) => {
     }
     return response
   }
-  // alterar mensagens de aleerta quando eh revisao ou revalidacao && arrumar descricao pra ficar melhor a tag typography
+
   const { 
     mutate: mutateCreateReview, 
     isLoading: isCreatingReview, 
@@ -72,7 +72,7 @@ export const useDocument = (id) => {
     },
     onError: (error) => {
       setError(error?.response?.data)
-      enqueueSnackbar('Falha ao criar revisão, tente novamente!', {
+      enqueueSnackbar('Falha na criação, tente novamente!', {
         variant: 'error'
       });
     }
@@ -92,7 +92,7 @@ export const useDocument = (id) => {
     mutationFn: createApproveReview,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['documentos'] });
-      enqueueSnackbar(data?.data?.deleted ? 'Aprovação retirada com sucesso!' : 'Revisão aprovada com sucesso!', {
+      enqueueSnackbar(data?.data?.deleted ? 'Aprovação retirada com sucesso!' : 'Aprovada com sucesso!', {
         variant: 'success'
       });
     },

@@ -23,7 +23,8 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
         variant: 'success'
       });
     },
-    onError: () => {
+    onError: (erro) => {
+      setError(erro?.response?.data)
       enqueueSnackbar('Ocorreu um erro ao deletar o instrumento. Tente mais tarde!', {
         variant: 'error'
       });
@@ -51,7 +52,8 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
       });
       queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
     },
-    onError: () => {
+    onError: (erro) => {
+      setError(erro?.response?.data)
       enqueueSnackbar('Ocorreu um erro ao criar sua ánalise. Tente mais tarde!', {
         variant: 'error'
       });
@@ -112,8 +114,8 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
       queryClient.invalidateQueries({ queryKey: ['propostas'] })
       handleClose()
     },
-    onError: () => {
-      setError(error?.response?.data)
+    onError: (erro) => {
+      setError(erro?.response?.data)
       enqueueSnackbar('Falha ao atualizar instrumento, tente novamente!', {
         variant: 'error'
       });
@@ -141,8 +143,8 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
         variant: 'success'
       });
     },
-    onError: (error) => {
-      setError(error?.response?.data)
+    onError: (erro) => {
+      setError(erro?.response?.data)
       enqueueSnackbar('Falha ao criar instrumento, tente novamente!', {
         variant: 'error'
       });
