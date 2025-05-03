@@ -54,7 +54,7 @@ function ProposalsPage() {
     error,
     setError,
   } = useProposalsVM()
-
+  console.log(allProposals)
   const isFiltering = formFilter?.formState?.isDirty
   return (
     <>

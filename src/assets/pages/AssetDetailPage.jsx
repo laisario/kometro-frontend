@@ -22,7 +22,7 @@ function AssetDetailPage() {
 
   const modelo = asset?.instrumento?.tipoDeInstrumento?.modelo
   const fabricante = asset?.instrumento?.tipoDeInstrumento?.fabricante
-
+  console.log(asset)
   return (
     <>
       <Helmet>
@@ -50,6 +50,9 @@ function AssetDetailPage() {
             gap={2} 
             divider={<Divider orientation={isMobile ? "horizontal" : "vertical"} flexItem />} 
             justifyContent='space-between'
+            // backgroundColor={theme.palette.background.neutral}
+            padding={2}
+            borderRadius={2}
           >
             <Box width="100%">
               {(!!asset?.instrumento?.tipoDeInstrumento?.descricao || !!modelo) && <ContentRow title={asset?.instrumento.tipoDeInstrumento.descricao} value={!!modelo && modelo} />}
@@ -70,7 +73,7 @@ function AssetDetailPage() {
               {!!asset?.frequencia && <ContentRow title="Frequência" value={`${asset?.frequencia} ${+(asset?.frequencia) > 1 ? 'meses' : 'mês'}`} />}
               {!!asset?.pontosDeCalibracao?.length && <ContentRow title="Pontos de calibração:" isMobile value={asset?.pontosDeCalibracao?.map(({ nome }) => nome).join(", ")} />}
             </Box>
-            <Box display="flex" gap={1} flexDirection={isMobile ? 'row' : "column"} justifyContent="flex-start">
+            <Box display="flex" flexWrap='wrap' gap={1} flexDirection={isMobile ? 'row' : "column"} justifyContent="flex-start">
               <Chip
                 label={positionLabels[asset?.posicao]}
                 color={colorPositionInstrument[asset?.posicao]}
@@ -81,6 +84,12 @@ function AssetDetailPage() {
                 label={asset?.instrumento?.tipoDeServico === 'A' ? 'Acreditado' : 'Não acreditado'}
                 variant="filled"
                 color={asset?.instrumento?.tipoDeServico === 'A' ? 'info' : 'primary'}
+                sx={{ color: theme.palette.common.white }}
+              />
+              <Chip
+                label={`Expira ${fDate(asset?.dataExpiracaoCalibracao)}`}
+                variant="filled"
+                color={'warning'}
                 sx={{ color: theme.palette.common.white }}
               />
             </Box>

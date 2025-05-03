@@ -46,7 +46,7 @@ export const useDocument = (id) => {
       aprovadores: formReview.watch('aprovadores'),
       tipo: formReview.watch('tipo'),
     });
-    if (response?.data?.revisaoId) {
+    if (formReview.watch('tipo') === "revisar" && response?.data?.revisaoId) {
       const formData = new FormData()
       formData.append("arquivo", formReview.watch('arquivo'))
       await axiosForFiles.patch(`/documentos/${id}/alterar_anexo/`, formData)
@@ -71,6 +71,7 @@ export const useDocument = (id) => {
       });
     },
     onError: (error) => {
+      console.log(error, 'AAAAAAA')
       setError(error?.response?.data)
       enqueueSnackbar('Falha na criação, tente novamente!', {
         variant: 'error'

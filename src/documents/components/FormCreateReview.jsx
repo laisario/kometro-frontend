@@ -48,8 +48,8 @@ function FormCreateReview(props) {
     }
   };
   
-  
   const usersWithoutCreator = users?.filter((user) => user.id !== idCreator)
+
   return (
     <Dialog
       open={open}
@@ -110,44 +110,46 @@ function FormCreateReview(props) {
                   {!!error?.aprovadores && <FormHelperText>{error?.aprovadores}</FormHelperText>}
                 </FormControl>
               </Grid>
-              <Grid item>
-                <FormControl
-                  error={!!error?.arquivo}
-                  helperText={!!error?.arquivo && error?.arquivo}
-                  sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap'}}
-                >
-                  <FormLabel id="upload-btn">Documento {tipo === 'revalidar' ? 'revalidado:' : 'alterado:'}</FormLabel>
-                  <Button component="label" size="small" variant="contained" startIcon={<CloudUploadIcon />}>
-                    Enviar arquivo
-                    <input
-                      style={{ display: 'none' }}
-                      id="upload-btn"
-                      name="arquivo"
-                      type="file"
-                      {...form.register("arquivo", {
-                        onChange: (e) => {if (error?.arquivo) setError(null)},
-                      })}
-                      onChange={handleChange}
-                    />
-                  </Button>
-                  {!!arquivo &&
-                    <Button
-                    component="a"
-                      size="small"
-                      href={
-                        !!arquivo && arquivo instanceof File
-                        ? URL.createObjectURL(arquivo)
-                        : arquivo
-                      }
-                      target="_blank"
-                      variant="outlined"
-                      >
-                      Ver arquivo
+              {tipo === 'revisar' && (
+                <Grid item>
+                  <FormControl
+                    error={!!error?.arquivo}
+                    helperText={!!error?.arquivo && error?.arquivo}
+                    sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap'}}
+                  >
+                    <FormLabel id="upload-btn">Documento {tipo === 'revalidar' ? 'revalidado:' : 'alterado:'}</FormLabel>
+                    <Button component="label" size="small" variant="contained" startIcon={<CloudUploadIcon />}>
+                      Enviar arquivo
+                      <input
+                        style={{ display: 'none' }}
+                        id="upload-btn"
+                        name="arquivo"
+                        type="file"
+                        {...form.register("arquivo", {
+                          onChange: (e) => {if (error?.arquivo) setError(null)},
+                        })}
+                        onChange={handleChange}
+                      />
                     </Button>
-                  }
-                  <Typography variant='body2' fontSize={12} color="primary">{availableFormats}</Typography>
-                </FormControl>
-              </Grid>
+                    {!!arquivo &&
+                      <Button
+                      component="a"
+                        size="small"
+                        href={
+                          !!arquivo && arquivo instanceof File
+                          ? URL.createObjectURL(arquivo)
+                          : arquivo
+                        }
+                        target="_blank"
+                        variant="outlined"
+                        >
+                        Ver arquivo
+                      </Button>
+                    }
+                    <Typography variant='body2' fontSize={12} color="primary">{availableFormats}</Typography>
+                  </FormControl>
+                </Grid>
+              )}
           </Grid>)
         }
       </DialogContent>
@@ -155,7 +157,7 @@ function FormCreateReview(props) {
         <Button onClick={handleClose}>Cancelar</Button>
         {!isCreatingReview && (
           <Button
-            disabled={!(arquivo && alteracao && aprovadores)} 
+            disabled={!(alteracao && aprovadores)} 
             type="submit"
           >
             {tipo === 'revalidar' ? 'Criar revalidação' : 'Criar revisão'}
