@@ -9,7 +9,7 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
   const [error, setError] = useState({});
   const queryClient = useQueryClient();
   const deleteAsset = async (id) => {
-    await axios.delete(`/instrumentos/${id}`);
+    await axios.delete(`/instrumentos/${id}/`);
   };
   
   const { 

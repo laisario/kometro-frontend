@@ -7,7 +7,7 @@ export const useDashboard = () => {
     isLoading, 
   } = useQuery({
     queryKey: ['dashboard'], 
-    queryFn: async () =>  await axios.get('/dashboard'),
+    queryFn: async () =>  await axios.get('/dashboard/'),
   });
   return {
     data: data?.data,

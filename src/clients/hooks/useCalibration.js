@@ -19,10 +19,10 @@ const useCalibrations = (id, instrumento) => {
   
   const { data, isLoading: isLoadingCalibrations  } = useQuery(['calibracoes', debouncedSearch, instrumento, id], async () => {
     if (id) {
-      const response = await axios.get(`/calibracoes/${id}`, { params: { page_size: 9999 } });
+      const response = await axios.get(`/calibracoes/${id}/`, { params: { page_size: 9999 } });
       return response?.data;
     }
-    const response = await axios.get('/calibracoes', { params: { page_size: 9999, ordem_de_servico: debouncedSearch, instrumento } });
+    const response = await axios.get('/calibracoes/', { params: { page_size: 9999, ordem_de_servico: debouncedSearch, instrumento } });
     return response?.data?.results;
   });
   

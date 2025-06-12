@@ -46,7 +46,7 @@ const DocumentsProvider = ({ children }) => {
   } = useWatch({ control: formFilter.control })
 
   const { data, isLoading, } = useQuery(['documentos', page, rowsPerPage, debouncedSearch, statusFilter], async () => {
-    const response = await axios.get('/documentos', { params: { page: page + 1, page_size: rowsPerPage, search: debouncedSearch, status: statusFilter } });
+    const response = await axios.get('/documentos/', { params: { page: page + 1, page_size: rowsPerPage, search: debouncedSearch, status: statusFilter } });
     return response?.data
   });
 
@@ -90,7 +90,7 @@ const DocumentsProvider = ({ children }) => {
   const { 
     mutate: deleteDocumentos, 
     isLoading: isDeleting 
-  } = useMutation(async (ids) => Promise.all(ids?.map((id) => axios.delete(`/documentos/${id}`))), {
+  } = useMutation(async (ids) => Promise.all(ids?.map((id) => axios.delete(`/documentos/${id}/`))), {
     onSuccess: () => {
       enqueueSnackbar('Documento deletado com sucesso!', {
         variant: 'success'

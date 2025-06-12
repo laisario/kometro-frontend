@@ -17,7 +17,7 @@ const AssetsProvider = ({ children }) => {
     isLoading: isLoadingAssets, 
     refetch: refetchAssets,
   } = useQuery(['instrumentos', debouncedSearch, page, rowsPerPage], async () => {
-    const response = await axios.get('/instrumentos', { params: { page: page + 1, page_size: rowsPerPage, search: debouncedSearch} });
+    const response = await axios.get('/instrumentos/', { params: { page: page + 1, page_size: rowsPerPage, search: debouncedSearch} });
     return response?.data;
   });
 

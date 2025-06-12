@@ -58,7 +58,7 @@ const ProposalsProvider = ({ children }) => {
     debouncedSearchFilter, 
     status, 
     filterByDate], async () => {
-    const response = await axios.get('/propostas',
+    const response = await axios.get('/propostas/',
       {
         params:
         {
@@ -112,7 +112,7 @@ const ProposalsProvider = ({ children }) => {
     })
 
     const { mutate: deleteOrder, isLoading: isDeleting } = useMutation({
-    mutationFn: async (ids) => Promise.all(ids?.map((id) => axios.delete(`/propostas/${id}`))), 
+    mutationFn: async (ids) => Promise.all(ids?.map((id) => axios.delete(`/propostas/${id}/`))), 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['propostas'] })
       enqueueSnackbar('Proposta deletada com sucesso!', {

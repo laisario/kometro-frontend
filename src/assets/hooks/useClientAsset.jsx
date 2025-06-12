@@ -16,7 +16,7 @@ const useClientAssets = (clientId, table = false) => {
   } = useQuery({
     queryKey: ['instrumentos', clientId, debouncedSearch, page, rowsPerPage], 
     queryFn: async () => {
-      const response = await axios.get(`/instrumentos`, { 
+      const response = await axios.get(`/instrumentos/`, { 
         params: { 
           page_size: table ? rowsPerPage : 9999, 
           client: clientId,  

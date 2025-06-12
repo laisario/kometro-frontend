@@ -9,7 +9,7 @@ function useClient(id) {
   } = useQuery({
     queryKey: ['clientes', id], 
     queryFn: async () => {
-      const response = await axios.get(`/clientes/${id}`);
+      const response = await axios.get(`/clientes/${id}/`);
       return response?.data;
     },
     enabled: !!id

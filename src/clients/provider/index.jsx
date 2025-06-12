@@ -18,7 +18,7 @@ const ClientsProvider = ({ children }) => {
     error: errorClients, 
     isLoading: isLoadingClients, 
   } = useQuery(['clientes', page, rowsPerPage, debouncedSearch], async () => {
-    const response = await axios.get('/clientes', { params: { page: page + 1, page_size: rowsPerPage, search: debouncedSearch } });
+    const response = await axios.get('/clientes/', { params: { page: page + 1, page_size: rowsPerPage, search: debouncedSearch } });
     return response?.data;
   });
 
@@ -45,7 +45,7 @@ const ClientsProvider = ({ children }) => {
     mutate: deleteClients, 
     isLoading: isDeleting 
   } = useMutation({
-    mutationFn: async (ids) => Promise.all(ids?.map((id) => axios.delete(`/clientes/${id}`))),
+    mutationFn: async (ids) => Promise.all(ids?.map((id) => axios.delete(`/clientes/${id}/`))),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
       enqueueSnackbar('Cliente deletado com sucesso!', {

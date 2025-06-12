@@ -22,7 +22,7 @@ const useProposal = (id, cliente) => {
       if (cliente !== null) {
         params = { ...params, cliente, }
       }
-      const response = await axios.get(`/propostas/${id}`, { params });
+      const response = await axios.get(`/propostas/${id}/`, { params });
 
       return response?.data;
     },

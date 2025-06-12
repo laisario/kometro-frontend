@@ -13,7 +13,7 @@ const useAssets = (id) => {
   } = useQuery({
     queryKey: ['instrumentos', id], 
     queryFn: async () => {
-      const response = await axios.get(`/instrumentos/${id}`, { params: { page_size: 9999 } });
+      const response = await axios.get(`/instrumentos/${id}/`, { params: { page_size: 9999 } });
       return response?.data;
     },
     enabled: !!id

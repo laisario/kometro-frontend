@@ -28,7 +28,7 @@ export const useDocument = (id) => {
   } = useQuery({
     queryKey: ['documentos', id], 
     queryFn: async () => {
-      const response = await axios.get(`/documentos/${id}`);
+      const response = await axios.get(`/documentos/${id}/`);
       return response?.data;
     },
     enabled: !!id
@@ -71,7 +71,6 @@ export const useDocument = (id) => {
       });
     },
     onError: (error) => {
-      console.log(error, 'AAAAAAA')
       setError(error?.response?.data)
       enqueueSnackbar('Falha na criação, tente novamente!', {
         variant: 'error'
