@@ -9,7 +9,8 @@ const useProcedures = (id) => {
     }
     const response = await axios.get('/procedimentos/', { params: { page_size: 9999 } });
     return response?.data?.results;
-  });
+  }, {refetchOnReconnect: false,
+    refetchOnWindowFocus: false});
 
   return {
     procedures: data, 

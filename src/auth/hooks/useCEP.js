@@ -43,7 +43,7 @@ const useCEP = (cep, form) => {
     return response?.data
 
     },
-    { enabled: isValid }
+    { enabled: isValid, refetchOnReconnect: false, refetchOnWindowFocus: false }
   )
 
   return {

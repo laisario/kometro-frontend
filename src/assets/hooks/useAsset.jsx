@@ -1,10 +1,7 @@
 import { useQuery } from "react-query";
-import useResponsive from "../../theme/hooks/useResponsive";
 import { axios } from "../../api";
 
-const useAssets = (id) => {
-  const isMobile = useResponsive('down', 'md');
-
+const useAsset = (id) => {
   const { 
     data: asset, 
     error: errorAsset, 
@@ -16,7 +13,9 @@ const useAssets = (id) => {
       const response = await axios.get(`/instrumentos/${id}/`, { params: { page_size: 9999 } });
       return response?.data;
     },
-    enabled: !!id
+    enabled: !!id,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   });
 
   return {
@@ -24,8 +23,7 @@ const useAssets = (id) => {
     errorAsset, 
     isLoadingAsset, 
     refetchAsset,
-    isMobile,
   }
 };
 
-export default useAssets;
+export default useAsset;

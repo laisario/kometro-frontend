@@ -72,7 +72,7 @@ function FormCreateProposal(props) {
           autoHighlight
           options={assets?.results || []}
           isOptionEqualToValue={(option, value) => option?.id === value?.id}
-          getOptionLabel={(instrument) => `${instrument?.tag}: ${instrument?.numeroDeSerie} - ${instrument?.instrumento?.tipoDeInstrumento?.descricao} - ${instrument?.instrumento?.minimo} - ${instrument?.instrumento?.maximo}`}
+          getOptionLabel={(instrument) => `${instrument?.instrumento?.tipoDeInstrumento?.descricao} - ${instrument?.instrumento?.minimo} - ${instrument?.instrumento?.maximo} ${instrument?.instrumento?.unidade} ${!!instrument?.tag && `| ${instrument?.tag}`} ${!!instrument?.numeroDeSerie && `| ${instrument?.numeroDeSerie}`} `}
           disableCloseOnSelect
           loading={isLoadingAssets}
           renderTags={(value, getTagProps) => value?.map((tag, index) => <Chip {...getTagProps({ index })} key={tag?.tag} label={tag?.tag} />)}
@@ -99,7 +99,7 @@ function FormCreateProposal(props) {
                   style={{ marginRight: 8 }}
                   checked={selected}
                 />
-                {instrumento?.tag}: {instrumento?.numeroDeSerie} - {instrumento?.instrumento?.tipoDeInstrumento?.descricao} - {instrumento?.instrumento?.minimo} - {instrumento?.instrumento?.maximo}
+                {instrumento?.instrumento?.tipoDeInstrumento?.descricao} - {instrumento?.instrumento?.minimo} - {instrumento?.instrumento?.maximo} {instrumento?.instrumento?.unidade} {!!instrumento?.tag && `| ${instrumento?.tag}`} {!!instrumento?.numeroDeSerie && `| ${instrumento?.numeroDeSerie}`}
               </li>
             );
           }}

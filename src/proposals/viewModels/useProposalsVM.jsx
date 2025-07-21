@@ -6,9 +6,11 @@ import ProposalsContext from '../context';
 import AssetsContext from '../../assets/context';
 import  ClientsContext from '../../clients/context';
 import { useWatch } from 'react-hook-form';
+import { axios } from '../../api';
 
 function useProposalsVM() {
   const [selectedOrders, setSelectedOrders] = useState([]);
+  const [csvContent, setCsvContent] = useState(null);
   const isMobile = useResponsive('down', 'md');
   const { user } = useAuth();
   const admin = user?.admin
@@ -61,6 +63,19 @@ function useProposalsVM() {
 
   const isSelected = (id) => selectedOrders.indexOf(id) !== -1;
 
+  const exportOrders = async () => {
+    try {
+      const resposta = await axios.post('/propostas/exportar/', { propostas_selecionadas: selectedOrders });;
+      if (resposta.status === 200) {
+        setCsvContent(resposta?.data)
+      } else {
+        console.log('Xi status não foi 200')
+      }
+    } catch (error) {
+      console.error('Erro ao enviar dados para o backend:', error);
+    }
+  };
+
   return {
     isSelected,
     handleClick,
@@ -90,6 +105,8 @@ function useProposalsVM() {
     mutateCreateProposal,
     error,
     setError,
+    exportOrders,
+    csvContent
   }
 }
 

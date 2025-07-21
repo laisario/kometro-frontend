@@ -22,7 +22,6 @@ function AssetDetailPage() {
 
   const modelo = asset?.instrumento?.tipoDeInstrumento?.modelo
   const fabricante = asset?.instrumento?.tipoDeInstrumento?.fabricante
-  console.log(asset)
   return (
     <>
       <Helmet>
@@ -50,7 +49,6 @@ function AssetDetailPage() {
             gap={2} 
             divider={<Divider orientation={isMobile ? "horizontal" : "vertical"} flexItem />} 
             justifyContent='space-between'
-            // backgroundColor={theme.palette.background.neutral}
             padding={2}
             borderRadius={2}
           >

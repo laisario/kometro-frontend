@@ -8,6 +8,8 @@ export const useDashboard = () => {
   } = useQuery({
     queryKey: ['dashboard'], 
     queryFn: async () =>  await axios.get('/dashboard/'),
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false
   });
   return {
     data: data?.data,

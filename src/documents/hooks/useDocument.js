@@ -31,7 +31,9 @@ export const useDocument = (id) => {
       const response = await axios.get(`/documentos/${id}/`);
       return response?.data;
     },
-    enabled: !!id
+    enabled: !!id,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false
   });
 
   const handleCloseReview = () => {

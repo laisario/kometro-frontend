@@ -12,7 +12,9 @@ function useClient(id) {
       const response = await axios.get(`/clientes/${id}/`);
       return response?.data;
     },
-    enabled: !!id
+    enabled: !!id,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false
   });
  
   return {

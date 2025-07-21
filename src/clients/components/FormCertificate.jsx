@@ -52,11 +52,6 @@ function FormCertificate(props) {
     mutateAddCertificate({id: calibration?.id, arquivo, numero: numeroDoCertificado, anexos})
   }
 
-  const saveAddAnother = () => {
-    save();
-    form?.reset();
-    remove();
-  }
 
   const handleCloseAndClean = () => {
     form?.reset();
@@ -160,15 +155,6 @@ function FormCertificate(props) {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCloseAndClean}>Cancelar</Button>
-        <Button
-          variant='outlined' 
-          size='small' 
-          onClick={saveAddAnother} 
-          color='secondary' 
-          type="submit"
-        >
-          Salvar e adicionar outro
-        </Button>
         <Button variant='contained' type="submit">Salvar</Button>
       </DialogActions>
     </Dialog>

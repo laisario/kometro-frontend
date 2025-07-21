@@ -34,6 +34,7 @@ function Form(props) {
             params.id = calibration?.id
           }
           form?.handleSubmit(() => mutate(params))();
+          if (create) form.reset();
         },
       }}
     >
@@ -63,7 +64,7 @@ function Form(props) {
           />
           <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
             <DatePicker
-              label="Última calibração"
+              label="Data da calibração"
               {...form?.register("data")}
               value={form?.watch('data') ? dayjs(form?.watch('data')) : null}
               onChange={newValue => form?.setValue("data", newValue)}
@@ -93,45 +94,6 @@ function Form(props) {
             })}
             error={!!error?.incerteza}
             helperText={!!error?.incerteza && error?.incerteza}
-          />
-          {!isMobile && (
-            <TextField
-              autoFocus
-              id="criterioDeAceitacao"
-              label="Critério de aceitação"
-              fullWidth
-              {...form?.register("criterioDeAceitacao", {
-                onChange: (e) => {if (error?.criterio_de_aceitacao) setError({})},
-              })}
-              error={!!error?.criterio_de_aceitacao}
-              helperText={!!error?.criterio_de_aceitacao && error?.criterio_de_aceitacao}
-            />
-          )}
-        </Row>
-        <Row>
-          {isMobile && (
-            <TextField
-              autoFocus
-              id="criterioDeAceitacao"
-              label="Critério de aceitação"
-              fullWidth
-              {...form?.register("criterioDeAceitacao", {
-                onChange: (e) => {if (error?.criterio_de_aceitacao) setError({})},
-              })}
-              error={!!error?.criterio_de_aceitacao}
-              helperText={!!error?.criterio_de_aceitacao && error?.criterio_de_aceitacao}
-            />
-          )}
-          <TextField
-            autoFocus
-            id="referenciaCriterioDeAceitacao"
-            label="Referência critério de aceitação"
-            fullWidth
-            {...form?.register("referenciaDoCriterio", {
-              onChange: (e) => {if (error?.referencia_do_criterio) setError({})},
-            })}
-            error={!!error?.referencia_do_criterio}
-            helperText={!!error?.referencia_do_criterio && error?.referencia_do_criterio}
           />
         </Row>
         <TextField

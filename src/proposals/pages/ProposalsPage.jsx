@@ -14,7 +14,6 @@ import {
   Checkbox,
 } from '@mui/material';
 import Label from '../../components/label';
-import Scrollbar from '../../components/scrollbar';
 import { fDate } from '../../utils/formatTime';
 import FormCreateProposal from '../components/FormCreateProposal';
 import TableHeader from '../../components/TableHeader';
@@ -23,7 +22,8 @@ import EmptyYet from '../../components/EmptyYet';
 import useProposalsVM from '../viewModels/useProposalsVM';
 import Loading from '../../components/Loading';
 import { headCells, headCellsAdmin, statusColor, statusString } from '../../utils/proposals';
-
+import GetAppIcon from '@mui/icons-material/GetApp';
+import CsvViewer from '../../components/CsvViewer';
 
 function ProposalsPage() {
   const {
@@ -53,8 +53,9 @@ function ProposalsPage() {
     isLoadingClients,
     error,
     setError,
+    exportOrders,
+    csvContent
   } = useProposalsVM()
-  console.log(allProposals)
   const isFiltering = formFilter?.formState?.isDirty
   return (
     <>
@@ -63,14 +64,30 @@ function ProposalsPage() {
       </Helmet>
 
       <Container>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Stack direction={isMobile ? 'column' : "row"} alignItems={isMobile ? "start " : "center"} justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
             {admin ? 'Propostas' : 'Minhas propostas'}
           </Typography>
 
-          <Button variant="contained" onClick={handleOpen} >
-            Nova proposta
-          </Button>
+          <Stack  
+            direction="row" 
+            alignItems="center" 
+            gap={2}
+          >
+            {admin && <Button
+              variant="contained" 
+              startIcon={<GetAppIcon />} 
+              disabled={selectedOrders?.length < 1}
+              onClick={exportOrders}
+            >
+              Exportar
+            </Button>}
+
+            <Button variant="contained" onClick={handleOpen} >
+              Nova proposta
+            </Button>
+          </Stack>
+
         </Stack>
         
         {isLoadingProposals
@@ -87,7 +104,7 @@ function ProposalsPage() {
                 isMobile={isMobile}
                 />
                 {!allProposals?.results?.length 
-                  ? <EmptyYet table content="proposta" isFiltering={isFiltering} isMobile={isMobile} />  
+                  ? <EmptyYet table content="proposta" isFiltering={isFiltering} onClick={handleOpen} isMobile={isMobile} />  
                   : (<>
                       <TableContainer>
                         <Table sx={{ minWidth: 800 }}>
@@ -177,6 +194,7 @@ function ProposalsPage() {
           setError={setError}
         />
       </Container>
+       <CsvViewer csvContent={csvContent} fileName="propostas" />
     </>
   );
 }

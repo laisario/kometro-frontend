@@ -8,6 +8,8 @@ import ProposalsContext from '../context';
 const useProposalVM = () => {
   const [edit, setEdit] = useState(false);
   const [elaborateOpen, setElaborateOpen] = useState(false);
+  const [openBillingApprovel, setOpenBillingApprovel] = useState(false);
+  const [openSendEmail, setOpenSendEmail] = useState(false);
   const { id, idClient } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate()
@@ -37,7 +39,9 @@ const useProposalVM = () => {
     elaborateProposal,
     isLoadingElaborateProposal,
     isSuccessElaborate,
-  } = useProposal(id, idClient);
+    isApprovingBilling,
+    approveBilling,
+  } = useProposal(id, idClient,);
 
   const isMobile = useResponsive('down', 'md');
 
@@ -66,7 +70,13 @@ const useProposalVM = () => {
     elaborateProposal,
     isLoadingElaborateProposal,
     isSuccessElaborate,
-    isDeleting
+    isDeleting,
+    openBillingApprovel, 
+    setOpenBillingApprovel,
+    isApprovingBilling,
+    approveBilling,
+    openSendEmail, 
+    setOpenSendEmail,
   }
 }
 

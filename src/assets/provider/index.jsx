@@ -1,52 +1,69 @@
 import AssetsContext from "../context";
-import _, {debounce} from 'lodash';
-import { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { axios } from '../../api';
+import useAuth from "../../auth/hooks/useAuth";
 
+export const buildTreeItems = (sector, parentId = null) => {
+  const children = [];
+
+  if (!!sector?.subsetores?.length) {
+    sector.subsetores.forEach((sub) => {
+      children.push(buildTreeItems(sub, sector.id));
+    });
+  }
+
+  if (!!sector?.instrumentos?.length) {
+    sector.instrumentos.forEach((instr) => {
+      children.push({
+        id:`instrument-${instr.id}`,
+        label: instr.tag || instr.numeroDeSerie || 'Instrumento',
+        itemType: 'instrument',
+        instrumentoData: instr,
+        parentId: String(sector.id),
+      });
+    });
+  }
+
+  return {
+    id: String(sector?.id),
+    label: sector.nome,
+    itemType: "sector",
+    parentId: parentId ? String(parentId) : null,
+    children,
+  };
+};
 
 const AssetsProvider = ({ children }) => {
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(8);
+  const { user } = useAuth();
 
   const { 
-    data: allAssets,
-    error: errorAssets, 
-    isLoading: isLoadingAssets, 
-    refetch: refetchAssets,
-  } = useQuery(['instrumentos', debouncedSearch, page, rowsPerPage], async () => {
-    const response = await axios.get('/instrumentos/', { params: { page: page + 1, page_size: rowsPerPage, search: debouncedSearch} });
-    return response?.data;
-  });
+    data: sectors,
+    isFetching: isLoadingSectors,
+  } = useQuery(
+    {
+      queryKey: ['setores'], 
+      queryFn: async () => {
+        const params = {
+          cliente_id: user?.cliente,
+        };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+        const response = await axios.get('/setores/hierarquia/', { params });
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+        const items = response?.data?.map((sect) => buildTreeItems(sect));
 
-  const handleSearch = debounce((value) => setDebouncedSearch(value), 500);
+        return items
+      },
+      refetchOnWindowFocus: false,
+      refetchOnReconnect:false,
+    }
+  );
 
-  useEffect(() => { handleSearch(search) }, [search, handleSearch])
 
   return (
     <AssetsContext.Provider
       value={{
-        allAssets,
-        errorAssets, 
-        isLoadingAssets, 
-        refetchAssets,
-        handleChangePage,
-        handleChangeRowsPerPage,
-        search,
-        setSearch,
-        page,
-        rowsPerPage,
+        sectors,
+        isLoadingSectors, 
       }}
     >
       {children}

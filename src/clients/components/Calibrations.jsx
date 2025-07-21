@@ -26,9 +26,9 @@ function Calibrations(props) {
     return (
       <div key={index + calibrations[index]?.id}>
         <ListItem style={style} disablePadding onClick={() => setSelectedCalibration(calibrations[index])} sx={{ bgcolor: selectedCalibration?.id === calibrations[index]?.id ? 'background.neutral' : 'background.paper', }}>
-          <ListItemAvatar sx={{p: 1}}>
-            <Avatar>
-              OS
+          <ListItemAvatar  sx={{p: 1}}>
+            <Avatar >
+              os
             </Avatar>
           </ListItemAvatar>
           <ListItemText primary={calibrations[index]?.ordemDeServico || `${index + 1}°`} secondary={fDate(calibrations[index]?.data)} />

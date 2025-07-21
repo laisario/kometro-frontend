@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import { axios } from '../../api';
 import { enqueueSnackbar } from 'notistack';
 import ProposalsContext from "../context";
+import { useSearchParams } from 'react-router';
 
 const ProposalsProvider = ({ children }) => {
   const [page, setPage] = useState(0);
@@ -14,6 +15,9 @@ const ProposalsProvider = ({ children }) => {
   const [error, setError] = useState({});
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
+
+  const statusParam = searchParams.get('status');
   
   const formFilter = useForm({
     defaultValues: {
@@ -57,6 +61,7 @@ const ProposalsProvider = ({ children }) => {
     rowsPerPage, 
     debouncedSearchFilter, 
     status, 
+    statusParam,
     filterByDate], async () => {
     const response = await axios.get('/propostas/',
       {
@@ -67,11 +72,12 @@ const ProposalsProvider = ({ children }) => {
           search: debouncedSearchFilter,
           data_criacao_after: dateStart ? dayjs(dateStart).format('YYYY-MM-DD') : null,
           data_criacao_before: dateStop ? dayjs(dateStop).format('YYYY-MM-DD') : null,
-          status
+          status: !!statusParam ? statusParam : status
         }
       });
       return response?.data;
-    });
+    }, {refetchOnReconnect: false,
+      refetchOnWindowFocus: false});
     
     const handleSearchFilter = debounce((value) => setDebouncedSearchFilter(value), 1500);
     

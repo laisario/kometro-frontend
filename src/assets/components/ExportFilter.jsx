@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { 
   Box, 
   Checkbox, 
@@ -12,15 +12,58 @@ import {
   Dialog,
   Button,
   DialogContent,
+  CircularProgress,
 } from '@mui/material';
 import { axios } from '../../api';
 import CsvViewer from '../../components/CsvViewer';
+import InstrumentoTable from './InstrumentoTable';
+import PrintIcon from '@mui/icons-material/Print';
+import DownloadIcon from '@mui/icons-material/Download';
+import { readString, useCSVDownloader } from "react-papaparse"
 
-function ExportFilter({ open, handleClose, selected, handleChangeCheckbox, valueCheckbox, error, setError, selectAll }) {
+function ExportFilter(props) {
+  const { 
+    open, 
+    handleClose, 
+    selected,
+    setSelected,
+    handleChangeCheckbox, 
+    valueCheckbox, 
+    error, 
+    setError, 
+    selectAll, 
+    assets,
+    handleCheckboxSelectAll
+  } = props;
   const [csvContent, setCsvContent] = useState(null)
+  const [parsedCsv, setParsedCsv] = React.useState(null)
+  const [loading, setLoading] = useState(false)
+  const { CSVDownloader } = useCSVDownloader()
+
+  useEffect(() => {
+    if (!csvContent) return
+    readString(csvContent, {
+      header: true,
+      worker: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        if (results?.errors?.length) console.log("deu ruim")
+        setParsedCsv(results?.data)
+      }
+    })
+  }, [csvContent])
+
+  const handlePrint = () => {
+    if (!parsedCsv) return;
+    window.print()
+  };
+
+
+
   return (
     <Dialog
       open={open}
+      fullScreen
       onClose={() => { setCsvContent(null); handleClose() }}
       PaperProps={{
         component: 'form',
@@ -38,11 +81,13 @@ function ExportFilter({ open, handleClose, selected, handleChangeCheckbox, value
           };
 
           try {
+            setLoading(true)
             const resposta = await axios.post('/instrumentos/exportar/', selectedData);
+            setLoading(false)
             if (resposta.status === 200) {
-                setCsvContent(resposta?.data)
+              setCsvContent(resposta?.data)
             } else {
-                setError(true)
+              setError(true)
             }
           } catch (error) {
             console.error('Erro ao enviar dados para o backend:', error);
@@ -54,8 +99,8 @@ function ExportFilter({ open, handleClose, selected, handleChangeCheckbox, value
       }}
     >
       <DialogTitle>Exporte informações dos instrumentos</DialogTitle>
-      <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: "column" }}>
+      <DialogContent sx={{ display: 'flex', flexDirection: "row" }}>
+        {!csvContent && <Box sx={{ display: 'flex', flexDirection: "column" }}>
           <FormControl sx={{ m: 2 }} component="fieldset" variant="standard">
             <FormLabel component="legend">Escolha quais informações deseja incluir no relatório:</FormLabel>
             <FormGroup>
@@ -96,8 +141,8 @@ function ExportFilter({ open, handleClose, selected, handleChangeCheckbox, value
                 label="Data da Próxima Checagem"
               />
               <FormControlLabel
-                control={<Checkbox checked={valueCheckbox?.local} onChange={handleChangeCheckbox} name="local" />}
-                label="Local"
+                control={<Checkbox checked={valueCheckbox?.local} onChange={handleChangeCheckbox} name="setor" />}
+                label="Setor"
               />
             </FormGroup>
             {error && !Object.values(valueCheckbox).includes(true) &&
@@ -106,13 +151,43 @@ function ExportFilter({ open, handleClose, selected, handleChangeCheckbox, value
               </FormHelperText>
             }
           </FormControl>
-        </Box>
+        </Box>}
+        <InstrumentoTable 
+          instrumentos={assets?.results} 
+          valueCheckbox={valueCheckbox}
+          selected={selected}
+          setSelected={setSelected}
+          selectAll={selectAll}
+          handleCheckboxSelectAll={handleCheckboxSelectAll}
+          csvContent={csvContent}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={() => { setCsvContent(null); handleClose() }}>Cancelar</Button>
-        <Button type="submit">Exportar</Button>
+        {!parsedCsv && (loading ? <CircularProgress /> : <Button disabled={!selected?.length} type="submit">Exportar</Button>)}
+        {csvContent && <Button className='button' variant='outlined' endIcon={<PrintIcon />} onClick={handlePrint}>Imprimir</Button>}
+        {csvContent && <CSVDownloader style={{ background: 'transparent', border: 0 }} variant="contained" type="button" filename="meus_instrumentos" bom data={parsedCsv}><Button variant='contained' endIcon={<DownloadIcon />}>Download</Button></CSVDownloader>}
       </DialogActions>
-      <CsvViewer csvContent={csvContent}  onClose={handleClose} fileName="meus_instrumentos" />
+      <style>
+              {`
+                  @media print {
+          @page {
+              size: Legal landscape;
+              margin: 1cm;
+          }
+
+          #print-section {
+              width: 100%;
+              transform: scale(0.95);
+              transform-origin: top left;
+          }
+
+          button, .button {
+              display: none;
+          }
+
+      } `}
+      </style>
     </Dialog >
   )
 }

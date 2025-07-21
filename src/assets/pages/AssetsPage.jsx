@@ -1,7 +1,7 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async';
 import useAssetsVM from '../viewModels/useAssetsVM';
-import { Box, Button, Checkbox, Container, FormControlLabel, FormGroup, Stack, TablePagination, Typography } from '@mui/material';
+import { Box, Button, Checkbox, Container, FormControlLabel, FormGroup, Grid, Stack, TablePagination, Typography } from '@mui/material';
 import { Search, SearchIconWrapper, StyledInputBase } from '../styledComponents';
 import SearchIcon from '@mui/icons-material/Search';
 import GetAppIcon from '@mui/icons-material/GetApp';
@@ -9,6 +9,10 @@ import ExportFilter from '../components/ExportFilter';
 import Loading from '../../components/Loading';
 import EmptyYet from '../../components/EmptyYet';
 import AssetsList from '../components/AssetsList';
+import SetorTree from '../components/SetorTree';
+import InstrumentDetails from '../components/InstrumentDetails';
+import CalibrationList from '../components/CalibrationList';
+import SearchWithDropdown from '../components/SearchWithDropdown';
 
 function AssetsPage() {
   const {
@@ -19,21 +23,44 @@ function AssetsPage() {
     isMobile,
     search, 
     setSearch,
-    isLoadingAssets, 
-    page, 
-    handleChangePage, 
-    handleChangeRowsPerPage, 
-    rowsPerPage,
+    sectors,
+    isLoadingSectors, 
     open,
     error,
     selectAll,
     valueCheckbox,
     setError,
-    allAssets,
     setSelected,
     selected,
+    asset, 
+    mutateDeleteSectors,
+    isDeletingSectors,
+    mutateUpdateSectors, 
+    mutateCreateSectors, 
+    isLoadingUpdateSectors, 
+    isLoadingCreateSectors,
+    errorSectors,
+    openCreateSectorId,
+    openEditSector,
+    handleCreate,
+    handleOpenEditSector,
+    handleCloseCreateSector,
+    handleCloseEditSector,
+    defaultAssets,
+    mutateCreateClient,
+    expandedItems,
+    setExpandedItems,
+    selectedItem,
+    setSelectedItem,
+    handleEdit,
+    mutateUpdateClient,
+    isLoadingUpdateClient,
+    mutateDeleteClient,
+    assets,
+    setSearchDA,
+    searchDA,
+    isFetching,
   } = useAssetsVM();
-
   return (
     <>
       <Helmet>
@@ -54,67 +81,116 @@ function AssetsPage() {
           <Box 
             sx={{ 
               display: "flex", 
-              gap: 2, 
               flexDirection: "row", 
               alignItems: 'center', 
-              flexWrap: 'wrap'
-            }}>
-            <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Procure um instrumento"
-                inputProps={{ 'aria-label': 'Procure um instrumento' }}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </Search>
-            <FormGroup sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: 'center',  }}>
-              <FormControlLabel
-                control={<Checkbox checked={selectAll} />} 
-                onChange={handleCheckboxSelectAll} 
-                label="Selecionar todos" 
-              />
-              <Button
-                variant="contained" 
-                disabled={selected?.length === 0} 
-                onClick={handleClickOpen}
-                endIcon={<GetAppIcon />}
-              >
-                Exportar
-              </Button>
-            </FormGroup>
+              gap: 2,
+            }}
+          >
+            <SearchWithDropdown 
+              data={assets} 
+              onSelect={(item) =>  { setSelectedItem({id: `instrument-${item?.id}`, type: 'instrument', parentId: item?.setor?.id}); setExpandedItems(prevState => [...prevState, item?.setor?.id])}} 
+            />
+            <Button
+              variant="contained" 
+              onClick={handleClickOpen}
+              endIcon={<GetAppIcon />}
+            >
+              Exportar
+            </Button>
           </Box>
         </Stack>
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <Box>
           <ExportFilter
             handleClose={handleClose}
             open={open}
             selected={selected}
+            setSelected={setSelected}
             handleChangeCheckbox={handleChangeCheckbox}
+            handleCheckboxSelectAll={handleCheckboxSelectAll}
             valueCheckbox={valueCheckbox}
             error={error}
             setError={setError}
             selectAll={selectAll}
+            assets={assets}
           />
-          {isLoadingAssets
+          {isLoadingSectors
             ? <Loading />
-            : (allAssets?.results?.length
-              ? <AssetsList assets={allAssets} setSelected={setSelected} selected={selected} />
-              : <EmptyYet isMobile={isMobile} content="instrumento" />
+            : (!!sectors?.length
+              ? (
+                <Grid container sx={{ height: '100vh' }} spacing={4}>
+                  <Grid
+                    item
+                    xs={12}
+                    md={4}
+                    sx={{
+                      borderRight: { md: '1px solid #ddd' },
+                      height: { xs: 'auto', md: 'calc(100vh - 64px)' },
+                      overflowY: 'auto',
+                      pr: 1
+                    }}
+                  >
+                    <SetorTree
+                      setores={sectors}
+                      onAddSetor={mutateCreateSectors}
+                      onEditSetor={mutateUpdateSectors}
+                      onDeleteSetor={mutateDeleteSectors}
+                      openCreateSectorId={openCreateSectorId}
+                      openEditSector={openEditSector}
+                      handleCreate={handleCreate}
+                      handleEdit={handleEdit}
+                      defaultAssets={defaultAssets}
+                      mutate={mutateCreateClient}
+                      expandedItems={expandedItems}
+                      setExpandedItems={setExpandedItems}
+                      selectedItem={selectedItem}
+                      setSelectedItem={setSelectedItem}
+                      handleCloseCreateSector={handleCloseCreateSector}
+                      setSearchDA={setSearchDA}
+                      searchDA={searchDA}
+                      isFetching={isFetching}
+                    />
+                  </Grid>
+
+                  <Grid
+                    item
+                    xs={12}
+                    md={8}
+                    sx={{
+                      overflowY: 'auto',
+                      height: 'calc(100vh - 64px)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 2,
+                    }}
+                  >
+                    <Box sx={{ flex: 1, overflowY: 'auto' }}>
+                      <InstrumentDetails
+                        instrumento={asset}
+                        mutateUpdateClient={mutateUpdateClient}
+                        isLoadingUpdateClient={isLoadingUpdateClient}
+                        defaultAssets={defaultAssets}
+                        selectedItem={selectedItem}
+                        mutateDeleteClient={mutateDeleteClient}
+                        setSelectedItem={setSelectedItem}
+                        error={error}
+                        setError={setError}
+                        isFetching={isFetching}
+                        setSearchDA={setSearchDA}
+                        searchDA={searchDA}
+                      />
+                    </Box>
+
+                    {selectedItem?.type === 'instrument' && (
+                      <Box sx={{ flex: 1, overflowY: 'auto' }}>
+                        <CalibrationList asset={asset} />
+                      </Box>
+                    )}
+                  </Grid>
+                </Grid>
+              )
+              : <EmptyYet isMobile={isMobile} content="setor"   onCreate={handleCreate} />
             )
           }
-          <TablePagination
-            rowsPerPageOptions={[8, 16, 32, 64, 128]}
-            component="div"
-            count={allAssets?.count || 0}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            labelRowsPerPage="Instrumentos por página"
-          />
         </Box>
       </Container>
     </>

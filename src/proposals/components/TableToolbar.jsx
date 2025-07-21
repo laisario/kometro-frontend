@@ -64,7 +64,7 @@ function TableToolbar(props) {
         </Typography>
       ) : (
             <Grid container display="flex" justifyContent="space-between" alignItems="center">
-              <Grid item sm={6}>
+              <Grid item sm={6} xs={8}>
                 <TextField
                   label='Busque'
                   {...form.register("search")}
@@ -82,7 +82,7 @@ function TableToolbar(props) {
                   }}
                 />
               </Grid>
-              <Grid item>
+              <Grid item sm={2} >
                 <FilterSidebar
                   openFilter={filter}
                   onOpenFilter={() => setFilter(true)}

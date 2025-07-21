@@ -6,6 +6,7 @@ import DocumentsContext from "../context";
 import { axios, axiosForFiles } from '../../api';
 import { isPastFromToday } from '../../utils/formatTime';
 import { enqueueSnackbar } from 'notistack';
+import { useSearchParams } from 'react-router';
 
 const DocumentsProvider = ({ children }) => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -13,7 +14,10 @@ const DocumentsProvider = ({ children }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [error, setError] = useState({});
   const [open, setOpen] = useState(false);
+  const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
+
+  const vencidoParam = searchParams.get('vencido');
 
   const formFilter = useForm({
     defaultValues: {
@@ -45,10 +49,24 @@ const DocumentsProvider = ({ children }) => {
     status: statusFilter,
   } = useWatch({ control: formFilter.control })
 
-  const { data, isLoading, } = useQuery(['documentos', page, rowsPerPage, debouncedSearch, statusFilter], async () => {
-    const response = await axios.get('/documentos/', { params: { page: page + 1, page_size: rowsPerPage, search: debouncedSearch, status: statusFilter } });
-    return response?.data
-  });
+  const { data, isLoading, } = useQuery(
+    ['documentos', page, rowsPerPage, debouncedSearch, statusFilter, vencidoParam],
+    async () => {
+      let params = {
+        page: page + 1, 
+        page_size: rowsPerPage, 
+        search: debouncedSearch, 
+        status: statusFilter, 
+      }
+
+      if (vencidoParam !== null) {
+        params.vencido = vencidoParam;
+      }
+
+      const response = await axios.get('/documentos/', { params });
+      return response?.data
+  }, {refetchOnReconnect: false,
+    refetchOnWindowFocus: false});
 
   const handleSearch = debounce((value) => setDebouncedSearch(value), 1500);
 

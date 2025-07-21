@@ -20,7 +20,7 @@ function Assets(props) {
   const handleClose = () => setOpen(false);
 
   return (
-    <Box>
+    <Box sx={{my: isMobile ? 4 : 8}}>
       <Box display="flex" justifyContent='space-between' alignItems='center'>
         <Typography variant="h6" my={2}>
           {data?.instrumentos.length > 1 ? "Instrumentos" : "Instrumento"}

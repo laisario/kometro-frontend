@@ -13,6 +13,9 @@ const useUsers = (id) => {
     }
     const response = await axios.get('/users/', { params: { page_size: 9999 } });
     return response?.data?.results;
+  }, { 
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false
   });
 
   return {

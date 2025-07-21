@@ -26,7 +26,9 @@ const useProposal = (id, cliente) => {
 
       return response?.data;
     },
-    enabled: !!id
+    enabled: !!id,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false
   });
 
 
@@ -73,7 +75,7 @@ const useProposal = (id, cliente) => {
   })
 
   const { mutate: sendProposalToEmail, isLoading: isLoadingSendProposal } = useMutation({
-    mutationFn: async() => await axios.get(`/propostas/${id}/enviar_email/`),
+    mutationFn: async(data) => await axios.post(`/propostas/${id}/enviar_email/`, data),
     onSuccess: () => {
       enqueueSnackbar('Proposta enviada com sucesso!', {
         variant: 'success'
@@ -116,20 +118,36 @@ const useProposal = (id, cliente) => {
     }
   })
 
+  const { mutate: approveBilling, isLoading: isApprovingBilling } = useMutation({
+    mutationFn: async (data) =>  await axios.patch(`/propostas/${id}/liberar_para_faturamento/`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['propostas'] });
+      enqueueSnackbar('Faturamento aprovado com sucesso!', {
+        variant: 'success'
+      });
+    },
+    onError: () => {
+      enqueueSnackbar('Falha ao aprovar faturamento, tente novamente!', {
+        variant: 'error'
+      });
+    }
+  });
+
   const elaborate = async ({ addressClient, data }) => {
     const formValues = data;
 
     const formatDayjs = (date) => dayjs.isDayjs(date) ? date.format('YYYY-MM-DD') : null;
     const commonData = {
       total: formValues?.total || 0,
-      condicaoDePagamento: formValues?.formaDePagamento || null,
+      condicaoDePagamento: formValues?.condicaoDePagamento || null,
       transporte: formValues?.transporte || null,
-      numero: formValues?.numeroProposta || 0,
+      numero: formValues?.numeroProposta || '',
       validade: formatDayjs(formValues?.validade),
       status: formValues?.status || null,
       prazoDePagamento: formatDayjs(formValues?.prazoDePagamento),
       responsavel: formValues?.responsavel || null,
       diasUteis: formValues?.diasUteis || null,
+      descontoPercentual: formValues?.descontoPercentual || null,
     };
 
     if (formValues?.enderecoDeEntrega === 'enderecoCadastrado') {
@@ -168,7 +186,7 @@ const useProposal = (id, cliente) => {
       enqueueSnackbar('Falha ao elaborar proposta, tente novamente!', {
         variant: 'error'
       });
-    }
+    },
   })
 
   return {
@@ -188,7 +206,9 @@ const useProposal = (id, cliente) => {
     isLoadingAdd,
     elaborateProposal,
     isLoadingElaborateProposal,
-    isSuccessElaborate
+    isSuccessElaborate,
+    approveBilling,
+    isApprovingBilling
   }
 }
 

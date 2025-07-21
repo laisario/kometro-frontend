@@ -20,7 +20,8 @@ const ClientsProvider = ({ children }) => {
   } = useQuery(['clientes', page, rowsPerPage, debouncedSearch], async () => {
     const response = await axios.get('/clientes/', { params: { page: page + 1, page_size: rowsPerPage, search: debouncedSearch } });
     return response?.data;
-  });
+  }, {refetchOnReconnect: false,
+    refetchOnWindowFocus: false});
 
   const formFilter = useForm({defaultValues: { search: "" }});
 

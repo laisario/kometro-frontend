@@ -1,4 +1,4 @@
-import { Stack, Box, Button, Divider, CircularProgress } from '@mui/material'
+import { Stack, Box, Button, Divider, CircularProgress, Typography } from '@mui/material'
 import React from 'react'
 import AddIcon from '@mui/icons-material/Add';
 import Calibrations from './Calibrations';
@@ -34,14 +34,16 @@ function CalibrationPanel({ isMobile, instrument }) {
     error,
     isLoadingCalibrations,
     setError
-  } = useCalibrations(null, instrument )
+  } = useCalibrations(null, instrument)
 
   
   return (
     <Stack flexDirection={isMobile ? 'column' : 'row'} width="100%" gap={2} divider={<Divider orientation={isMobile ? "horizontal" : "vertical"} flexItem />} justifyContent='space-between'>
       <Box sx={{ display: 'flex', flexDirection: 'column', width: isMobile ? '100%' : '50%', gap: 2 }}>
-        <Stack flexDirection='row' gap={1} >
-          <Button startIcon={<AddIcon />} variant='contained' onClick={handleOpenForm}>calibração</Button>
+        <Stack  direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="subtitle1">
+            Calibrações
+          </Typography>
           <Form
             isMobile={isMobile}
             open={openForm}
@@ -52,6 +54,7 @@ function CalibrationPanel({ isMobile, instrument }) {
             isLoadingCreation={isLoadingCreation}
             error={error}
           />
+          <Button startIcon={<AddIcon />} variant='contained' size='small' onClick={handleOpenForm}>calibração</Button>
         </Stack>
         {isLoadingCreation 
           ? <CircularProgress /> 

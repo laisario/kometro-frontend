@@ -64,7 +64,7 @@ export default function DocumentsPage() {
           </Grid>
           <Grid item container spacing={2} sm={6} xs={12} justifyContent={isMobile ? "flex-start" : "flex-end"}>
             <Grid item>
-              <Button variant="contained" startIcon={<GetAppIcon />} onClick={exportDocuments} disabled={selectedDocuments?.length < 1} >
+              <Button variant="contained" startIcon={<GetAppIcon />} onClick={exportDocuments} disabled={selectedDocuments?.length < 1}>
                 Exportar
               </Button>
             </Grid>

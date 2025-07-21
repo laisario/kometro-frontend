@@ -52,11 +52,12 @@ export default function useAuth() {
   const { mutate: mutateLogin, isLoading: isLoadingLogin, error: errorLogin, isError: isErrorLogin } = useMutation(login,
     {
       onSuccess: (data) => {
-        const decoded = jwtDecode(data?.data?.access);
         const token = data?.data?.access;
-
+        const decoded = jwtDecode(token);
         window.localStorage.setItem('token', token);
-        setUser({ token, nome: decoded?.nome, admin: decoded?.admin });
+        const user = { token, nome: decoded?.nome, id: decoded?.user_id, admin: decoded?.admin, cliente: decoded?.cliente }
+        setUser(user);
+        window.localStorage.setItem('user', JSON.stringify(user));
         
         const redirectPath = decoded?.admin ? '/admin' : '/dashboard';
         navigate(redirectPath, { replace: true });

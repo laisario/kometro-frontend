@@ -7,6 +7,7 @@ import {
   Divider,
   CircularProgress,
   IconButton,
+  Button,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -21,6 +22,9 @@ import Label from '../../components/label';
 import Form from './Form';
 import FormCertificate from './FormCertificate';
 import Attachment from '../../components/Attachment';
+import CriticalAnalysisDialog from '../../assets/components/CriticalAnalysisDialog';
+import useAssetMutations from '../../assets/hooks/useAssetMutations';
+import { truncateString } from '../../utils/formatString';
 
 function Calibration(props) {
   const {
@@ -41,8 +45,56 @@ function Calibration(props) {
     setOpenCreateCertificate,
     form,
     error,
-    setError
+    setError,
   } = props;
+
+  const [open, setOpen] = useState(false);
+  const [analiseCliente, setAnaliseCliete] = useState({
+    criticalAnalysis: "A",
+    restriction: '',
+  });
+  const [readMore, setReadMore] = useState({
+    readMoreObservation: { readMore: false, readUntil: 15 },
+    readMoreCriticalAnalisys: { readMore: false, readUntil: 15 },
+    readMoreCertificate: false,
+  });
+
+  const { 
+    mutateCriticalAnalisys, 
+    isLoadingCriticalAnalisys, 
+  } = useAssetMutations();
+
+  const toggleReadMore = (field, readMore, readUntil = 15) => {
+    setReadMore((prevValues) => ({
+      ...prevValues,
+      [field]: { readMore, readUntil: readMore ? null : readUntil },
+    }));
+  };
+  
+  const handleConfirmationAnalysis = (analiseCritica) => {
+    mutateCriticalAnalisys({ idCalibration: calibration?.id, analiseCliente: analiseCritica });
+    handleClose();
+  };
+  
+  const handleChange = (event) => {
+    setAnaliseCliete((prevValue) => ({ ...prevValue, [event.target.name]: event.target.value }));
+  };
+  
+  const handleCloseCriticalAnalysis = () => {
+    setOpen(false);
+    setAnaliseCliete({ criticalAnalysis: "A", restriction: '' });
+  };
+
+  const readMoreObservation = () => toggleReadMore('readMoreObservation', true);
+  const readLessObservation = () => toggleReadMore('readMoreObservation', false);
+
+  const readMoreCriticalAnalisys = () => toggleReadMore('readMoreCriticalAnalisys', true);
+  const readLessCriticalAnalisys = () => toggleReadMore('readMoreCriticalAnalisys', false);
+
+  const readMoreCertificates = () => toggleReadMore('readMoreCertificate', true);
+  const readLessCertificates = () => toggleReadMore('readMoreCertificate', false);
+
+    
 
   const handleClose = () => {
     setSelectedCalibration({})
@@ -65,8 +117,8 @@ function Calibration(props) {
       maxHeight: '350px',
       overflow: "auto"
     }}>
-      <CardContent sx={{ display: 'flex', gap: 2, justifyContent: "space-between", flexDirection: isMobile ? 'column' : 'row' }}>
-        <Box width={(!calibration?.certificados?.length || isMobile) ? "100%" : "60%"}>
+      <CardContent sx={{ display: 'flex', gap: 2, justifyContent: "space-between", flexDirection: 'column' }}>
+        <Box width={"100%"}>
           <CardActions sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             {isLoadingAddCertificate 
               ? <CircularProgress /> 
@@ -114,44 +166,71 @@ function Calibration(props) {
           <ContentRow title="Maior erro" value={calibration?.maiorErro ? calibration?.maiorErro : "Não faz parte do cálculo"} />
 
           <ContentRow title="Incerteza" value={calibration?.incerteza ? calibration?.incerteza : "Não faz parte do cálculo"} />
-          {calibration?.criterioDeAceitacao && (
-            <ContentRow title="Critério de aceitação" value={calibration?.criterioDeAceitacao !== 'None' ? calibration?.criterioDeAceitacao : "Não informado"} />
-          )}
-          {calibration?.referenciaDoCriterio && (
-            <ContentRow title="Referência do critério" value={calibration?.referenciaDoCriterio} />
-          )}
-
           {(calibration?.analiseCritica)
-            && <ContentRow title="Análise critica" colorTitle='black' my={1} value={<Label color={analiseCriticaColor[calibration?.analiseCritica]}>{analiseCriticaLabel[calibration?.analiseCritica]}</Label>} />
-          }
+            && <ContentRow title={calibration?.analiseCritica !== "P" ? "Sua análise crítica" : "Análise critica"} colorTitle='black' my={1} value={<Label color={analiseCriticaColor[calibration?.analiseCritica]}>{analiseCriticaLabel[calibration?.analiseCritica]}</Label>} />}
           {calibration?.restricaoAnaliseCritica && (
-            <ContentRow isMobile title="Restrição análise crítica:" value={calibration?.restricaoAnaliseCritica} />
+            <>
+              <ContentRow 
+                title="Restrição:" 
+                isMobile={readMore?.readMoreCriticalAnalisys?.readMore} 
+                value={truncateString(calibration?.restricaoAnaliseCritica, readMore?.readMoreCriticalAnalisys?.readUntil)} 
+              />
+              {(calibration?.restricaoAnaliseCritica?.length > 15)
+                && <Box sx={{ m: 0, display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button 
+                    sx={{ color: 'black', p: 0 }} 
+                    onClick={readMore?.readMoreCriticalAnalisys?.readMore 
+                      ? readLessCriticalAnalisys 
+                      : readMoreCriticalAnalisys
+                    }
+                  >
+                    {readMore?.readMoreCriticalAnalisys?.readMore ? 'Ler menos' : 'Ler mais'}
+                  </Button>
+                </Box>}
+            </>
           )}
-        </Box>
-        {!!calibration?.certificados?.length && <Divider orientation={"vertical"} flexItem />}
-        {!!calibration?.certificados?.length && (
-          <Box
-            width={isMobile ? "100%" : "30%"}
-            height="100%"
-            gap={2}
-            display="flex"
-            flexDirection="column"
-          >
-            {isLoadingDeleteCertificate ? <CircularProgress /> : calibration?.certificados?.map((certificado, i) => (
-              <Box key={certificado?.id + i} sx={{ bgcolor: 'background.neutral', p: 2, borderRadius: 2 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                  {certificado?.numero && <ContentRow colorTitle='black' title="Certificado:" isMobile value={<Attachment url={certificado?.arquivo} content={certificado?.numero} />} />}
-                  <IconButton size='small' onClick={() => deleteCertificate(certificado?.id)}>
-                    <ClearIcon />
-                  </IconButton>
+          </Box>
+          {!!calibration?.certificados?.length && <Divider orientation={"horizontal"} flexItem />}
+          {!!calibration?.certificados?.length && (
+            <Box
+              width="100%"
+              height="100%"
+              gap={2}
+              display="flex"
+              flexDirection="column"
+            >
+              {isLoadingDeleteCertificate ? <CircularProgress /> : calibration?.certificados?.map((certificado, i) => (
+                <Box key={certificado?.id + i} sx={{ bgcolor: 'background.neutral', p: 2, borderRadius: 2 }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                    {certificado?.numero && <ContentRow colorTitle='black' title="Certificado:" isMobile value={<Attachment url={certificado?.arquivo} content={certificado?.numero} />} />}
+                    <IconButton size='small' onClick={() => deleteCertificate(certificado?.id)}>
+                      <ClearIcon />
+                    </IconButton>
+                  </Box>
+                  {(certificado?.anexos?.map(({ anexo, id }, index) => (
+                    <ContentRow my={0} key={id + index} title={`Anexo ${index + 1}`} value={<Attachment url={anexo} content={<AttachmentIcon fontSize='small' />} />} />
+                  )))}
                 </Box>
-                {(certificado?.anexos?.map(({ anexo, id }, index) => (
-                  <ContentRow my={0} key={id + index} title={`Anexo ${index + 1}`} value={<Attachment url={anexo} content={<AttachmentIcon fontSize='small' />} />} />
-                )))}
-              </Box>
-            ))}
-          </Box>)}
+              ))}
+            </Box>
+          )}
       </CardContent>
+      {calibration?.analiseCritica === "P" && (
+      <CardActions sx={{ display: "flex", justifyContent: calibration?.analiseCritica === "P" ? "flex-end" : "space-between", m: 1 }}>
+        {isLoadingCriticalAnalisys 
+          ? <CircularProgress />
+          : <Button onClick={() => setOpen(true)}>Análise Crítica</Button>
+        }
+        <CriticalAnalysisDialog
+          open={open}
+          handleClose={handleCloseCriticalAnalysis}
+          handleConfirmationAnalysis={handleConfirmationAnalysis}
+          analiseCliente={analiseCliente}
+          setAnaliseCliete={setAnaliseCliete}
+          handleChange={handleChange}
+        />
+      </CardActions>
+    )}
     </Card>
   )
 }

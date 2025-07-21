@@ -13,7 +13,7 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import dayjs from 'dayjs';
 import { capitalizeFirstLetter as CFL, titleCase } from '../../utils/formatString';
 import FilesSelection from './FilesSelection';
-import { paymentMethods, statusMessages, statusColor, statusString } from '../../utils/proposals';
+import { statusMessages, statusColor, statusString } from '../../utils/proposals';
 
 
 
@@ -46,7 +46,7 @@ function InformationProposol(props) {
     <Grid container justifyContent="space-between" flexDirection={isMobile ? 'column-reverse' : 'row'}>
       <Box>
         {+(data?.total) > 0 &&
-          <Typography variant="h6">Total: R${data?.total}</Typography>
+          <Typography variant="h6">Total: R${data?.totalComDesconto}</Typography>
         }
         {!!data?.dataCriacao && admin &&
           <Typography variant="subtitle1" fontWeight="500">
@@ -55,7 +55,7 @@ function InformationProposol(props) {
         }
         {!!data?.condicaoDePagamento &&
           <Typography variant="subtitle1" fontWeight="500">
-            Forma de pagamento: {paymentMethods[data?.condicaoDePagamento]}
+            Condição de pagamento: {data?.condicaoDePagamento}
           </Typography>
         }
         {!!data?.prazoDePagamento &&

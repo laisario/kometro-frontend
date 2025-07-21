@@ -2,9 +2,13 @@ import PropTypes from 'prop-types';
 import { forwardRef } from 'react';
 import { Link as RouterLink } from 'react-router';
 import { Box, Link } from '@mui/material';
+import useAuth from '../auth/hooks/useAuth';
 
 
 const Logo = forwardRef(({ disabledLink = false, sx }, ref) => {
+  const { user } = useAuth();
+  const admin = user?.admin;
+
   const logo = (
     <Box
       component="img"
@@ -20,7 +24,7 @@ const Logo = forwardRef(({ disabledLink = false, sx }, ref) => {
   }
 
   return (
-    <Link to="/" component={RouterLink} sx={{ display: 'contents' }}>
+    <Link to={admin ? "/admin" : '/dashboard'} component={RouterLink} sx={{ display: 'contents' }}>
       {logo}
     </Link>
   );

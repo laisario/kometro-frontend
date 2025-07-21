@@ -30,7 +30,6 @@ function PreviewCalibration(props) {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      maxHeight: '450px',
       borderRadius: 4,
     }}>
       {!Object.keys(calibration)?.length

@@ -5,15 +5,18 @@ import AuthContext from '../context';
 
 const AuthProvider = ({ children }) => {
   const token = window.localStorage.getItem('token');
+  const storedUser = window.localStorage.getItem('user');
   const storedClienteId = window.localStorage.getItem('clienteId');
-  const [user, setUser] = useState(token ? { token } : null);
+  const [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : null);
   const [clienteId, setClienteId] = useState(storedClienteId || null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (token) {
       const decoded = jwtDecode(token);
-      setUser({ token, nome: decoded?.nome, admin: decoded?.admin, id: decoded?.user_id });
+      if (decoded && decoded?.user_id) {
+        setUser({ token, nome: decoded?.nome, admin: decoded?.admin, id: decoded?.user_id, cliente: decoded?.cliente });
+      }
     }
   }, [token]);
 

@@ -1,6 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import AssetsContext from "../context";
 import useResponsive from '../../theme/hooks/useResponsive';
+import useAsset from "../hooks/useAsset";
+import useSectorMutations from "../hooks/useSectorMutations";
+import useDefaultAssets from "../hooks/useDefaultAssets";
+import useAssetMutations from "../hooks/useAssetMutations";
+import useAuth from "../../auth/hooks/useAuth";
+import useAssets from "../hooks/useAssets";
 
 const useAssetsVm = () => {
   const [open, setOpen] = useState(false);
@@ -14,22 +20,62 @@ const useAssetsVm = () => {
     frequenciaDeCalibracao: true,
     dataDaProximaCalibracao: true,
     dataDaProximaChecagem: true,
-    local: true,
+    setor: true,
   });
-  const [error, setError] = useState(false);
   const [selected, setSelected] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [openCreateSectorId, setOpenCreateSectorId] = useState(null);
+  const [openEditSector, setOpenEditSector] = useState(false);
+  const {user} = useAuth()
+  const { sectors, isLoadingSectors } = useContext(AssetsContext);
+  const [expandedItems, setExpandedItems] = useState([])
+  const [selectedItem, setSelectedItem] = useState(null)
+
+  const { asset, isLoadingAsset, } = useAsset(selectedItem?.type === 'instrument' ? selectedItem?.id?.split("-")[1]  : null);
+  const { assets, search, setSearch } = useAssets();
+  
+  const handleCloseCreateSector = () => setOpenCreateSectorId(null);
+  
+  const {
+    mutateDeleteSectors,
+    isDeletingSectors,
+    mutateUpdateSectors, 
+    mutateCreateSectors, 
+    isLoadingUpdateSectors, 
+    isLoadingCreateSectors,
+    errorSectors,
+  } = useSectorMutations(setOpenCreateSectorId, setExpandedItems, setSelectedItem, handleCloseCreateSector)
+  
+  const { defaultAssets, search: searchDA, setSearch: setSearchDA, isFetching } = useDefaultAssets();
 
   const { 
-    allAssets, 
-    search, 
-    setSearch,
-    isLoadingAssets, 
-    page, 
-    handleChangePage, 
-    handleChangeRowsPerPage, 
-    rowsPerPage 
-  } = useContext(AssetsContext);
+    mutateCreateClient,
+    mutateUpdateClient,
+    isLoadingUpdateClient,
+    mutateDeleteClient,
+    error,
+    setError
+  } = useAssetMutations();
+
+  const handleCreate = (selectedItem) => {
+    const params = {
+      nome: "Novo setor",
+      cliente: user?.cliente,
+    }
+    if (selectedItem) {
+      params['setorPaiId'] =  selectedItem?.type === 'sector' ? selectedItem?.id : selectedItem?.parentId
+    }
+    mutateCreateSectors(params)
+  };
+
+  const handleEdit = (selectedItem) => {
+    setOpenCreateSectorId(selectedItem?.id)
+  }
+
+  const handleOpenEditSector = () => setOpenEditSector((prev) => !prev);
+
+  const handleCloseEditSector = () => setOpenEditSector(false);
+
 
   const isMobile = useResponsive('down', 'md');
 
@@ -40,7 +86,7 @@ const useAssetsVm = () => {
 
   useEffect(() => {
     if (selectAll) {
-      setSelected(allAssets?.results?.map(({ id }) => id))
+      setSelected(sectors?.map(({ id }) => id))
     } else {
       setSelected([])
     }
@@ -77,28 +123,47 @@ const useAssetsVm = () => {
     handleCheckboxSelectAll,
     handleChangeCheckbox,
     isMobile,
-    search, 
-    setSearch,
-    isLoadingAssets, 
-    page, 
-    handleChangePage, 
-    handleChangeRowsPerPage, 
-    rowsPerPage,
+    isLoadingSectors,
     open,
     error,
-    allAssets, 
+    setError,
+    sectors, 
     search, 
     setSearch,
-    isLoadingAssets, 
-    page, 
-    handleChangePage, 
-    handleChangeRowsPerPage, 
-    rowsPerPage,
     selectAll,
     valueCheckbox,
     setError,
     selected,
-    setSelected
+    setSelected,
+    asset, 
+    isLoadingAsset,
+    mutateDeleteSectors,
+    isDeletingSectors,
+    mutateUpdateSectors, 
+    mutateCreateSectors, 
+    isLoadingUpdateSectors, 
+    isLoadingCreateSectors,
+    errorSectors,
+    openCreateSectorId,
+    openEditSector,
+    handleCreate,
+    handleOpenEditSector,
+    handleCloseCreateSector,
+    handleCloseEditSector,
+    defaultAssets,
+    mutateCreateClient,
+    expandedItems,
+    setExpandedItems,
+    selectedItem,
+    setSelectedItem,
+    handleEdit,
+    mutateUpdateClient,
+    isLoadingUpdateClient,
+    mutateDeleteClient,
+    assets,
+    setSearchDA,
+    searchDA,
+    isFetching,
   }
 }
 

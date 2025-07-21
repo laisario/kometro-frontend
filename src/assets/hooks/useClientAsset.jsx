@@ -25,7 +25,9 @@ const useClientAssets = (clientId, table = false) => {
       }});
       return response?.data;
     },
-    enabled: !!clientId
+    enabled: !!clientId,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   });
 
   const handleSearch = debounce((value) => setDebouncedSearch(value), 500);

@@ -50,7 +50,7 @@ export default function AppListItems({ title, subheader, list, document, ...othe
               <ListItem key={data?.id} isDocument={document} data={data} />
             ))}
           </Stack>
-        : <EmptyYet isDashboard content={document ? 'revisao' : 'instrumento'} isMobile={isMobile} /> }
+        : <EmptyYet onClick={() => navigate(document ? '/admin/documentos' : '/dashboard/instrumentos')} showKaka={false} isDashboard content={document ? 'revisao' : 'instrumento'} isMobile={isMobile} /> }
       </CardContent>
 
       <Divider />

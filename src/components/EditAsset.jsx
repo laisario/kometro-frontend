@@ -96,7 +96,7 @@ function EditAsset(props) {
       local: instrument?.local ? instrument?.local : "P",
       precoCalibracaoLaboratorio: instrument?.instrumento?.precoCalibracaoNoLaboratorio || null,
       precoCalibracaoCliente: instrument?.instrumento?.precoCalibracaoNoCliente || null,
-      pontosCalibracao: instrument?.pontosDeCalibracao?.length ? instrument?.pontosDeCalibracao?.map(ponto => ponto?.nome) : [],
+      pontosDeCalibracao: instrument?.pontosDeCalibracao?.length ? instrument?.pontosDeCalibracao?.map(ponto => ponto?.nome) : [],
       minimo: instrument?.instrumento?.minimo ? instrument?.instrumento?.minimo : null,
       maximo: instrument?.instrumento?.maximo ? instrument?.instrumento?.maximo : null,
       unidade: instrument?.instrumento?.unidade ? instrument?.instrumento?.unidade : null,
@@ -125,6 +125,7 @@ function EditAsset(props) {
     error,
     setError,
   } = useAssetMutations(handleCleanCreateForm, handleClose);
+  
   const {
     dataUltimaCalibracao,
     local,
@@ -221,7 +222,6 @@ function EditAsset(props) {
                 error={!!error?.tag}
                 helperText={!!error?.tag && error?.tag}
                 size="small"
-                required
               />
             </Row>
             <Row>
@@ -384,7 +384,7 @@ function EditAsset(props) {
               )}
             </Row>
             <Row>
-              <AddArrayField label="Pontos de Calibração" fieldName="pontosCalibracao" form={form} field="nome" />
+              <AddArrayField label="Pontos de Calibração" fieldName="pontosDeCalibracao" form={form} field="nome" />
             </Row>
             <Row>
               <DialogContentText>Faixa atendida:</DialogContentText>

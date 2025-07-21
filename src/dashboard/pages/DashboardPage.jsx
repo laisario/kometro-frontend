@@ -7,6 +7,7 @@ import {
  } from '../components';
 import { fDate } from '../../utils/formatTime';
 import { useDashboardVM } from '../viewModels/useDashboardVM';
+import { Link } from 'react-router';
 
 
 export default function DashboardPage() {
@@ -14,8 +15,9 @@ export default function DashboardPage() {
     data,
     instruments,
     user,
-    documents
+    documents,
   } = useDashboardVM()
+
   return (
     <>
       <Helmet>
@@ -34,7 +36,7 @@ export default function DashboardPage() {
                 title="Instrumentos vencidos"
                 color="error"
                 total={data?.instrumentosVencidos || 0}
-                icon={'ant-design:close-outlined'}
+                icon="ant-design:close-outlined"
               />
             </Grid>
 
@@ -48,41 +50,52 @@ export default function DashboardPage() {
             </Grid>
 
             {user?.admin
-              ? (<Grid item xs={12} sm={6} md={3}>
-                <AppWidgetSummary
-                  title="Documentos vencidos"
-                  total={data?.documentosVencidos || 0}
-                  color="info"
-                  icon={'mdi:file-document-alert-outline'}
-                />
-              </Grid>)
-              : (<Grid item xs={12} sm={6} md={3}>
-                <AppWidgetSummary
-                  title="Instrumentos cadastrados"
-                  total={data?.instrumentosCadastrados || 0}
-                  color="info"
-                  icon={'fluent-mdl2:total'}
-                />
-              </Grid>
+              ? (
+                <Grid item xs={12} sm={6} md={3}>
+                  <Link to="/admin/documentos?vencido=True" style={{ textDecoration: 'none' }}>
+                    <AppWidgetSummary
+                      title="Documentos vencidos"
+                      total={data?.documentosVencidos || 0}
+                      color="info"
+                      icon={'mdi:file-document-alert-outline'}
+                    />
+                  </Link>
+                </Grid>
+              )
+              : (
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Link to="/dashboard/instrumentos" style={{ textDecoration: 'none' }}>
+                      <AppWidgetSummary
+                        title="Instrumentos cadastrados"
+                        total={data?.instrumentosCadastrados || 0}
+                        color="info"
+                        icon={'fluent-mdl2:total'}
+                        />
+                    </Link>
+                  </Grid>
               )}
 
             {user?.admin ? (
               <Grid item xs={12} sm={6} md={3}>
-                <AppWidgetSummary
-                  title="Propostas em elaboração"
-                  total={data?.propostasEmElaboracao || 0}
-                  color="warning"
-                  icon={'ant-design:file-sync-outlined'}
-                />
+                <Link to="/admin/propostas?status=E" style={{ textDecoration: 'none' }}>
+                  <AppWidgetSummary
+                    title="Propostas em elaboração"
+                    total={data?.propostasEmElaboracao || 0}
+                    color="warning"
+                    icon={'ant-design:file-sync-outlined'}
+                  />
+                </Link>
               </Grid>
             ) : (
               <Grid item xs={12} sm={6} md={3}>
-                <AppWidgetSummary
-                  title="Propostas aguardando aprovação"
-                  total={data?.propostasAguardandoAprovacao || 0}
-                  color="warning"
-                  icon={'ant-design:file-sync-outlined'}
-                />
+                <Link to="/dashboard/propostas?status=AA" style={{ textDecoration: 'none' }}>
+                  <AppWidgetSummary
+                    title="Propostas aguardando aprovação"
+                    total={data?.propostasAguardandoAprovacao || 0}
+                    color="warning"
+                    icon={'ant-design:file-sync-outlined'}
+                  />
+                </Link>
               </Grid>
             )}
 

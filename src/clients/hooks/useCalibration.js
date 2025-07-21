@@ -24,13 +24,14 @@ const useCalibrations = (id, instrumento) => {
     }
     const response = await axios.get('/calibracoes/', { params: { page_size: 9999, ordem_de_servico: debouncedSearch, instrumento } });
     return response?.data?.results;
-  });
+  }, { refetchOnReconnect: false,
+    refetchOnWindowFocus: false });
   
   const handleSearchOS = debounce((value) => setDebouncedSearch(value));
   useEffect(() => { handleSearchOS(search) }, [search, handleSearchOS])
   
   const deleteClibration = async (idCalibration) => {
-    await axios.delete(`/calibracoes/${idCalibration}`);
+    await axios.delete(`/calibracoes/${idCalibration}/`);
   };
   
   const defaultValues = useMemo(() => ({

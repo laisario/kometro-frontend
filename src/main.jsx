@@ -11,7 +11,6 @@ import ProposalsProvider from './proposals/provider/index.jsx';
 import ClientsProvider from './clients/provider/index.jsx';
 import DocumentsProvider from './documents/provider/index.jsx';
 import MainRouter from './routes/MainRouter.jsx';
-import AuthRouter from './routes/AuthRouter.jsx';
 
 const queryClient = new QueryClient();
 

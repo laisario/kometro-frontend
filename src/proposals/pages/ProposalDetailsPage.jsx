@@ -22,6 +22,9 @@ import FormElaborate from '../components/FormElaborate';
 import useProposalVM from '../viewModels/useProposalVM';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import Loading from '../../components/Loading'
+import MenuButton from '../components/MenuButton'
+import BillingApprovalForm from '../components/BillingApprovalForm';
+import SendEmailForm from '../components/SendEmailForm';
 
 
 function ProposalDetailsPage() {
@@ -48,10 +51,15 @@ function ProposalDetailsPage() {
     isLoadingAproveProposal,
     isLoadingRefuseProposal,
     isLoadingProposal,
+    openBillingApprovel, 
+    setOpenBillingApprovel,
+    isApprovingBilling,
+    approveBilling,
+    openSendEmail, 
+    setOpenSendEmail,
   } = useProposalVM();
 
   const theme = useTheme()
-
   return (
     <>
       <Helmet>
@@ -84,50 +92,34 @@ function ProposalDetailsPage() {
           </Box>
 
           {user?.admin ? (
-            <Box display="flex" gap={2} mt={isMobile ? 1 : 0} >
-              <Tooltip title="Deletar proposta">
-                <Button onClick={deleteOrderAndNavigate} color="secondary">
-                  {isDeleting ? <CircularProgress size='20px' color="inherit" /> : <Iconify icon="eva:trash-2-fill" />}
-                </Button>
-              </Tooltip>
-              {proposal?.status === 'E' ? (
-                <Button 
-                  color='secondary'
-                  variant="contained" 
-                  onClick={() => setElaborateOpen(true)} 
-                  endIcon={<Iconify icon="eva:checkmark-fill" />}
-                >
-                  Elaborar proposta
-                </Button>
-              ) : (
-                <Button 
-                  color='secondary' 
-                  variant="contained" 
-                  onClick={() => { setEdit(true); setElaborateOpen(true) }} 
-                  endIcon={
-                    isLoadingElaborateProposal 
-                      ? <CircularProgress size='20px' color="inherit" />  
-                      : <Iconify icon="eva:edit-fill" />
-                  }
-                >
-                  Editar proposta
-                </Button>
-              )}
+            <Box display="flex" gap={2} mt={isMobile ? 2 : 0}>
               <Tooltip title="Enviar proposta para email">
                 <Button 
                   variant="contained" 
-                  color="primary" 
+                  color="secondary"
+                  size='small'
                   disabled={proposal?.status === "E"} 
-                  onClick={sendProposalToEmail} 
+                  onClick={() => setOpenSendEmail(true)} 
                   endIcon={
                     isLoadingSendProposal 
                       ? <CircularProgress size='20px' color="inherit" /> 
                       : <ForwardToInboxIcon />
                   }
                 >
-                  Enviar para cliente
+                  Enviar proposta por email
                 </Button>
               </Tooltip>
+
+              <MenuButton 
+                isDeleting={isDeleting} 
+                proposal={proposal}
+                isLoadingElaborateProposal={isLoadingElaborateProposal}
+                deleteOrderAndNavigate={deleteOrderAndNavigate}
+                setEdit={setEdit}
+                setElaborateOpen={setElaborateOpen}
+                setOpenBillingApprovel={setOpenBillingApprovel}
+                isApprovingBilling={isApprovingBilling}
+              />
             </Box>
           ) : proposal?.status === "AA" && (
             <Box display='flex'>
@@ -171,6 +163,21 @@ function ProposalDetailsPage() {
           elaborateProposal={elaborateProposal}
           isLoadingElaborateProposal={isLoadingElaborateProposal}
           isSuccessElaborate={isSuccessElaborate}
+        />
+
+        <BillingApprovalForm
+          open={openBillingApprovel}      
+          onClose={() => setOpenBillingApprovel(false)}
+          isMobile={isMobile}
+          isApprovingBilling={isApprovingBilling}
+          approveBilling={approveBilling}
+        />
+
+        <SendEmailForm 
+          open={openSendEmail}
+          onClose={() => setOpenSendEmail(false)}
+          clienteEmail={proposal?.cliente?.usuario?.username}
+          sendProposalToEmail={sendProposalToEmail}
         />
 
         <Paper sx={{ padding: 4 }}>

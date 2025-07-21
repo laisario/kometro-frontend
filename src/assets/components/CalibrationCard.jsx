@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardActions, CardContent, CircularProgress, Divider } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, CircularProgress, Divider, alpha } from '@mui/material';
 import React, { useState } from 'react';
 import AttachmentIcon from '@mui/icons-material/Attachment';
 import { fDate } from '../../utils/formatTime';
@@ -75,6 +75,9 @@ function CalibrationCard({ calibration, theme, isMobile }) {
         {calibration?.local && (
           <ContentRow title="Local" value={calibration?.local} />
         )}
+        { !!calibration?.setor && (
+          <ContentRow title="Setor" value={calibration?.setor?.nome} />
+        )}
         {calibration?.observacoes && (
           <ContentRow title="Observações:" isMobile={readMore?.readMoreObservation?.readMore} value={truncateString(calibration?.observacoes, readMore?.readMoreObservation?.readUntil)} />
         )}
@@ -90,12 +93,6 @@ function CalibrationCard({ calibration, theme, isMobile }) {
         )}
         {calibration?.incerteza && (
           <ContentRow title="Incerteza" value={calibration?.incerteza} />
-        )}
-        {calibration?.criterioDeAceitacao && (
-          <ContentRow title="Critério de aceitação" value={calibration?.criterioDeAceitacao} />
-        )}
-        {calibration?.referenciaDoCriterio && (
-          <ContentRow title="Referência do critério" value={calibration?.referenciaDoCriterio} />
         )}
         {(calibration?.analiseCritica)
           && <ContentRow title={calibration?.analiseCritica !== "P" ? "Sua análise crítica" : "Análise critica"} colorTitle='black' my={1} value={<Label color={analiseCriticaColor[calibration?.analiseCritica]}>{analiseCriticaLabel[calibration?.analiseCritica]}</Label>} />}
@@ -119,12 +116,11 @@ function CalibrationCard({ calibration, theme, isMobile }) {
                 </Button>
               </Box>}
           </>
-
         )}
         {!!calibration?.certificados?.length && <Divider orientation={"horizontal"} flexItem sx={{ my: 1 }} />}
         {!!calibration?.certificados?.length && (
           <Box>
-            <Box sx={{ bgcolor: 'background.default', p: 2, borderRadius: 2 }}>
+            <Box sx={{ bgcolor: alpha(theme.palette.background.default, 0.4), p: 2, borderRadius: 2 }}>
               {certificado?.numero && <ContentRow colorTitle='black' title="Certificado:" value={<Attachment url={certificado?.arquivo} content={certificado?.numero} />} />}
               {(certificado?.anexos?.map(({ anexo, id }, index) => (
                 <ContentRow key={id + index} my={0} title={`Anexo ${index + 1}`} value={<Attachment url={anexo} content={<AttachmentIcon fontSize='small' />} />} />

@@ -65,7 +65,7 @@ export default function AppOrderTimeline({ title, subheader, list, ...other }) {
               ))}
             </Timeline>
           ) 
-          :  <EmptyYet isDashboard content="proposta" isMobile={isMobile} />
+          :  <EmptyYet onClick={redirect} isDashboard content="proposta" showKaka={false} isMobile={isMobile} />
         }
       </CardContent>
       <Divider />

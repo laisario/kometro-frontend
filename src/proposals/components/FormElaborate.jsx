@@ -16,7 +16,11 @@ import {
   Typography,
   Paper,
   Link,
-  CircularProgress
+  CircularProgress,
+  Stack,
+  InputAdornment,
+  DialogTitle,
+  DialogActions
 } from '@mui/material';
 import 'dayjs/locale/pt-br';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -43,10 +47,13 @@ function FormElaborate(props) {
   } = props;
   const [anexos, setAnexos] = useState([])
   const [loadingAnexo, setLoadingAnexo] = useState(false)
+  const totalOriginal = data?.total || 0;
+  const [totalComDesconto, setTotalComDesconto] = useState(data?.totalComDesconto);
 
   const defaultValues = useMemo(() => ({
+    numeroProposta: data?.numero || '',
     transporte: data?.transporte || '',
-    formaDePagamento: data?.condicaoDePagamento,
+    condicaoDePagamento: data?.condicaoDePagamento,
     enderecoDeEntrega: "enderecoCadastrado" || '',
     validade: data?.validade || null,
     prazoDePagamento: data?.prazoDePagamento || null,
@@ -59,6 +66,8 @@ function FormElaborate(props) {
     cidade: data?.enderecoDeEntrega?.bairro?.cidade || "",
     estado: data?.enderecoDeEntrega?.estado || "",
     complemento: data?.enderecoDeEntrega?.complemento || "",
+    total: totalOriginal,
+    descontoPercentual: Number(data?.descontoPercentual).toFixed(0) || 0
   }), [data])
 
   const form = useForm({ defaultValues });
@@ -70,8 +79,6 @@ function FormElaborate(props) {
   const {
     enderecoDeEntrega,
     validade,
-    prazoDePagamento,
-    formaDePagamento,
     responsavel,
   } = useWatch({ control: form.control })
   
@@ -115,29 +122,57 @@ function FormElaborate(props) {
     setAnexos(data?.anexos?.map((anexo) => anexo))
   }, [])
 
+  const descontoPercentual = form.watch("descontoPercentual")
+
+  const handleCalcularDesconto = () => {
+    const descontoFloat = parseFloat(descontoPercentual);
+    const totalComDesconto =
+      !isNaN(descontoFloat) && descontoFloat >= 0 && descontoFloat <= 100
+        ? (totalOriginal * (1 - descontoFloat / 100)).toFixed(2)
+        : totalOriginal;
+    setTotalComDesconto(totalComDesconto)
+  }
+
   return (
     <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>Elaboração da proposta</DialogTitle>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
         <DialogContent>
-          <Box display="flex" gap={2}>
-            <FormControl sx={{ width: '50%' }} size="small">
-              <InputLabel id="select-pagamento">Forma de pagamento</InputLabel>
-              <Select
-                labelId="select-pagamento"
-                id="select-pagamento"
-                name="formaDePagamento"
-                label="Forma de Pagamento"
-                fullWidth
-                {...form.register("formaDePagamento")}
-                value={formaDePagamento}
-              >
-                <MenuItem value="CD">Cartão débito</MenuItem>
-                <MenuItem value="CC">Cartão crédito</MenuItem>
-                <MenuItem value="P">Pix</MenuItem>
-                <MenuItem value="D">Dinheiro</MenuItem>
-                <MenuItem value="B">Boleto</MenuItem>
-              </Select>
-            </FormControl>
+        <Box sx={{ mb: 2 }}>
+            <Typography>Anexos</Typography>
+            <Box display="flex" gap={2} flexWrap="nowrap" overflow="auto" flexShrink={0}>
+              <Paper onClick={() => ref?.current?.click()} sx={{ cursor: 'pointer', display: 'flex', flexShrink: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: 100, width: 100 }} elevation={4}>
+                {loadingAnexo ? <CircularProgress /> : <Typography color="gray" fontSize={72} lineHeight={0.75} mb={0} fontWeight={300}>+</Typography>}
+                <Typography color="gray" variant='caption'>Novo anexo</Typography>
+                <input
+                  style={{ display: 'none' }}
+                  id="upload-btn"
+                  name="anexos"
+                  type="file"
+                  ref={ref}
+                  onChange={handleChangeAnexo}
+                />
+              </Paper>
+              {anexos?.map((anexo, i) => <Paper key={i + 1} sx={{ textDecoration: "none", display: 'flex', flexShrink: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: 100, width: 100 }} elevation={4}>
+                <Link href={anexo?.anexo} target="_blank" rel='noreferrer' style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                  <DescriptionIcon color='gray' fontSize="large" />
+                  <Typography color="gray" variant='caption'>{truncateString(new URL(anexo?.anexo).pathname?.split('/').reverse()[0], 12)}</Typography>
+                </Link>
+                <CloseIcon fontSize='small' color='gray' onClick={() => handleRemoveAttachment(anexo)} />
+              </Paper>)}
+
+            </Box>
+          </Box>
+          <Box display="flex" gap={2} sx={{ my: 2 }}>
+            <TextField
+              id="numero"
+              label="Número"
+              name="numeroProposta"
+              variant="outlined"
+              sx={{ width: '50%' }}
+              {...form.register("numeroProposta")}
+              size="small"
+            />
             <TextField
               id="transporte"
               label="Transporte"
@@ -156,13 +191,13 @@ function FormElaborate(props) {
               onChange={newValue => form.setValue("validade", newValue)}
               sx={{ width: '50%' }}
             />
-            <DatePicker
-              label="Prazo de pagamento"
+            <TextField
+              id="condicaoDePagamento"
+              label="Condição de pagamento"
+              name="condicaoDePagamento"
+              variant="outlined"
               sx={{ width: '50%' }}
-              {...form.register("prazoDePagamento")}
-              value={prazoDePagamento ? dayjs(prazoDePagamento) : null}
-              onChange={newValue => form.setValue("prazoDePagamento", newValue)}
-
+              {...form.register("condicaoDePagamento")}
             />
           </Box>
           <Box display="flex" gap={2}>
@@ -221,59 +256,57 @@ function FormElaborate(props) {
               form={form} 
             />
           )}
-          <Box>
-            <Typography>Anexos</Typography>
-            <Box display="flex" gap={2} flexWrap="nowrap" overflow="auto" flexShrink={0}>
-              <Paper onClick={() => ref?.current?.click()} sx={{ cursor: 'pointer', display: 'flex', flexShrink: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: 100, width: 100 }} elevation={4}>
-                {loadingAnexo ? <CircularProgress /> : <Typography color="gray" fontSize={72} lineHeight={0.75} mb={0} fontWeight={300}>+</Typography>}
-                <Typography color="gray" variant='caption'>Novo anexo</Typography>
-                <input
-                  style={{ display: 'none' }}
-                  id="upload-btn"
-                  name="anexos"
-                  type="file"
-                  ref={ref}
-                  onChange={handleChangeAnexo}
-                />
-              </Paper>
-              {anexos?.map((anexo, i) => <Paper key={i + 1} sx={{ textDecoration: "none", display: 'flex', flexShrink: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: 100, width: 100 }} elevation={4}>
-                <Link href={anexo?.anexo} target="_blank" rel='noreferrer' style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                  <DescriptionIcon color='gray' fontSize="large" />
-                  <Typography color="gray" variant='caption'>{truncateString(new URL(anexo?.anexo).pathname?.split('/').reverse()[0], 12)}</Typography>
-                </Link>
-                <CloseIcon fontSize='small' color='gray' onClick={() => handleRemoveAttachment(anexo)} />
-              </Paper>)}
-
-            </Box>
-          </Box>
           <Box display="flex" gap={1} >
-            {+data?.total !== 0 && (<FormControl sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2, mt: 1 }}>
-              <FormLabel id="total">Total: </FormLabel>
-              <Typography variant="subtitle1">R$ {data?.total}</Typography>
-            </FormControl>)}
-          </Box>
-          <Box display="flex" alignItems="center" justifyContent="space-between" mt={4}>
-            <Button onClick={handleClose}>Cancelar</Button>
-            {isLoadingElaborateProposal ? <CircularProgress /> : <Button
-              endIcon={<Iconify icon={'eva:arrow-ios-forward-fill'} />}
-              sx={{ maxWidth: '45%' }}
-              type="submit"
-              fullWidth
-              size="large"
-              variant="contained"
-              onClick={() => {
-                form.handleSubmit((submitData) => elaborateProposal({
-                  addressClient: data?.cliente?.endereco?.id,
-                  data: submitData, 
-                }))()
-                handleClose()
-              }}
-            >
-              Salvar
-            </Button>}
+            {+totalOriginal !== 0 && (
+              <Box>
+                <Stack direction="row" flexWrap={'wrap'} alignItems="center" spacing={2}>
+                  <Typography>Desconto</Typography>
+                  <TextField
+                    placeholder="0"
+                    variant="outlined"
+                    InputProps={{
+                      endAdornment: <InputAdornment position="end">% de {data?.total}</InputAdornment>,
+                    }}
+                    size="small"
+                    type="number"
+                    inputProps={{ min: 0, max: 100 }}
+                    {...form.register("descontoPercentual")}
+                  />
+                  <Button variant="text" size='small'  onClick={handleCalcularDesconto}>
+                    Calcular Desconto
+                  </Button>
+                </Stack>
+          
+                <Stack direction="row" alignItems="center" spacing={2} mt={2}>
+                  <Typography>Total:</Typography>
+                  <Typography variant="subtitle1">R$ {totalComDesconto}</Typography>
+                </Stack>
+              </Box>
+            )}
           </Box>
         </DialogContent>
       </LocalizationProvider>
+      <DialogActions>
+        <Box width="100%" display="flex" alignItems="center" justifyContent="space-between">
+          <Button color="secondary" onClick={handleClose}>Cancelar</Button>
+          {isLoadingElaborateProposal ? <CircularProgress /> : <Button
+            endIcon={<Iconify icon={'eva:arrow-ios-forward-fill'} />}
+            sx={{ maxWidth: '45%' }}
+            type="submit"
+            fullWidth
+            variant="contained"
+            onClick={() => {
+              form.handleSubmit((submitData) => elaborateProposal({
+                addressClient: data?.cliente?.endereco?.id,
+                data: submitData, 
+              }))()
+              handleClose()
+            }}
+          >
+            Salvar
+          </Button>}
+        </Box>
+      </DialogActions>
     </Dialog>
   );
 }

@@ -8,6 +8,8 @@ import { axios } from '../../api';
 function useAssetMutations(handleCleanCreateForm, handleClose) {
   const [error, setError] = useState({});
   const queryClient = useQueryClient();
+
+
   const deleteAsset = async (id) => {
     await axios.delete(`/instrumentos/${id}/`);
   };
@@ -51,6 +53,7 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
         variant: 'success'
       });
       queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
+      queryClient.invalidateQueries({ queryKey: ['calibracoes'] })
     },
     onError: (erro) => {
       setError(erro?.response?.data)
@@ -87,7 +90,7 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
     procedimentoRelacionado: form?.procedimentoRelacionado,
     precoAlternativoCalibracao: form?.precoAlternativoCalibracao,
     diasUteis: form?.diasUteis,
-    pontosDeCalibracao: form?.pontosCalibracao?.length ? form?.pontosCalibracao?.map(ponto => ({ nome: ponto })) : [],
+    pontosDeCalibracao: form?.pontosDeCalibracao?.length ? form?.pontosDeCalibracao?.map(ponto => ({ nome: ponto })) : [],
     posicao: form?.posicao,
     frequencia: form?.frequencia,
     laboratorio: form?.laboratorio,
@@ -151,6 +154,91 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
     }
   })
 
+  const createInstrumentClient = async (data) => {
+    const response = await axios.post(`/instrumentos/`, data);
+    return response;
+  }
+
+  const { 
+    mutate: mutateCreateClient, 
+    isLoading: isLoadingCreateClient, 
+  } = useMutation({
+    mutationFn: createInstrumentClient,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['setores'] })
+      enqueueSnackbar('Instrumento criado com sucesso!', {
+        variant: 'success'
+      });
+    },
+    onError: (erro) => {
+      const errors = erro?.response?.data;
+    
+      const mensagemDetalhada =
+        errors && typeof errors === 'object'
+          ? Object.entries(errors)
+              .map(([campo, mensagens]) => {
+                const nomeFormatado =
+                  campo === 'instrumento' ? 'Instrumento base' : campo.charAt(0).toUpperCase() + campo.slice(1);
+                return `${nomeFormatado} - ${mensagens.join(', ')}`;
+              })
+              .join('\n')
+          : null;
+    
+      setError(errors);
+    
+      enqueueSnackbar(
+        mensagemDetalhada || 'Falha ao criar instrumento, tente novamente!',
+        { variant: 'error' }
+      );
+    }
+  })
+
+  const updateInstrumentClient = async (data) => {
+    const response = await axios.patch(`/instrumentos/${data?.id}/`, data);
+    return response;
+  }
+
+  const { 
+    mutate: mutateUpdateClient, 
+    isLoading: isLoadingUpdateClient,
+  } = useMutation({
+    mutationFn: updateInstrumentClient,
+    onSuccess: () => {
+      enqueueSnackbar('Instrumento atualizado com sucesso!', {
+        variant: 'success'
+      });
+      queryClient.invalidateQueries({ queryKey: ['setores'] })
+      queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
+    },
+    onError: (erro) => {
+      setError(erro?.response?.data)
+      enqueueSnackbar('Falha ao atualizar instrumento, tente novamente!', {
+        variant: 'error'
+      });
+    }
+  })
+
+  
+  const { 
+    mutate: mutateDeleteClient, 
+  } = useMutation({
+    mutationFn: async(id) => await axios.delete(`/instrumentos/${id}/`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['setores'] })
+      queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
+      enqueueSnackbar('Instrumento deletado com sucesso!', {
+        variant: 'success'
+      });
+    },
+    onError: (erro) => {
+      setError(erro?.response?.data)
+      enqueueSnackbar('Ocorreu um erro ao deletar o instrumento. Tente mais tarde!', {
+        variant: 'error'
+      });
+    },
+  })
+
+
   return {
     mutateDelete,
     isDeleting,
@@ -162,6 +250,11 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
     isLoadingCreate,
     error,
     setError,
+    mutateCreateClient,
+    isLoadingCreateClient,
+    mutateUpdateClient,
+    isLoadingUpdateClient,
+    mutateDeleteClient
   }
 }
 
