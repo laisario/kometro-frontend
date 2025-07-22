@@ -49,9 +49,7 @@ const TreeHeader = (props) => {
 function SetorTree(props) {
   const { 
     setores, 
-    onAddSetor, 
     onEditSetor, 
-    openEditSector,
     onDeleteSetor,
     openCreateSectorId,
     handleCreate,

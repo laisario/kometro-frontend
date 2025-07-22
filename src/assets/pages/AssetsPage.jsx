@@ -1,14 +1,11 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async';
 import useAssetsVM from '../viewModels/useAssetsVM';
-import { Box, Button, Checkbox, Container, FormControlLabel, FormGroup, Grid, Stack, TablePagination, Typography } from '@mui/material';
-import { Search, SearchIconWrapper, StyledInputBase } from '../styledComponents';
-import SearchIcon from '@mui/icons-material/Search';
+import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ExportFilter from '../components/ExportFilter';
 import Loading from '../../components/Loading';
 import EmptyYet from '../../components/EmptyYet';
-import AssetsList from '../components/AssetsList';
 import SetorTree from '../components/SetorTree';
 import InstrumentDetails from '../components/InstrumentDetails';
 import CalibrationList from '../components/CalibrationList';
@@ -21,8 +18,6 @@ function AssetsPage() {
     handleCheckboxSelectAll,
     handleChangeCheckbox,
     isMobile,
-    search, 
-    setSearch,
     sectors,
     isLoadingSectors, 
     open,
@@ -34,12 +29,8 @@ function AssetsPage() {
     selected,
     asset, 
     mutateDeleteSectors,
-    isDeletingSectors,
     mutateUpdateSectors, 
     mutateCreateSectors, 
-    isLoadingUpdateSectors, 
-    isLoadingCreateSectors,
-    errorSectors,
     openCreateSectorId,
     openEditSector,
     handleCreate,
@@ -131,11 +122,9 @@ function AssetsPage() {
                   >
                     <SetorTree
                       setores={sectors}
-                      onAddSetor={mutateCreateSectors}
                       onEditSetor={mutateUpdateSectors}
                       onDeleteSetor={mutateDeleteSectors}
                       openCreateSectorId={openCreateSectorId}
-                      openEditSector={openEditSector}
                       handleCreate={handleCreate}
                       handleEdit={handleEdit}
                       defaultAssets={defaultAssets}

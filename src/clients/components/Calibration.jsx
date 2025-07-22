@@ -59,6 +59,7 @@ function Calibration(props) {
     readMoreCertificate: false,
   });
 
+
   const { 
     mutateCriticalAnalisys, 
     isLoadingCriticalAnalisys, 
@@ -163,6 +164,11 @@ function Calibration(props) {
             && <ContentRow title="Resultado" colorTitle='black' my={1} value={<Label color={statusColor[calibration?.status]}>{statusLabel[calibration?.status]}</Label>} />
           }
 
+          {calibration?.instrumento?.criterioDeAceitacao && <ContentRow title="Critério de aceitação" value={`${Number(calibration?.instrumento?.criterioDeAceitacao).toFixed()} ${calibration?.instrumento?.unidade}`} />}
+          {calibration?.instrumento?.observacaoCriterioAceitacao && <ContentRow title="Observação Critério de aceitação" value={calibration?.instrumento?.observacaoCriterioAceitacao} />}
+          {calibration?.instrumento?.referenciaDoCriterio && <ContentRow title="Referência do Critério de aceitação" value={calibration?.instrumento?.referenciaDoCriterio} />}
+
+
           <ContentRow title="Maior erro" value={calibration?.maiorErro ? calibration?.maiorErro : "Não faz parte do cálculo"} />
 
           <ContentRow title="Incerteza" value={calibration?.incerteza ? calibration?.incerteza : "Não faz parte do cálculo"} />
@@ -222,6 +228,14 @@ function Calibration(props) {
           : <Button onClick={() => setOpen(true)}>Análise Crítica</Button>
         }
         <CriticalAnalysisDialog
+          data={{
+            maiorErro: calibration?.maiorErro,
+            incerteza: calibration?.incerteza,
+            status: calibration?.status,
+            criterioDeAceitacao: `${Number(calibration?.instrumento?.criterioDeAceitacao).toFixed()} ${calibration?.instrumento?.unidade && calibration?.instrumento?.unidade}`,
+            observacaoCriterioAceitacao: calibration?.instrumento?.observacaoCriterioAceitacao,
+            referenciaDoCriterio: calibration?.instrumento?.referenciaDoCriterio
+          }}
           open={open}
           handleClose={handleCloseCriticalAnalysis}
           handleConfirmationAnalysis={handleConfirmationAnalysis}
