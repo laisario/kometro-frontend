@@ -19,6 +19,7 @@ function Calibrations(props) {
     setSelectedCalibration, 
     selectedCalibration,
     isLoadingCalibrations,
+    checagem
   } = props;
   
   function renderRow(props) {
@@ -45,7 +46,7 @@ function Calibrations(props) {
       maxHeight: 'auto'
     }}>
       {isLoadingCalibrations ? <CircularProgress /> : !calibrations?.length 
-        ? <Typography color='grey' fontWeight={400} textAlign='center'>Nenhuma calibração cadastrada</Typography> 
+        ? <Typography color='grey' fontWeight={400} textAlign='center'>{checagem ? "Nenhuma checagem cadastrada" : "Nenhuma calibração cadastrada"}</Typography> 
         : (
           <FixedSizeList
             height={300}

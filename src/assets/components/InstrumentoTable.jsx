@@ -1,31 +1,34 @@
-import React, { useState } from 'react';
+import React, { forwardRef } from 'react';
 import {
   Table, TableBody, TableCell, TableHead, TableRow,
   Checkbox, Box
 } from '@mui/material';
-import { SelectAll } from '@mui/icons-material';
+import { positionLabels } from '../../utils/assets';
+import { fDate } from '../../utils/formatTime';
 
-const InstrumentoTable = ({ csvContent, selectAll, instrumentos, valueCheckbox, selected, setSelected, handleCheckboxSelectAll }) => {
+const InstrumentoTable = forwardRef(({ csvContent, selectAll, instrumentos, valueCheckbox, selected, setSelected, handleCheckboxSelectAll }, ref) => {
   const fieldMap = {
     tag: { label: 'Tag', path: 'tag' },
     numeroDeSerie: { label: 'Número de Série', path: 'numeroDeSerie' },
     observacoes: { label: 'Observações', path: 'observacaoStatus' },
     laboratorio: { label: 'Laboratório', path: 'laboratorio' },
-    posicaoDoInstrumento: { label: 'Posição do Instrumento', path: 'posicao' },
-    dataUltimaCalibracao: { label: 'Data Última Calibração', path: 'dataExpiracaoCalibracao' },
-    frequenciaDeCalibracao: { label: 'Frequência de Calibração', isComplex: true },
-    dataDaProximaCalibracao: { label: 'Data da Próxima Calibração', path: 'dataProximaCalibracao' },
-    dataDaProximaChecagem: { label: 'Data da Próxima Checagem', path: 'dataProximaChecagem' },
     setor: { label: 'Setor', path: 'setor.nome' },
+    posicaoDoInstrumento: { label: 'Posição do Instrumento', path: 'posicao' },
+    dataUltimaCalibracao: { label: 'Data Última Calibração', path: 'dataUltimaCalibracao' },
+    dataDaProximaCalibracao: { label: 'Data da Próxima Calibração', path: 'dataProximaCalibracao' },
+    frequenciaDeCalibracao: { label: 'Frequência de Calibração', isComplex: true },
+    dataUltimaChecagem: { label: 'Data Última Checagem', path: 'dataUltimaChecagem' },
+    dataDaProximaChecagem: { label: 'Data da Próxima Checagem', path: 'dataProximaChecagem' },
+    frequenciaDeChecagem: { label: 'Frequência de Checagem', isComplex: true },
   };
 
   const activeFields = Object.keys(valueCheckbox).filter((key) => valueCheckbox[key]);
 
   const handleRowSelect = (id) => {
     setSelected((prev) =>
-      prev.includes(id)
-        ? prev.filter((x) => x !== id)
-        : [...prev, id]
+      prev.includes(+id)
+        ? prev.filter((x) => +x !== +id)
+        : [...prev, +id]
     );
   };
 
@@ -34,8 +37,8 @@ const InstrumentoTable = ({ csvContent, selectAll, instrumentos, valueCheckbox, 
   };
 
   return (
-    <Box>
-      <Table size="small">
+    <div >
+      <Table ref={ref} size="small">
         <TableHead>
           <TableRow>
             <TableCell padding="checkbox">
@@ -75,6 +78,34 @@ const InstrumentoTable = ({ csvContent, selectAll, instrumentos, valueCheckbox, 
                   );
                 }
 
+                if (field?.isComplex && fieldKey === 'frequenciaDeChecagem') {
+                  const freq = inst?.frequenciaChecagem;
+                  return (
+                    <TableCell key={fieldKey}>
+                      {freq
+                        ? `${freq.quantidade} ${freq.periodo}`
+                        : ''}
+                    </TableCell>
+                  );
+                }
+
+                if (fieldKey === 'posicaoDoInstrumento') {
+                  const posicao = inst?.posicao;
+                  return (
+                    <TableCell key={fieldKey}>
+                      {positionLabels[posicao]}
+                    </TableCell>
+                  );
+                }
+
+                if (fieldKey.includes("data")) {
+                  return (
+                    <TableCell key={fieldKey}>
+                      {fDate(inst[field?.path], 'dd/MM/yyyy')}
+                    </TableCell>
+                  );
+                }
+
                 return (
                   <TableCell key={fieldKey}>
                     {getValue(inst, field.path)}
@@ -85,8 +116,8 @@ const InstrumentoTable = ({ csvContent, selectAll, instrumentos, valueCheckbox, 
           ))}
         </TableBody>
       </Table>
-    </Box>
+    </div>
   );
-};
+});
 
 export default InstrumentoTable;

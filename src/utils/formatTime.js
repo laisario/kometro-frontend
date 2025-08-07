@@ -32,3 +32,16 @@ export function isExpired(date, frequency, timeUnit ) {
 export function isPastFromToday(date) {
   return isPast(new Date(date))
 }
+
+export function formatDateTimeBR(date) {
+  const data = new Date(date);
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(data);
+}

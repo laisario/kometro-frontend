@@ -56,6 +56,7 @@ const AssetsProvider = ({ children }) => {
       refetchOnWindowFocus: false,
       refetchOnReconnect:false,
     }
+
   );
 
 
@@ -63,7 +64,7 @@ const AssetsProvider = ({ children }) => {
     <AssetsContext.Provider
       value={{
         sectors,
-        isLoadingSectors, 
+        isLoadingSectors,
       }}
     >
       {children}

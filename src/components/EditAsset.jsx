@@ -24,7 +24,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useForm, useWatch } from 'react-hook-form';
 import Row from './Row'
-import AssetsContext from '../assets/context';
 import useAssetMutations from '../assets/hooks/useAssetMutations';
 
 function AddArrayField({ label, fieldName, form }) {

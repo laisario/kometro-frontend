@@ -85,7 +85,7 @@ function AssetDetailPage() {
                 sx={{ color: theme.palette.common.white }}
               />
               <Chip
-                label={`Expira ${fDate(asset?.dataExpiracaoCalibracao)}`}
+                label={`Expira ${fDate(asset?.dataProximaCalibracao)}`}
                 variant="filled"
                 color={'warning'}
                 sx={{ color: theme.palette.common.white }}

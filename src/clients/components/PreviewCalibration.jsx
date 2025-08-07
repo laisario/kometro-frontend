@@ -22,6 +22,7 @@ function PreviewCalibration(props) {
     form,
     error,
     setError,
+    checagem
   } = props;
 
   return (
@@ -33,7 +34,7 @@ function PreviewCalibration(props) {
       borderRadius: 4,
     }}>
       {!Object.keys(calibration)?.length
-        ? <Typography color='grey' fontWeight={400} textAlign="center">Selecione uma calibração para visualizá-la</Typography>
+        ? <Typography color='grey' fontWeight={400} textAlign="center">Selecione uma {checagem ? 'checagem' : 'calibração'} para visualizá-la</Typography>
         : (
           <Calibration
             isMobile={isMobile}
@@ -53,6 +54,7 @@ function PreviewCalibration(props) {
             form={form}
             error={error}
             setError={setError}
+            checagem={checagem}
           />
       )
       }

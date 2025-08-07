@@ -8,7 +8,7 @@ import Loading from '../../components/Loading';
 import EmptyYet from '../../components/EmptyYet';
 import SetorTree from '../components/SetorTree';
 import InstrumentDetails from '../components/InstrumentDetails';
-import CalibrationList from '../components/CalibrationList';
+import RecordList from '../components/RecordList';
 import SearchWithDropdown from '../components/SearchWithDropdown';
 
 function AssetsPage() {
@@ -51,6 +51,8 @@ function AssetsPage() {
     setSearchDA,
     searchDA,
     isFetching,
+    assetFilterForm,
+    mutateChangePosition,
   } = useAssetsVM();
   return (
     <>
@@ -103,6 +105,7 @@ function AssetsPage() {
             setError={setError}
             selectAll={selectAll}
             assets={assets}
+            assetFilterForm={assetFilterForm}
           />
           {isLoadingSectors
             ? <Loading />
@@ -145,14 +148,19 @@ function AssetsPage() {
                     xs={12}
                     md={8}
                     sx={{
-                      overflowY: 'auto',
-                      height: 'calc(100vh - 64px)',
+                      overflowY: 'hidden',
+                      height: 'calc(100vh - 80px)',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: 2,
                     }}
                   >
-                    <Box sx={{ flex: 1, overflowY: 'auto' }}>
+                    <Box 
+                      sx={{
+                        flex: '1 1 50%',
+                        overflowY: 'auto',
+                      }}
+                    >
                       <InstrumentDetails
                         instrumento={asset}
                         mutateUpdateClient={mutateUpdateClient}
@@ -166,12 +174,19 @@ function AssetsPage() {
                         isFetching={isFetching}
                         setSearchDA={setSearchDA}
                         searchDA={searchDA}
+                        setores={sectors}
+                        mutateChangePosition={mutateChangePosition}
                       />
                     </Box>
 
                     {selectedItem?.type === 'instrument' && (
-                      <Box sx={{ flex: 1, overflowY: 'auto' }}>
-                        <CalibrationList asset={asset} />
+                      <Box 
+                        sx={{
+                          flex: '1 1 50%',
+                          overflowY: 'auto',
+                        }}
+                      >
+                        <RecordList asset={asset} />
                       </Box>
                     )}
                   </Grid>

@@ -57,7 +57,7 @@ function CalibrationCard({ calibration, theme, isMobile }) {
   const readMoreCertificates = () => toggleReadMore('readMoreCertificate', true);
   const readLessCertificates = () => toggleReadMore('readMoreCertificate', false);
 
-  const certificado = calibration?.certificados[0]
+  const certificado = !!calibration?.ContentRowcertificados?.length && calibration?.certificados[0]
 
   return (
     <Card 

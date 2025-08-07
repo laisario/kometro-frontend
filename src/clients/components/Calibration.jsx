@@ -46,8 +46,8 @@ function Calibration(props) {
     form,
     error,
     setError,
+    checagem
   } = props;
-
   const [open, setOpen] = useState(false);
   const [analiseCliente, setAnaliseCliete] = useState({
     criticalAnalysis: "A",
@@ -86,16 +86,8 @@ function Calibration(props) {
     setAnaliseCliete({ criticalAnalysis: "A", restriction: '' });
   };
 
-  const readMoreObservation = () => toggleReadMore('readMoreObservation', true);
-  const readLessObservation = () => toggleReadMore('readMoreObservation', false);
-
   const readMoreCriticalAnalisys = () => toggleReadMore('readMoreCriticalAnalisys', true);
   const readLessCriticalAnalisys = () => toggleReadMore('readMoreCriticalAnalisys', false);
-
-  const readMoreCertificates = () => toggleReadMore('readMoreCertificate', true);
-  const readLessCertificates = () => toggleReadMore('readMoreCertificate', false);
-
-    
 
   const handleClose = () => {
     setSelectedCalibration({})
@@ -123,17 +115,18 @@ function Calibration(props) {
           <CardActions sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             {isLoadingAddCertificate 
               ? <CircularProgress /> 
-              : <ButtonTooltip title="Adicionar certificado" variant='filled' icon={<AddIcon />} action={handleOpenCertificate} />
+              : <ButtonTooltip title={checagem ? 'Adicionar documento' : "Adicionar certificado"} variant='filled' icon={<AddIcon />} action={handleOpenCertificate} />
             }
             <FormCertificate
               mutateAddCertificate={mutateAddCertificate}
               open={openCreateCertificate}
               handleClose={handleCloseCertificate}
               calibration={calibration}
+              checagem={checagem}
             />
             {isLoadingEdit 
               ? <CircularProgress /> 
-              : <ButtonTooltip title="Editar calibração" action={handleOpenEdit} icon={<EditIcon />} />
+              : <ButtonTooltip title={checagem ? "Editar checagem" : "Editar calibração"} action={handleOpenEdit} icon={<EditIcon />} />
             }
             <Form
               mutate={mutateEdit}
@@ -144,10 +137,11 @@ function Calibration(props) {
               form={form}
               error={error}
               setError={setError}
+              checagem={checagem}
             />
             {isDeleting 
               ? <CircularProgress /> 
-              : <ButtonTooltip title="Apagar calibração" variant='filled' icon={<DeleteIcon />} action={handleDelete} />
+              : <ButtonTooltip title={checagem ? 'Apagar checagem' : "Apagar calibração"} variant='filled' icon={<DeleteIcon />} action={handleDelete} />
             }
           </CardActions>
           
@@ -156,6 +150,9 @@ function Calibration(props) {
           )}
           {calibration?.local && (
             <ContentRow title="Local" value={calibration?.local} />
+          )}
+          {calibration?.setor && (
+            <ContentRow title="Setor" value={calibration?.setor?.nome} />
           )}
           {calibration?.observacoes && (
             <ContentRow isMobile title="Observações:" value={calibration?.observacoes} />
@@ -171,7 +168,16 @@ function Calibration(props) {
 
           <ContentRow title="Maior erro" value={calibration?.maiorErro ? calibration?.maiorErro : "Não faz parte do cálculo"} />
 
-          <ContentRow title="Incerteza" value={calibration?.incerteza ? calibration?.incerteza : "Não faz parte do cálculo"} />
+          {!checagem && <ContentRow title="Incerteza" value={calibration?.incerteza ? calibration?.incerteza : "Não faz parte do cálculo"} />}
+          {!!calibration?.laboratorio && (
+            <ContentRow title="Laboratório" value={calibration.laboratorio} />
+          )}
+          {!!calibration?.preco && (
+            <ContentRow title="Preço" value={`R$ ${calibration.preco}`} />
+          )}
+          {!!calibration?.observacaoFornecedor && (
+            <ContentRow title="Observação" value={calibration.observacaoFornecedor} />
+          )}
           {(calibration?.analiseCritica)
             && <ContentRow title={calibration?.analiseCritica !== "P" ? "Sua análise crítica" : "Análise critica"} colorTitle='black' my={1} value={<Label color={analiseCriticaColor[calibration?.analiseCritica]}>{analiseCriticaLabel[calibration?.analiseCritica]}</Label>} />}
           {calibration?.restricaoAnaliseCritica && (
@@ -207,12 +213,21 @@ function Calibration(props) {
             >
               {isLoadingDeleteCertificate ? <CircularProgress /> : calibration?.certificados?.map((certificado, i) => (
                 <Box key={certificado?.id + i} sx={{ bgcolor: 'background.neutral', p: 2, borderRadius: 2 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                    {certificado?.numero && <ContentRow colorTitle='black' title="Certificado:" isMobile value={<Attachment url={certificado?.arquivo} content={certificado?.numero} />} />}
-                    <IconButton size='small' onClick={() => deleteCertificate(certificado?.id)}>
-                      <ClearIcon />
-                    </IconButton>
-                  </Box>
+                  {checagem ? (
+                    <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                      {certificado?.arquivo && <ContentRow colorTitle='black' title={`Documento ${i + 1}:`} isMobile value={<Attachment url={certificado?.arquivo} content='Clique para abrir' />} />}
+                      <IconButton size='small' onClick={() => deleteCertificate(certificado?.id)}>
+                        <ClearIcon />
+                      </IconButton>
+                    </Box>
+                  ) : (
+                    <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                      {certificado?.arquivo && <ContentRow colorTitle='black' title="Certificado:" isMobile value={<Attachment url={certificado?.arquivo} content={certificado?.numero} />} />}
+                      <IconButton size='small' onClick={() => deleteCertificate(certificado?.id)}>
+                        <ClearIcon />
+                      </IconButton>
+                    </Box>
+                )}
                   {(certificado?.anexos?.map(({ anexo, id }, index) => (
                     <ContentRow my={0} key={id + index} title={`Anexo ${index + 1}`} value={<Attachment url={anexo} content={<AttachmentIcon fontSize='small' />} />} />
                   )))}
@@ -232,7 +247,7 @@ function Calibration(props) {
             maiorErro: calibration?.maiorErro,
             incerteza: calibration?.incerteza,
             status: calibration?.status,
-            criterioDeAceitacao: `${Number(calibration?.instrumento?.criterioDeAceitacao).toFixed()} ${calibration?.instrumento?.unidade && calibration?.instrumento?.unidade}`,
+            criterioDeAceitacao: `${calibration?.instrumento?.criterioDeAceitacao} ${calibration?.instrumento?.unidade && calibration?.instrumento?.unidade}`,
             observacaoCriterioAceitacao: calibration?.instrumento?.observacaoCriterioAceitacao,
             referenciaDoCriterio: calibration?.instrumento?.referenciaDoCriterio
           }}

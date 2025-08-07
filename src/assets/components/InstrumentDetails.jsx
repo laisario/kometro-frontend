@@ -6,6 +6,8 @@ import ConfirmDeleteDialog from './ConfirmDeleteDialog';
 import CreateInstrument from './CreateInstrument';
 import { fDate } from '../../utils/formatTime';
 import EmptyYet from '../../components/EmptyYet';
+import { dateDistanceText, findDateStatusColor } from '../../utils/date';
+import InstrumentPosition from './InstrumentPosition';
 
 
 const tipoSinalMap = {
@@ -36,10 +38,8 @@ const pluralize = (quantidade, periodo) => {
   return quantidade > 1 ? pluralMap[periodo] || periodo : periodo;
 };
 
-
 const OptionsMenu = ({ 
   mutateUpdateClient, 
-  isLoadingUpdateClient,
   defaultAssets,
   selectedItem,
   asset,
@@ -50,6 +50,7 @@ const OptionsMenu = ({
   isFetching,
   searchDA,
   setSearchDA,
+  setores
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   
@@ -108,6 +109,7 @@ const OptionsMenu = ({
         isFetching={isFetching}
         setSearchDA={setSearchDA}
         searchDA={searchDA}
+        setores={setores}
       />
     </div>
   )
@@ -117,7 +119,6 @@ const OptionsMenu = ({
 function InstrumentDetails({ 
   instrumento,   
   mutateUpdateClient,
-  isLoadingUpdateClient,
   defaultAssets,
   selectedItem,
   mutateDeleteClient,
@@ -125,30 +126,32 @@ function InstrumentDetails({
   isFetching,
   searchDA,
   setSearchDA,
+  setores,
+  mutateChangePosition
 }) {
   const { user } = useAuth();
-
   const [openForm, setOpenForm] = useState({
     status: false,
     type: '',
   });
-  
   if (!instrumento) {
-    return (<>
-    <EmptyYet
-      content="instrumento"
-      onCreate={() =>  setOpenForm({status: true, type: 'create'})}
-      imageAlt="Mascote da empresa"
-      />
-    <CreateInstrument
-      handleClose={() => setOpenForm({status: false, type: 'create'})}
-      open={openForm?.type === 'create' && openForm?.status}
-      defaultAssets={defaultAssets}
-      setor={selectedItem}
-      cliente={user?.cliente}
-      mutate={mutateUpdateClient}
-    />
-    </>)
+    return (
+      <>
+        <EmptyYet
+          content="instrumento"
+          onCreate={() =>  setOpenForm({status: true, type: 'create'})}
+          imageAlt="Mascote da empresa"
+          />
+        <CreateInstrument
+          handleClose={() => setOpenForm({status: false, type: 'create'})}
+          open={openForm?.type === 'create' && openForm?.status}
+          defaultAssets={defaultAssets}
+          setor={selectedItem}
+          cliente={user?.cliente}
+          mutate={mutateUpdateClient}
+        />
+      </>
+    )
   }
   
   const tipoDeInstrumento = instrumento?.instrumento?.tipoDeInstrumento;
@@ -158,21 +161,20 @@ function InstrumentDetails({
       <CardContent>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" mb={2}>
-            Informacoes instrumentos
+            Informações instrumento
           </Typography>
-          <Box display='flex' alignItems='center'>
-            {!!instrumento?.dataExpiracaoCalibracao && (
+          <Box display='flex' alignItems='center' gap={1}>
+            {!!instrumento?.dataProximaCalibracao && (
               <Chip
-              label={`Expira ${fDate(instrumento?.dataExpiracaoCalibracao)}`}
+              label={`Vence ${dateDistanceText(instrumento?.dataProximaCalibracao)}`}
               variant="filled"
-              color={'warning'}
-              size='small'
-                sx={{ color: theme.palette.common.white }}
+              color={findDateStatusColor(instrumento?.dataProximaCalibracao)}
+              sx={{ color: theme.palette.common.white }}
               />
             )}
+            <InstrumentPosition mutateChangePosition={mutateChangePosition} positionMap={posicaoMap} instrumento={instrumento} />
             <OptionsMenu
               mutateUpdateClient={mutateUpdateClient} 
-              isLoadingUpdateClient={isLoadingUpdateClient} 
               defaultAssets={defaultAssets}
               selectedItem={selectedItem}
               asset={instrumento}
@@ -183,6 +185,7 @@ function InstrumentDetails({
               isFetching={isFetching}
               setSearchDA={setSearchDA}
               searchDA={searchDA}
+              setores={setores}
             />
           </Box>
         </Stack>
@@ -216,6 +219,29 @@ function InstrumentDetails({
               )}
             </Grid>
           )}
+
+          {(instrumento?.observacaoStatus || instrumento?.dataProximaCalibracao || instrumento?.dataUltimaCalibracao || instrumento?.dataProximaChecagem || instrumento?.dataUltimaChecagem) && (
+            <Grid item xs={12} sm={6} md={6}>
+              <Typography variant="subtitle2" my={1}>Status</Typography>
+              {!!instrumento?.observacaoStatus && (
+                <Typography variant="body2">Observação: {instrumento.observacaoStatus}</Typography>
+              )}
+              {!!instrumento?.dataProximaCalibracao && (
+                <Typography variant="body2">Próxima calibração: {fDate(instrumento?.dataProximaCalibracao)}</Typography>
+              )}
+              {!!instrumento?.dataUltimaCalibracao && (
+                <Typography variant="body2">Data da última calibração: {fDate(instrumento?.dataUltimaCalibracao)}</Typography>
+              )}
+              {!!instrumento?.dataProximaChecagem && (
+                <Typography variant="body2">Próxima checagem: {fDate(instrumento?.dataProximaChecagem)}</Typography>
+              )}
+              {!!instrumento?.dataUltimaChecagem && (
+                <Typography variant="body2">Data da última checagem: {fDate(instrumento?.dataUltimaChecagem)}</Typography>
+              )}
+            </Grid>
+          )}
+
+
 
           {(tipoDeInstrumento?.resolucao ||
             instrumento?.instrumento?.minimo ||
@@ -282,47 +308,7 @@ function InstrumentDetails({
             </Grid>
           )}
 
-          {(instrumento?.laboratorio || instrumento?.precoUltimaCalibracao || instrumento?.observacaoFornecedor) && (
-            <Grid item xs={12} sm={6} md={6}>
-              <Typography variant="subtitle2" my={1}>Fornecedor</Typography>
-              {!!instrumento?.laboratorio && (
-                <Typography variant="body2">Laboratório: {instrumento.laboratorio}</Typography>
-              )}
-              {!!instrumento?.precoUltimaCalibracao && (
-                <Typography variant="body2">
-                  Preço última calibração: R$ {instrumento.precoUltimaCalibracao}
-                </Typography>
-              )}
-              {!!instrumento?.observacaoFornecedor && (
-                <Typography variant="body2">Observação: {instrumento.observacaoFornecedor}</Typography>
-              )}
-            </Grid>
-          )}
-
-          {(instrumento?.posicao || instrumento?.dataUtilizao || instrumento?.observacaoStatus || instrumento?.dataProximaCalibracao) && (
-            <Grid item xs={12} sm={6} md={6}>
-              {!!instrumento?.posicao && (
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography variant="subtitle2" my={1}>Status</Typography>
-                  <Chip
-                    label={posicaoMap[instrumento.posicao]?.label || 'Desconhecido'}
-                    color={posicaoMap[instrumento.posicao]?.color || 'default'}
-                    size="small"
-                  />
-                </Stack>
-              )}
-              {!!instrumento?.observacaoStatus && (
-                <Typography variant="body2">Observação: {instrumento.observacaoStatus}</Typography>
-              )}
-              {!!instrumento?.dataProximaCalibracao && (
-                <Typography variant="body2">Próxima calibração: {fDate(instrumento?.dataProximaCalibracao)}</Typography>
-              )}
-              {!!instrumento?.dataProximaChecagem && (
-                <Typography variant="body2">Próxima checagem: {fDate(instrumento?.dataProximaChecagem)}</Typography>
-              )}
-            </Grid>
-          )}
-
+         
           {!!instrumento?.pontosDeCalibracao?.length && (
             <Grid item xs={12} sm={6} md={6}>
               <Typography variant="subtitle2" my={1}>Pontos de Calibração</Typography>

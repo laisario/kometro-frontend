@@ -238,6 +238,25 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
     },
   })
 
+  const { 
+    mutate: mutateChangePosition, 
+  } = useMutation({
+    mutationFn: async(data) => await axios.patch(`/instrumentos/${data?.id}/mudar_posicao/`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['setores'] })
+      queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
+      enqueueSnackbar('Mudança posição realizada com sucesso!', {
+        variant: 'success'
+      });
+    },
+    onError: (erro) => {
+      setError(erro?.response?.data)
+      enqueueSnackbar('Ocorreu um erro ao mudar a posição do instrumento. Tente mais tarde!', {
+        variant: 'error'
+      });
+    },
+  })
+
 
   return {
     mutateDelete,
@@ -254,7 +273,8 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
     isLoadingCreateClient,
     mutateUpdateClient,
     isLoadingUpdateClient,
-    mutateDeleteClient
+    mutateDeleteClient,
+    mutateChangePosition
   }
 }
 

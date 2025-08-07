@@ -6,7 +6,7 @@ import { axios, axiosForFiles } from '../../api';
 import { enqueueSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
 
-const useCalibrations = (id, instrumento) => {
+const useCalibrations = (id, instrumento, checagem) => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [search, setSearch] = useState('');
   const [selectedCalibration, setSelectedCalibration] = useState({});
@@ -14,25 +14,20 @@ const useCalibrations = (id, instrumento) => {
   const [openEdit, setOpenEdit] = useState(false);
   const [openCreateCertificate, setOpenCreateCertificate] = useState(false);
   const [error, setError] = useState({});
-
   const queryClient = useQueryClient();
   
-  const { data, isLoading: isLoadingCalibrations  } = useQuery(['calibracoes', debouncedSearch, instrumento, id], async () => {
+  const { data, isLoading: isLoadingCalibrations  } = useQuery(['calibracoes', debouncedSearch, instrumento, id, checagem], async () => {
     if (id) {
       const response = await axios.get(`/calibracoes/${id}/`, { params: { page_size: 9999 } });
       return response?.data;
     }
-    const response = await axios.get('/calibracoes/', { params: { page_size: 9999, ordem_de_servico: debouncedSearch, instrumento } });
+    const response = await axios.get('/calibracoes/', { params: { page_size: 9999, ordem_de_servico: debouncedSearch, instrumento, checagem } });
     return response?.data?.results;
   }, { refetchOnReconnect: false,
     refetchOnWindowFocus: false });
   
   const handleSearchOS = debounce((value) => setDebouncedSearch(value));
   useEffect(() => { handleSearchOS(search) }, [search, handleSearchOS])
-  
-  const deleteClibration = async (idCalibration) => {
-    await axios.delete(`/calibracoes/${idCalibration}/`);
-  };
   
   const defaultValues = useMemo(() => ({
     local: selectedCalibration?.local ? selectedCalibration?.local : '',
@@ -41,8 +36,9 @@ const useCalibrations = (id, instrumento) => {
     observacoes: selectedCalibration?.observacoes ? selectedCalibration?.observacoes : '',
     maiorErro: selectedCalibration?.maiorErro ? selectedCalibration?.maiorErro : null,
     incerteza: selectedCalibration?.incerteza ? selectedCalibration?.incerteza : null,
-    criterioDeAceitacao: selectedCalibration?.criterioDeAceitacao !== 'none' || selectedCalibration?.criterioDeAceitacao ? selectedCalibration?.criterioDeAceitacao : '',
-    referenciaDoCriterio: selectedCalibration?.referenciaDoCriterio ? selectedCalibration?.referenciaDoCriterio : null,
+    preco: !!selectedCalibration?.preco ? selectedCalibration.preco : null,
+    laboratorio: !!selectedCalibration?.laboratorio ? selectedCalibration.laboratorio : '',
+    observacaoFornecedor: !!selectedCalibration?.observacaoFornecedor ? selectedCalibration.observacaoFornecedor : '',
   }), [selectedCalibration])
   
   const form = useForm({ defaultValues })
@@ -54,33 +50,43 @@ const useCalibrations = (id, instrumento) => {
     maiorErro: null,
     incerteza: null,
     criterioDeAceitacao: '',
-    referenciaDoCriterio: null
+    referenciaDoCriterio: null,
+    arquivo: null,
+    numero: '',
+    anexos: [],
+    preco: null,
+    laboratorio: '',
+    observacaoFornecedor: '',
   }})
-
-
+  
   useEffect(() => {
     form?.reset(defaultValues)
   } , [defaultValues])
-
+  
   const handleOpenForm = () => setOpenForm(true);
   
   const handleCloseForm = () => setOpenForm(false);
+  
+  const deleteRecord = async (id) => {
+    await axios.delete(`/calibracoes/${id}/`);
+  };
   
   const {
     mutate: mutateDeleteCalibration,
     isLoading: isDeletingCalibration,
   } = useMutation({
-    mutationFn: deleteClibration,
+    mutationFn: deleteRecord,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calibracoes'] })
       queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
+      queryClient.invalidateQueries({ queryKey: ['setores'] })
       setSelectedCalibration({});
-      enqueueSnackbar('Calibração deletada com sucesso!', {
+      enqueueSnackbar(`${checagem ? 'Checagem' : 'Calibração'} deletada com sucesso!`, {
         variant: 'success'
       });
     },
     onError: (error) => {
-      enqueueSnackbar('Erro ao deletar calibração. Tente novamente!', {
+      enqueueSnackbar(`Erro ao deletar ${checagem ? 'Checagem' : 'Calibração'}. Tente novamente!`, {
         variant: 'error'
       });
     },
@@ -94,7 +100,7 @@ const useCalibrations = (id, instrumento) => {
 
   const create = async (params) => {
     const data = formatedData(params?.form)
-    const response = await axios.post(`/calibracoes/`, { ...data, instrumento });
+    const response = await axios.post(`/calibracoes/`, { ...data, instrumento, checagem,});
     return response.data;
   }
 
@@ -104,17 +110,36 @@ const useCalibrations = (id, instrumento) => {
     error: errorCreating,
   } = useMutation({
     mutationFn: create,
-    onSuccess: () => {
+    onSuccess: async(createdCalibration) => {
+      const {
+        arquivo,
+        numero,
+        anexos
+      } = formCreate.getValues();
+
+      if (arquivo || !!numero || !!anexos?.length) {
+        try {
+          await mutateAddCertificateAsync({
+            id: createdCalibration?.id,
+            arquivo,
+            numero,
+            anexos,
+          });
+        } catch (e) {
+          console.error('Erro ao adicionar certificado:', e);
+        }
+      }
+  
       queryClient.invalidateQueries({ queryKey: ['calibracoes'] })
-      enqueueSnackbar('Calibração criada com sucesso!', {
+      enqueueSnackbar(`${checagem ? 'Checagem' : 'Calibração'} criada com sucesso!`, {
         variant: 'success'
       });
-      form.reset();
+      formCreate.reset();
       setOpenForm(false);
     },
     onError: (error) => {
       setError(error?.response?.data);
-      enqueueSnackbar('Erro ao criar calibração. Tente novamente!', {
+      enqueueSnackbar(`Erro ao criar ${checagem ? 'Checagem' : 'Calibração'}. Tente novamente!`, {
         variant: 'error'
       });
     },
@@ -137,17 +162,18 @@ const useCalibrations = (id, instrumento) => {
       queryClient.invalidateQueries({ queryKey: ['instrumentos'] });
       setOpenEdit(false);
       setSelectedCalibration({});
-      enqueueSnackbar('Calibração editada com sucesso!', {
+      enqueueSnackbar(`${checagem ? 'Checagem' : 'Calibração'} editada com sucesso!`, {
         variant: 'success'
       });
     },
     onError: (error) => {
       setError(error?.response?.data);
-      enqueueSnackbar('Erro ao editar calibração. Tente novamente!', {
+      enqueueSnackbar(`Erro ao editar ${checagem ? 'Checagem' : 'Calibração'}. Tente novamente!`, {
         variant: 'error'
       });
     },
   })
+
 
   const addCertificate = async (params) => {
     const { data } = await axiosForFiles.post(`/calibracoes/${params?.id}/adicionar_certificado/`, { arquivo: params?.arquivo, numero: params?.numero })
@@ -170,7 +196,40 @@ const useCalibrations = (id, instrumento) => {
   } = useMutation({
     mutationFn: addCertificate,
     onSuccess: async (res) => {
-      setSelectedCalibration(selCalibration => ({...selCalibration, certificados: [...selCalibration?.certificados, res]}))
+      setSelectedCalibration(selCalibration => {
+        if (!selCalibration) return selCalibration;
+      
+        return {
+          ...selCalibration,
+          certificados: [...(selCalibration.certificados || []), res],
+        };
+      });
+      setOpenCreateCertificate(false)
+      enqueueSnackbar('Certificado adicionado com sucesso!', {
+        variant: 'success'
+      });
+    }, 
+    onError: (error) => {
+      setError(error?.response?.data);
+      enqueueSnackbar('Erro ao adicionar certificado. Tente novamente!', {
+        variant: 'error'
+      });
+    },
+  })
+
+  const {
+    mutateAsync: mutateAddCertificateAsync,
+  } = useMutation({
+    mutationFn: addCertificate,
+    onSuccess: async (res) => {
+      setSelectedCalibration(selCalibration => {
+        if (!selCalibration) return selCalibration;
+      
+        return {
+          ...selCalibration,
+          certificados: [...(selCalibration.certificados || []), res],
+        };
+      });
       setOpenCreateCertificate(false)
       enqueueSnackbar('Certificado adicionado com sucesso!', {
         variant: 'success'

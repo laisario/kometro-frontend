@@ -1,11 +1,18 @@
-import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
-import React, { useEffect } from 'react'
+import { Link, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Paper, TextField, Typography, Accordion, AccordionSummary, AccordionDetails, Grid, InputAdornment } from '@mui/material';
+import React, { useEffect, useRef } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import 'dayjs/locale/pt-br';
 import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Row from '../../components/Row';
+import DescriptionIcon from '@mui/icons-material/Description';
+import CloseIcon from '@mui/icons-material/Close';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { truncateString } from '../../utils/formatString';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
 
 function Form(props) {
   const { 
@@ -18,8 +25,37 @@ function Form(props) {
     form,
     isLoadingCreation,
     error,
-    setError
+    setError,
+    checagem
   } = props;
+
+  const { fields: anexos, append, remove, } = useFieldArray({
+    control: form.control,
+    name: "anexos",
+  });
+  const ref = useRef(null)
+
+  const {
+    arquivo,
+    numero
+  } = useWatch({ control: form.control })
+
+  const handleChangeAnexo = (event) => {
+    if (!event.target.files.length) return
+    append({ anexo: event.target.files[0] })
+  }
+
+  const handleRemoveAttachment = async (index) => {
+    remove(index)
+  }
+
+  const handleChange = (event) => {
+    const { name, files } = event.target;
+    if (name === 'arquivo') {
+      form.setValue("arquivo", files[0]);
+    }
+  }
+
 
   return (
     <Dialog
@@ -34,11 +70,10 @@ function Form(props) {
             params.id = calibration?.id
           }
           form?.handleSubmit(() => mutate(params))();
-          if (create) form.reset();
         },
       }}
     >
-      <DialogTitle>{create ? "Criar nova calibração" : "Editar calibração"}</DialogTitle>
+      <DialogTitle>{checagem ? create ? 'Criar checagem' : 'Editar checagem' : create ? "Criar nova calibração" : "Editar calibração"}</DialogTitle>
       <DialogContent>
         <Row isMobile={isMobile}>
           <TextField
@@ -64,7 +99,7 @@ function Form(props) {
           />
           <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
             <DatePicker
-              label="Data da calibração"
+              label={checagem ? 'Data da checagem' : "Data da calibração"}
               {...form?.register("data")}
               value={form?.watch('data') ? dayjs(form?.watch('data')) : null}
               onChange={newValue => form?.setValue("data", newValue)}
@@ -84,7 +119,7 @@ function Form(props) {
             error={!!error?.maior_erro}
             helperText={!!error?.maior_erro && error?.maior_erro}
           />
-          <TextField
+          {!checagem && <TextField
             autoFocus
             id="incerteza"
             label="Incerteza"
@@ -94,7 +129,7 @@ function Form(props) {
             })}
             error={!!error?.incerteza}
             helperText={!!error?.incerteza && error?.incerteza}
-          />
+          />}
         </Row>
         <TextField
           autoFocus
@@ -109,6 +144,153 @@ function Form(props) {
           error={!!error?.observacoes}
           helperText={!!error?.observacoes && error?.observacoes}
         />
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom mt={2}>
+              Fornecedor
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Preço"
+                  type="number"
+                  size="small"
+                  inputProps={{
+                    step: 0.01,
+                    inputMode: 'decimal',
+                    min: 0,
+                  }}
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                  }}
+                  fullWidth
+                  {...form?.register("preco", {
+                    onChange: (e) => {if (error?.preco) setError({})},
+                    valueAsNumber: true
+                  })}
+                  error={!!error?.preco}
+                  helperText={!!error?.preco && error?.preco}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Laboratório"
+                  size="small"
+                  fullWidth
+                  {...form?.register("laboratorio", {
+                    onChange: (e) => {if (error?.laboratorio) setError({})},
+                  })}
+                  error={!!error?.laboratorio}
+                  helperText={!!error?.laboratorio && error?.laboratorio}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  label="Observação do Fornecedor"
+                  size="small"
+                  fullWidth
+                  {...form?.register("observacaoFornecedor", {
+                    onChange: (e) => {if (error?.observacaoFornecedor) setError({})},
+                  })}
+                  error={!!error?.observacaoFornecedor}
+                  helperText={!!error?.observacaoFornecedor && error?.observacaoFornecedor}
+                />
+              </Grid>
+            </Grid>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom mt={2}>
+              {checagem ? 'Documento' : 'Certificado'}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {!checagem && <TextField
+              autoFocus
+              margin="dense"
+              id="numeroCertificado"
+              label="Número do certificado"
+              fullWidth
+              {...form?.register("numero")}
+            />}
+            <Box my={1}>
+              <FormLabel sx={{ marginRight: 1 }} id="upload-btn">{checagem ? 'Documento' : 'Certificado'}</FormLabel>
+              <Button component="label" size="small" variant="contained" startIcon={<CloudUploadIcon />}>
+              {checagem ? ' Enviar Documento' : 'Enviar Certificado'}
+                <input
+                  style={{ display: 'none' }}
+                  id="upload-btn"
+                  name="arquivo"
+                  type="file"
+                  {...form?.register("arquivo")}
+                  onChange={handleChange}
+                />
+              </Button>
+              {!!arquivo &&
+                <Button
+                  component="a"
+                  size="small"
+                  href={
+                    !!arquivo && arquivo instanceof File
+                      ? URL.createObjectURL(arquivo)
+                      : arquivo
+                  }
+                  target="_blank"
+                >
+                  Ver arquivo: {arquivo?.name}
+                </Button>
+              }
+            </Box>
+            {arquivo && (
+              <>
+                <Typography>Anexos</Typography>
+                <Box display="flex" gap={2} sx={{width: '100%', overflow: 'auto'}}>
+                  <Paper onClick={() => ref?.current?.click()} sx={{ cursor: 'pointer', display: 'flex', flexShrink: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: 100, width: 100 }} elevation={4}>
+                    <Typography color="gray" fontSize={72} lineHeight={0.75} mb={0} fontWeight={300}>+</Typography>
+                    <Typography color="gray" variant='caption'>Novo anexo</Typography>
+                    <input
+                      style={{ display: 'none' }}
+                      id="upload-btn"
+                      name="anexos"
+                      type="file"
+                      ref={ref}
+                      onChange={handleChangeAnexo}
+                    />
+                  </Paper>
+                  {anexos?.map((anexo, i) => (
+                    <Paper key={anexo + i + 1} sx={{ textDecoration: "none", display: 'flex', flexShrink: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: 100, width: 100 }} elevation={4}>
+                      <Link
+                        href={
+                            !!anexo?.anexo && anexo?.anexo instanceof File
+                                ? URL.createObjectURL(anexo?.anexo)
+                                : anexo?.anexo
+                        }
+                        target="_blank"
+                        rel='noreferrer'
+                        style={{
+                          textDecoration: 'none',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <DescriptionIcon color='gray' fontSize="large" />
+                        <Typography color="gray" variant='caption'>
+                          {truncateString(anexo?.anexo?.name, 12)}
+                        </Typography>
+                      </Link>
+                      <CloseIcon fontSize='small' color='gray' onClick={() => handleRemoveAttachment(i)} />
+                    </Paper>
+                  ))}
+                </Box>
+              </>
+            )}
+          </AccordionDetails>
+        </Accordion>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>

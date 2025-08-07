@@ -1,18 +1,14 @@
-import { Stack, Box, Button, Divider, CircularProgress, Typography } from '@mui/material'
+import { Stack, Box, Button, Divider, CircularProgress } from '@mui/material'
 import React from 'react'
-import AddIcon from '@mui/icons-material/Add';
 import Calibrations from './Calibrations';
 import PreviewCalibration from './PreviewCalibration';
-import Form from './Form';
-import useCalibrations from '../hooks/useCalibration';
 
 
-function CalibrationPanel({ isMobile, instrument }) {
+function CalibrationPanel(props) {
   const {
-    data: calibrations,
+    calibrations,
     mutateDeleteCalibration,
     isDeletingCalibration,
-    mutateCreation,
     isLoadingCreation,
     mutateEdit,
     isLoadingEdit,
@@ -23,39 +19,20 @@ function CalibrationPanel({ isMobile, instrument }) {
     selectedCalibration,
     setSelectedCalibration,
     form,
-    handleOpenForm,
-    handleCloseForm,
-    openForm, 
     openEdit,
     setOpenEdit,
     openCreateCertificate,
     setOpenCreateCertificate,
-    formCreate,
     error,
     isLoadingCalibrations,
-    setError
-  } = useCalibrations(null, instrument)
-
+    setError,
+    isMobile,
+    checagem
+  } = props;
   
   return (
     <Stack flexDirection={isMobile ? 'column' : 'row'} width="100%" gap={2} divider={<Divider orientation={isMobile ? "horizontal" : "vertical"} flexItem />} justifyContent='space-between'>
       <Box sx={{ display: 'flex', flexDirection: 'column', width: isMobile ? '100%' : '50%', gap: 2 }}>
-        <Stack  direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="subtitle1">
-            Calibrações
-          </Typography>
-          <Form
-            isMobile={isMobile}
-            open={openForm}
-            handleClose={handleCloseForm}
-            create
-            mutate={mutateCreation}
-            form={formCreate}
-            isLoadingCreation={isLoadingCreation}
-            error={error}
-          />
-          <Button startIcon={<AddIcon />} variant='contained' size='small' onClick={handleOpenForm}>calibração</Button>
-        </Stack>
         {isLoadingCreation 
           ? <CircularProgress /> 
           : (
@@ -65,6 +42,7 @@ function CalibrationPanel({ isMobile, instrument }) {
               selectedCalibration={selectedCalibration} 
               setSelectedCalibration={setSelectedCalibration}
               isLoadingCalibrations={isLoadingCalibrations}
+              checagem={checagem}
             />
           )
         }
@@ -88,6 +66,7 @@ function CalibrationPanel({ isMobile, instrument }) {
         form={form}
         error={error}
         setError={setError}
+        checagem={checagem}
       />
     </Stack>
   )

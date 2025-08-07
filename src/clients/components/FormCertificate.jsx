@@ -12,7 +12,8 @@ function FormCertificate(props) {
     open, 
     handleClose, 
     calibration, 
-    mutateAddCertificate 
+    mutateAddCertificate,
+    checagem,
   } = props;
   const ref = useRef(null)
   const form = useForm({
@@ -72,9 +73,9 @@ function FormCertificate(props) {
         },
       }}
     >
-      <DialogTitle>Adicione um certificado</DialogTitle>
+      <DialogTitle>{checagem ? 'Adicione um documento' : 'Adicione um certificado'}</DialogTitle>
       <DialogContent>
-        <TextField
+        {!checagem && <TextField
           autoFocus
           required
           margin="dense"
@@ -83,11 +84,11 @@ function FormCertificate(props) {
           fullWidth
           size="small"
           {...form?.register("numeroDoCertificado")}
-        />
+        />}
         <Box my={1}>
           <FormLabel sx={{ marginRight: 1 }} id="upload-btn">Certificado</FormLabel>
           <Button component="label" size="small" variant="contained" startIcon={<CloudUploadIcon />}>
-            Enviar certificado
+            {checagem ? 'Enviar documento' : 'Enviar certificado'}
             <input
               style={{ display: 'none' }}
               id="upload-btn"

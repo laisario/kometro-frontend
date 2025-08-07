@@ -15,12 +15,14 @@ const useAssetsVm = () => {
     numeroDeSerie: true,
     observacoes: true,
     laboratorio: true,
+    setor: true,
     posicaoDoInstrumento: true,
     dataUltimaCalibracao: true,
-    frequenciaDeCalibracao: true,
     dataDaProximaCalibracao: true,
+    frequenciaDeCalibracao: true,
+    dataUltimaChecagem: true,
     dataDaProximaChecagem: true,
-    setor: true,
+    frequenciaDeChecagem: true,
   });
   const [selected, setSelected] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
@@ -32,7 +34,7 @@ const useAssetsVm = () => {
   const [selectedItem, setSelectedItem] = useState(null)
 
   const { asset, isLoadingAsset, } = useAsset(selectedItem?.type === 'instrument' ? selectedItem?.id?.split("-")[1]  : null);
-  const { assets, search, setSearch } = useAssets();
+  const { assets, search, setSearch, assetFilterForm } = useAssets();
   
   const handleCloseCreateSector = () => setOpenCreateSectorId(null);
   
@@ -54,7 +56,8 @@ const useAssetsVm = () => {
     isLoadingUpdateClient,
     mutateDeleteClient,
     error,
-    setError
+    setError,
+    mutateChangePosition
   } = useAssetMutations();
 
   const handleCreate = (selectedItem) => {
@@ -86,7 +89,7 @@ const useAssetsVm = () => {
 
   useEffect(() => {
     if (selectAll) {
-      setSelected(sectors?.map(({ id }) => id))
+      setSelected(assets?.results?.map(({ id }) => id))
     } else {
       setSelected([])
     }
@@ -164,6 +167,8 @@ const useAssetsVm = () => {
     setSearchDA,
     searchDA,
     isFetching,
+    assetFilterForm,
+    mutateChangePosition
   }
 }
 

@@ -269,6 +269,7 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
                       if (!inputValue?.length) {
                         onDeleteSetor({id: selectedItem?.id});
                       }
+                      setSelectedItem(null)
                       handleCloseCreateSector();
                     }
                   }}
