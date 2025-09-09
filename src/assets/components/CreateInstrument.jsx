@@ -1,11 +1,15 @@
-import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputAdornment, InputLabel, List, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, IconButton, InputAdornment, InputLabel, List, MenuItem, Select, Stack, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from '@mui/material'
 import React, { useMemo, useState } from 'react'
 import useResponsive from '../../theme/hooks/useResponsive';
 import { useForm, useWatch } from 'react-hook-form';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FormDefaultAsset from './FormDefaultAsset';
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
 import useNorms from '../hooks/useNorms';
 import { fDate } from '../../utils/formatTime';
+import ContentRow from '../../components/ContentRowCard';
 
 
 function flattenSectors(data, depth = 0) {
@@ -27,6 +31,178 @@ function flattenSectors(data, depth = 0) {
   }
 
   return result;
+}
+
+const CriteriosDeAceitacao = ({ form, fieldName = "criteriosAceitacao" }) => {
+  const [novoCriterio, setNovoCriterio] = useState({
+    tipo: "",
+    criterioDeAceitacao: "",
+    referenciaDoCriterio: "",
+    observacaoCriterioAceitacao: "",
+    unidade: "",
+  });
+
+  const handleChange = (e) => {
+    setNovoCriterio((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+  const handleAdd = () => {
+    const currentValues = form.getValues(fieldName) || [];
+    if (editIndex !== null) {
+      const updated = [...currentValues];
+      updated[editIndex] = novoCriterio;
+      form.setValue(fieldName, updated);
+      setEditIndex(null);
+    } else {
+      form.setValue(fieldName, [...currentValues, novoCriterio]);
+    }
+    setNovoCriterio({
+      tipo: "",
+      criterioDeAceitacao: "",
+      unidade: "",
+      referenciaDoCriterio: "",
+      observacaoCriterioAceitacao: "",
+    });
+  };
+
+  const handleRemove = (index
+    
+  ) => {
+    const currentValues = form.getValues(fieldName) || [];
+    const newValues = currentValues.filter((_, i
+      
+    ) => i !== index);
+    form.setValue(fieldName, newValues);
+    if (editIndex === index) {
+      setEditIndex(null);
+      setNovoCriterio({
+        tipo: "",
+        criterioDeAceitacao: "",
+        unidade: "",
+        referenciaDoCriterio: "",
+        observacaoCriterioAceitacao: "",
+      });
+    }
+  };
+
+  const handleEdit = (index) => {
+    const currentValues = form.getValues(fieldName) || [];
+    setNovoCriterio(currentValues[index]);
+    setEditIndex(index);
+  };
+
+  const values = form.watch(fieldName) || [];
+  const [editIndex, setEditIndex] = useState(null);
+
+
+  return (
+    <>
+      <Grid container spacing={2}>
+        <Grid item xs={6} sm={4}>
+          <TextField
+            label="Tipo"
+            name="tipo"
+            size="small"
+            fullWidth
+            value={novoCriterio.tipo}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item xs={6} sm={4}>
+          <TextField
+            label="Critério de Aceitação"
+            name="criterioDeAceitacao"
+            type="number"
+            size="small"
+            inputProps={{ step: "any", inputMode: "decimal" }}
+            fullWidth
+            value={novoCriterio?.criterioDeAceitacao}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item xs={4} sm={4}>
+          <TextField
+            label="Unidade"
+            name="unidade"
+            size="small"
+            fullWidth
+            value={novoCriterio?.unidade}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item xs={8} sm={4}>
+          <TextField
+            label="Referência do Critério"
+            name="referenciaDoCriterio"
+            size="small"
+            fullWidth
+            value={novoCriterio?.referenciaDoCriterio}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item xs={9} sm={5}>
+          <TextField
+            label="Observações"
+            name="observacaoCriterioAceitacao"
+            size="small"
+            multiline
+            fullWidth
+            value={novoCriterio?.observacaoCriterioAceitacao}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <Button
+            variant="outlined"
+            startIcon={<AddIcon />}
+            onClick={handleAdd}
+          >
+            {editIndex !== null ? "Salvar" : "Adicionar"}
+          </Button>
+        </Grid>
+      </Grid>
+      <Table padding='none' size='small' sx={{ mt: 1, width: '100%' }}>
+        <TableHead>
+          <TableRow>
+            <TableCell>Tipo</TableCell>
+            <TableCell>Critério de Aceitação</TableCell>
+            <TableCell>Unidade</TableCell>
+            <TableCell>Referência</TableCell>
+            <TableCell>Observação</TableCell>
+            <TableCell align="right">Ações</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {values?.map((criterio, index) => (
+            <TableRow key={index}>
+              <TableCell>{criterio.tipo || "-"}</TableCell>
+              <TableCell>{criterio.criterioDeAceitacao || "-"}</TableCell>
+              <TableCell>{criterio.unidade || "-"}</TableCell>
+              <TableCell>{criterio.referenciaDoCriterio || "-"}</TableCell>
+              <TableCell>{criterio.observacaoCriterioAceitacao || "-"}</TableCell>
+              <TableCell sx={{display: 'flex'}} align="right">
+                <IconButton color="primary" onClick={() => handleEdit(index)}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton color="error" onClick={() => handleRemove(index)}>
+                  <DeleteIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          ))}
+          {!values?.length && (
+            <TableRow>
+              <TableCell colSpan={6} align="center">
+                Nenhum critério adicionado
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </>
+  )
 }
 
 
@@ -132,13 +308,13 @@ function CreateInstrument(props) {
     cliente, 
     mutate, 
     asset, 
-    error,
+    error, 
+    setError,
     searchDA,
     setSearchDA,
     isFetching,
     setores = [],
   } = props;
-
   const options = useMemo(() => flattenSectors(setores), [setores]);
 
   const [instrumentoSelecionado, setInstrumentoSelecionado] = useState(asset ? {
@@ -170,11 +346,8 @@ function CreateInstrument(props) {
       tag: !!asset?.tag ? asset.tag : '',
       numeroDeSerie: !!asset?.numeroDeSerie ? asset.numeroDeSerie : '',
       classe: !!asset?.classe ? asset.classe : '',
-      criterioDeAceitacao: !!asset?.criterioDeAceitacao ? Number(asset?.criterioDeAceitacao).toFixed(2) : null,
-      unidade: !!asset?.unidade ? asset.unidade : '',
-      referenciaDoCriterio: !!asset?.referenciaDoCriterio ? asset.referenciaDoCriterio : '',
       posicao: !!asset?.posicao ? asset.posicao : "I",
-      observacaoStatus: !!asset?.observacaoStatus ? asset.observacaoStatus : '',
+      observacao: !!asset?.observacao ? asset.observacao : '',
       frequenciaChecagem: {
         quantidade: !!asset?.frequenciaChecagem?.quantidade ? asset.frequenciaChecagem.quantidade : null,
         periodo: !!asset?.frequenciaChecagem?.periodo ? asset.frequenciaChecagem.periodo : 'dia',
@@ -184,9 +357,12 @@ function CreateInstrument(props) {
         periodo: !!asset?.frequenciaCalibracao?.periodo ? asset.frequenciaCalibracao.periodo : 'dia',
       },
       pontosDeCalibracao: !!asset?.pontosDeCalibracao?.length ? asset?.pontosDeCalibracao?.map((p) => p?.nome) : [],
-      dataUltimaCalibracao: !!asset?.dataUltimaCalibracao ? asset?.dataUltimaCalibracao : null
+      dataUltimaCalibracao: !!asset?.dataUltimaCalibracao ? asset?.dataUltimaCalibracao : null,
+      dataUltimaChecagem: !!asset?.dataUltimaChecagem ? asset?.dataUltimaChecagem : null,
+      criteriosAceitacao: !!asset?.criteriosAceitacao?.length ? asset?.criteriosAceitacao : [],
     }
   });
+
   const onSubmit = (data) => {
     const payload = {
       ...data,
@@ -202,7 +378,6 @@ function CreateInstrument(props) {
     if (!payload.frequenciaChecagem?.quantidade) {
       delete payload.frequenciaChecagem;
     }
-  
     if (asset?.id) {
       mutate({
         id: asset.id,
@@ -228,15 +403,9 @@ function CreateInstrument(props) {
         >
           Escolha um instrumento base (obrigatório). Preencha os detalhes agora nas seções abaixo ou continue depois.
         </Typography>}
-        {asset?.instrumento && (
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            Instrumento base atual: <strong>{asset?.instrumento?.tipoDeInstrumento?.descricao} {!!asset?.instrumento?.tipoDeInstrumento?.modelo && asset?.instrumento?.tipoDeInstrumento?.modelo} {!!asset?.instrumento?.tipoDeInstrumento?.fabricante && asset?.instrumento?.tipoDeInstrumento?.fabricante}</strong>
-          </Typography>
-        )}
         <Typography
           variant="body2"
           color="text.secondary"
-          sx={{ mt: 2 }}
         >
           Busque pelo nome do instrumento (ex: paquímetro, balança...)
         </Typography>
@@ -321,6 +490,11 @@ function CreateInstrument(props) {
             />
           )}
         />
+        {asset?.instrumento && (
+          <Typography color='warning' variant="body1" sx={{ mt: 1 }}>
+            Instrumento escolhido: <strong>{asset?.instrumento?.tipoDeInstrumento?.descricao} {!!asset?.instrumento?.tipoDeInstrumento?.modelo && asset?.instrumento?.tipoDeInstrumento?.modelo} {!!asset?.instrumento?.tipoDeInstrumento?.fabricante && asset?.instrumento?.tipoDeInstrumento?.fabricante}</strong>
+          </Typography>
+        )}
         <Typography
           variant="body2"
           color="text.secondary"
@@ -347,7 +521,11 @@ function CreateInstrument(props) {
                   label="TAG"
                   size="small"
                   fullWidth
-                  {...form.register('tag')}
+                  {...form.register('tag', {
+                    onChange: (e) => {if (error['non_field_errors']) setError({})},
+                  })}
+                  error={!!error['non_field_errors']}
+                  helperText={!!error['non_field_errors'] && error['non_field_errors'][0]}
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -372,41 +550,13 @@ function CreateInstrument(props) {
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="subtitle1" color="text.secondary" gutterBottom mt={2}>
-              Critério de Aceitação
+              Critérios de Aceitação
             </Typography>
           </AccordionSummary>
           
           <AccordionDetails>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Critério de Aceitação"
-                  type="number"
-                  size="small"
-                  inputProps={{
-                    step: 'any',
-                    inputMode: 'decimal',
-                  }}
-                  fullWidth
-                  {...form.register('criterioDeAceitacao', { valueAsNumber: true })}
-                  />
-              </Grid>
-              <Grid item xs={12} sm={3}>
-                <TextField
-                  label="Unidade"
-                  size="small"
-                  fullWidth
-                  {...form.register('unidade')}
-                  />
-              </Grid>
-              <Grid item xs={12} sm={5}>
-                <TextField
-                  label="Referência do Critério"
-                  size="small"
-                  fullWidth
-                  {...form.register('referenciaDoCriterio')}
-                  />
-              </Grid>
+              <CriteriosDeAceitacao form={form} fieldName='criteriosAceitacao' />
             </Grid>
           </AccordionDetails>
         </Accordion>
@@ -417,8 +567,8 @@ function CreateInstrument(props) {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+            <Grid container>
+              <Grid item xs={12}>
                 <TextField
                   label="Posição"
                   size="small"
@@ -433,14 +583,6 @@ function CreateInstrument(props) {
                   <MenuItem value="F">Fora de uso</MenuItem>
                 </TextField>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Observação do Status"
-                  size="small"
-                  fullWidth
-                  {...form.register('observacaoStatus')}
-                />
-              </Grid>
             </Grid>
           </AccordionDetails>
         </Accordion>
@@ -451,7 +593,7 @@ function CreateInstrument(props) {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Grid container spacing={3}>
+            <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Grid container alignItems="center" spacing={2}>
                   <Grid item xs={12} sm={2}>
@@ -459,7 +601,7 @@ function CreateInstrument(props) {
                       Checagem
                     </Typography>
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <TextField
                       label="Quantidade"
                       type="number"
@@ -469,7 +611,7 @@ function CreateInstrument(props) {
                       {...form.register('frequenciaChecagem.quantidade')}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <TextField
                       label="Frequência"
                       select
@@ -483,6 +625,16 @@ function CreateInstrument(props) {
                       <MenuItem value="ano">Ano</MenuItem>
                     </TextField>
                   </Grid>
+                  {!asset && <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="Data última checagem"
+                    type="date"
+                    fullWidth
+                    size='small'
+                    InputLabelProps={{ shrink: true }}
+                    {...form.register("dataUltimaChecagem")}
+                  />
+                </Grid>}
                 </Grid>
               </Grid>
 
@@ -659,11 +811,38 @@ function CreateInstrument(props) {
               )}
             </AccordionDetails>
           </Accordion>}
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom mt={2}>
+              Observação
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Grid container>
+              <Grid item xs={12}>
+                <TextField
+                  label="Observação"
+                  size="small"
+                  fullWidth
+                  multiline
+                  rows={2}
+                  {...form.register('observacao')}
+                />
+              </Grid>
+            </Grid>
+          </AccordionDetails>
+        </Accordion>
+          
         </Box>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between' }}>
         <Button onClick={handleClose}>Cancelar</Button>
-        <Button onClick={() => {form.handleSubmit(onSubmit)(); handleClose(); setInstrumentoSelecionado(null); setSearchDA('')}}  variant="contained">{asset ? 'Editar instrumento' : 'Criar instrumento'}</Button>
+        <Button
+          onClick={() => {form.handleSubmit(onSubmit)(); setInstrumentoSelecionado(null)}}  
+          variant="contained"
+        >
+          {asset ? 'Editar instrumento' : 'Criar instrumento'}
+        </Button>
       </DialogActions>
     </Dialog>
   )

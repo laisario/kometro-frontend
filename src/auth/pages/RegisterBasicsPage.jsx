@@ -11,24 +11,15 @@ export default function RegisterBasicsPage() {
     tipo,
     razaoSocial,
     IE,
-    CPF,
-    nome,
-    telefone,
     nomeFantasia,
     filial,
-    setTipo,
     setCNPJ,
     setRazaoSocial,
     setIE,
     setNomeFantasia,
     setFilial,
-    setCPF,
-    setNome,
-    setTelefone,
     cnpjFormatado,
     cnpjValido,
-    cpfValido,
-    cpfFormatado,
     error,
     setError,
     verifyError
@@ -52,25 +43,16 @@ export default function RegisterBasicsPage() {
         <BasicInformation
           handleSubmit={handleSubmit}
           tipo={tipo}
-          setTipo={setTipo}
           setCNPJ={setCNPJ}
           setRazaoSocial={setRazaoSocial}
           setIE={setIE}
           setNomeFantasia={setNomeFantasia}
           setFilial={setFilial}
-          setCPF={setCPF}
-          setNome={setNome}
-          setTelefone={setTelefone}
           cnpjFormatado={cnpjFormatado}
           cnpjValido={cnpjValido}
-          cpfValido={cpfValido}
-          cpfFormatado={cpfFormatado}
           CNPJ={CNPJ}
           razaoSocial={razaoSocial}
           IE={IE}
-          CPF={CPF}
-          nome={nome}
-          telefone={telefone}
           nomeFantasia={nomeFantasia}
           filial={filial}
           error={error}

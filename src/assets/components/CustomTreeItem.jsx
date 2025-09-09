@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { animated, useSpring } from '@react-spring/web';
 import { styled, alpha } from '@mui/material/styles';
-
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
@@ -10,20 +9,20 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FolderRounded from '@mui/icons-material/FolderRounded';
 import { useTreeItem } from '@mui/x-tree-view/useTreeItem';
 import {
-  TreeItemCheckbox,
   TreeItemIconContainer,
   TreeItemLabel,
 } from '@mui/x-tree-view/TreeItem';
 import { TreeItemIcon } from '@mui/x-tree-view/TreeItemIcon';
 import { TreeItemProvider } from '@mui/x-tree-view/TreeItemProvider';
-import { TreeItemDragAndDropOverlay } from '@mui/x-tree-view/TreeItemDragAndDropOverlay';
 import { useTreeItemModel } from '@mui/x-tree-view/hooks';
-import { Checkbox, IconButton, Input, InputAdornment, Stack, TextField, Tooltip } from '@mui/material';
+import { IconButton, Input, InputAdornment, Stack, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import ConfirmDeleteDialog from './ConfirmDeleteDialog';
+import { NO_PERMISSION_ACTION } from '../../utils/messages';
+import useAuth from '../../auth/hooks/useAuth';
 
 function DotIcon() {
   return (
@@ -128,19 +127,21 @@ const TreeItemLabelText = styled(Typography)({
 });
 
 function CustomLabel({ 
-  icon: Icon, 
-  expandable, 
-  children, 
-  handleCreate, 
-  itemId, 
-  selectedItem, 
-  onDeleteSetor, 
-  handleEditSector, 
-  setSelectedItem, 
-  handleEdit,
-  ...other
- }) {
+    icon: Icon, 
+    expandable, 
+    children, 
+    handleCreate, 
+    itemId, 
+    selectedItem, 
+    onDeleteSetor, 
+    handleEditSector, 
+    setSelectedItem, 
+    handleEdit,
+    duplicateInstrument,
+    ...other
+  }) {
   const [open, setOpen] = React.useState(false)
+  const { hasCreatePermission, hasEditPermission, hasDeletePermission } = useAuth();
 
   return (
     <TreeItemLabel
@@ -164,22 +165,28 @@ function CustomLabel({
           {expandable && <DotIcon />}
         </Box>
         {selectedItem?.id === itemId && selectedItem?.type === 'sector' &&  <Box m={0} p={0} sx={{zIndex: 999}}>
-          <Tooltip title='Criar Subsetor'>
-            <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleCreate(selectedItem); }}>
-              <AddIcon fontSize="inherit" style={{color: 'white'}} />
-            </IconButton>
+          <Tooltip title={hasCreatePermission ? 'Criar Subsetor' : NO_PERMISSION_ACTION}>
+            <span>
+              <IconButton disabled={!hasCreatePermission} size="small" onClick={(e) => { e.stopPropagation(); handleCreate(selectedItem); }}>
+                <AddIcon fontSize="inherit" style={{color: 'white'}} />
+              </IconButton>
+            </span>
           </Tooltip>
         
-          <Tooltip title='Editar nome'>
-            <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEdit(selectedItem); }}>
-              <EditIcon fontSize="inherit" style={{color: 'white'}} />
-            </IconButton>
+          <Tooltip title={hasEditPermission ? 'Editar nome' : NO_PERMISSION_ACTION}>
+            <span>
+              <IconButton size="small" disabled={!hasEditPermission} onClick={(e) => { e.stopPropagation(); handleEdit(selectedItem); }}>
+                <EditIcon fontSize="inherit" style={{color: 'white'}} />
+              </IconButton>
+            </span>
           </Tooltip>
         
-          <Tooltip title='Deletar'>
-            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setOpen(true) }}>
-              <DeleteIcon fontSize="inherit" style={{color: 'white'}} />
-            </IconButton>
+          <Tooltip title={hasDeletePermission ?  'Deletar' : NO_PERMISSION_ACTION}>
+            <span>
+              <IconButton disabled={!hasDeletePermission} size="small" onClick={(e) => { e.stopPropagation(); setOpen(true) }}>
+                <DeleteIcon fontSize="inherit" style={{color: 'white'}} />
+              </IconButton>
+            </span>
           </Tooltip>
 
           <ConfirmDeleteDialog
@@ -190,6 +197,17 @@ function CustomLabel({
           />
           
         </Box>}
+        {selectedItem?.id === itemId && selectedItem?.type === 'instrument' && (
+          <Box m={0} p={0} sx={{zIndex: 999}}>
+            <Tooltip title={hasCreatePermission ? 'Duplicar instrumento' : NO_PERMISSION_ACTION} placement='top'>
+              <span>
+                <IconButton disabled={!hasCreatePermission} size="small" onClick={(e) => { e.stopPropagation(); duplicateInstrument(selectedItem?.id?.split('-')[1]); }}>
+                  <AddIcon fontSize="inherit" style={{color: 'white'}} />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </Box>
+        )}
       </Box>
     </TreeItemLabel>
   );
@@ -222,9 +240,11 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
     handleEditSector, 
     handleEdit,
     handleCloseCreateSector,
+    duplicateInstrument,
     ...other
   } = props;
-  const [inputValue, setInputValue] = React.useState('')
+
+  const [inputValue, setInputValue] = React.useState('');
 
   const {
     getContextProviderProps,
@@ -245,6 +265,7 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
   } else if (item?.itemType) {
     icon = getIconFromItemType(item?.itemType);
   }
+
   return (
     <TreeItemProvider {...getContextProviderProps()}>
       <TreeItemRoot {...getRootProps(other)}>
@@ -277,7 +298,6 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
                   onMouseDown={(e) => e.stopPropagation()}
                   color='secondary'
                   autoFocus
-                  
                   size="small"
                   endAdornment={
                     <Stack direction="row">
@@ -316,6 +336,7 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
                 handleEditSector={handleEditSector}
                 handleEdit={handleEdit}
                 itemId={itemId}
+                duplicateInstrument={duplicateInstrument}
                 {...getLabelProps({
                   icon,
                   expandable: status.expandable && status.expanded,

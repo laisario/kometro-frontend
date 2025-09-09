@@ -4,6 +4,7 @@ import useAuth from '../hooks/useAuth';
 function useAuthInfoVM() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   
   const { 
@@ -18,7 +19,7 @@ function useAuthInfoVM() {
     const isEmailValid = validateEmail(email);
 
     if (isEmailValid) {
-      registerAuthMutation({ email, password})
+      registerAuthMutation({ email, password, name})
     }
   };
 
@@ -54,6 +55,8 @@ function useAuthInfoVM() {
     password,
     handlePasswordChange,
     verifyError,
+    name,
+    setName
   }
 }
 

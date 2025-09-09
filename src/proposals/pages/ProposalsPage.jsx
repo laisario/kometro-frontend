@@ -12,6 +12,7 @@ import {
   TableContainer,
   TablePagination,
   Checkbox,
+  Tooltip,
 } from '@mui/material';
 import Label from '../../components/label';
 import { fDate } from '../../utils/formatTime';
@@ -24,6 +25,8 @@ import Loading from '../../components/Loading';
 import { headCells, headCellsAdmin, statusColor, statusString } from '../../utils/proposals';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import CsvViewer from '../../components/CsvViewer';
+import useAuth from '../../auth/hooks/useAuth';
+import { NO_PERMISSION_ACTION } from '../../utils/messages';
 
 function ProposalsPage() {
   const {
@@ -57,6 +60,7 @@ function ProposalsPage() {
     csvContent
   } = useProposalsVM()
   const isFiltering = formFilter?.formState?.isDirty
+  const { hasCreatePermission } = useAuth()
   return (
     <>
       <Helmet>
@@ -82,10 +86,14 @@ function ProposalsPage() {
             >
               Exportar
             </Button>}
-
-            <Button variant="contained" onClick={handleOpen} >
-              Nova proposta
-            </Button>
+            
+            <Tooltip title={!hasCreatePermission && NO_PERMISSION_ACTION}>
+              <span>
+                <Button disabled={!hasCreatePermission} variant="contained" onClick={handleOpen} >
+                  Nova proposta
+                </Button>
+              </span>
+            </Tooltip>
           </Stack>
 
         </Stack>

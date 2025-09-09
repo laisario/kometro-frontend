@@ -8,6 +8,7 @@ import {
   CircularProgress,
   IconButton,
   Button,
+  Tooltip,
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -25,6 +26,9 @@ import Attachment from '../../components/Attachment';
 import CriticalAnalysisDialog from '../../assets/components/CriticalAnalysisDialog';
 import useAssetMutations from '../../assets/hooks/useAssetMutations';
 import { truncateString } from '../../utils/formatString';
+import { localLabels } from '../../utils/assets';
+import useAuth from '../../auth/hooks/useAuth';
+import { NO_PERMISSION_ACTION } from '../../utils/messages';
 
 function Calibration(props) {
   const {
@@ -58,6 +62,7 @@ function Calibration(props) {
     readMoreCriticalAnalisys: { readMore: false, readUntil: 15 },
     readMoreCertificate: false,
   });
+  const { hasCreatePermission, hasEditPermission, hasDeletePermission } = useAuth()
 
 
   const { 
@@ -115,7 +120,7 @@ function Calibration(props) {
           <CardActions sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             {isLoadingAddCertificate 
               ? <CircularProgress /> 
-              : <ButtonTooltip title={checagem ? 'Adicionar documento' : "Adicionar certificado"} variant='filled' icon={<AddIcon />} action={handleOpenCertificate} />
+              : <ButtonTooltip disabled={!hasCreatePermission}  title={hasCreatePermission ? checagem ? 'Adicionar documento' : "Adicionar certificado" : NO_PERMISSION_ACTION} variant='filled' icon={<AddIcon />} action={handleOpenCertificate} />
             }
             <FormCertificate
               mutateAddCertificate={mutateAddCertificate}
@@ -126,7 +131,7 @@ function Calibration(props) {
             />
             {isLoadingEdit 
               ? <CircularProgress /> 
-              : <ButtonTooltip title={checagem ? "Editar checagem" : "Editar calibração"} action={handleOpenEdit} icon={<EditIcon />} />
+              : <ButtonTooltip disabled={!hasEditPermission} title={hasEditPermission ? checagem ? "Editar checagem" : "Editar calibração" : NO_PERMISSION_ACTION} action={handleOpenEdit} icon={<EditIcon />} />
             }
             <Form
               mutate={mutateEdit}
@@ -138,10 +143,11 @@ function Calibration(props) {
               error={error}
               setError={setError}
               checagem={checagem}
+              criterios={calibration?.instrumento?.criteriosAceitacao}
             />
             {isDeleting 
               ? <CircularProgress /> 
-              : <ButtonTooltip title={checagem ? 'Apagar checagem' : "Apagar calibração"} variant='filled' icon={<DeleteIcon />} action={handleDelete} />
+              : <ButtonTooltip disabled={!hasDeletePermission} title={hasDeletePermission ? checagem ? 'Apagar checagem' : "Apagar calibração" : NO_PERMISSION_ACTION} variant='filled' icon={<DeleteIcon />} action={handleDelete} />
             }
           </CardActions>
           
@@ -149,7 +155,7 @@ function Calibration(props) {
             <ContentRow colorTitle='black' colorValue='black' title={calibration?.ordemDeServico?.toUpperCase()} value={fDate(calibration?.data, "dd/MM/yyyy")} />
           )}
           {calibration?.local && (
-            <ContentRow title="Local" value={calibration?.local} />
+            <ContentRow title="Local" value={localLabels[calibration?.local]} />
           )}
           {calibration?.setor && (
             <ContentRow title="Setor" value={calibration?.setor?.nome} />
@@ -166,9 +172,6 @@ function Calibration(props) {
           {calibration?.instrumento?.referenciaDoCriterio && <ContentRow title="Referência do Critério de aceitação" value={calibration?.instrumento?.referenciaDoCriterio} />}
 
 
-          <ContentRow title="Maior erro" value={calibration?.maiorErro ? calibration?.maiorErro : "Não faz parte do cálculo"} />
-
-          {!checagem && <ContentRow title="Incerteza" value={calibration?.incerteza ? calibration?.incerteza : "Não faz parte do cálculo"} />}
           {!!calibration?.laboratorio && (
             <ContentRow title="Laboratório" value={calibration.laboratorio} />
           )}
@@ -177,6 +180,14 @@ function Calibration(props) {
           )}
           {!!calibration?.observacaoFornecedor && (
             <ContentRow title="Observação" value={calibration.observacaoFornecedor} />
+          )}
+
+          {!!calibration?.resultados?.length && (
+            <>
+              <ContentRow colorTitle='black' colorValue='black' title={calibration?.resultados[0].criterio?.tipo}  value={<Label color={calibration?.resultados[0].status === 'A' ? 'success' : 'warning'} >{calibration?.resultados[0].status === 'A' ? 'Aprovado' : 'Reprovado'}</Label>} />
+              <ContentRow title="Maior erro" value={calibration?.resultados[0].maiorErro ? calibration?.resultados[0].maiorErro : "Não faz parte do cálculo"} />
+              {!checagem && <ContentRow title="Incerteza" value={calibration?.resultados[0].incerteza ? calibration?.resultados[0].incerteza : "Não faz parte do cálculo"} />}
+            </>
           )}
           {(calibration?.analiseCritica)
             && <ContentRow title={calibration?.analiseCritica !== "P" ? "Sua análise crítica" : "Análise critica"} colorTitle='black' my={1} value={<Label color={analiseCriticaColor[calibration?.analiseCritica]}>{analiseCriticaLabel[calibration?.analiseCritica]}</Label>} />}
@@ -240,7 +251,13 @@ function Calibration(props) {
       <CardActions sx={{ display: "flex", justifyContent: calibration?.analiseCritica === "P" ? "flex-end" : "space-between", m: 1 }}>
         {isLoadingCriticalAnalisys 
           ? <CircularProgress />
-          : <Button onClick={() => setOpen(true)}>Análise Crítica</Button>
+          : (
+            <Tooltip title={!hasEditPermission && NO_PERMISSION_ACTION}>
+              <span>
+                <Button disabled={!hasEditPermission} onClick={() => setOpen(true)}>Análise Crítica</Button>
+              </span>
+            </Tooltip>
+          )
         }
         <CriticalAnalysisDialog
           data={{

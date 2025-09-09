@@ -25,6 +25,8 @@ import Loading from '../../components/Loading'
 import MenuButton from '../components/MenuButton'
 import BillingApprovalForm from '../components/BillingApprovalForm';
 import SendEmailForm from '../components/SendEmailForm';
+import useAuth from '../../auth/hooks/useAuth';
+import { NO_PERMISSION_ACTION } from '../../utils/messages';
 
 
 function ProposalDetailsPage() {
@@ -58,8 +60,8 @@ function ProposalDetailsPage() {
     openSendEmail, 
     setOpenSendEmail,
   } = useProposalVM();
-
   const theme = useTheme()
+  const { hasCreatePermission } = useAuth()
   return (
     <>
       <Helmet>
@@ -123,34 +125,38 @@ function ProposalDetailsPage() {
             </Box>
           ) : proposal?.status === "AA" && (
             <Box display='flex'>
-              <Tooltip title="Clique para aprovar a proposta">
-                <Button
-                  variant="contained"
-                  disabled={proposal?.status !== "AA"}
-                  sx={{ marginX: 2 }}
-                  onClick={() => aproveProposal()}
-                  startIcon={
-                    isLoadingAproveProposal 
+              <Tooltip title={hasCreatePermission ? "Clique para aprovar a proposta" : NO_PERMISSION_ACTION}>
+                <span>
+                  <Button
+                    variant="contained"
+                    disabled={proposal?.status !== "AA" || !hasCreatePermission}
+                    sx={{ marginX: 2 }}
+                    onClick={() => aproveProposal()}
+                    startIcon={
+                      isLoadingAproveProposal 
                       ? <CircularProgress size='20px' color="inherit" /> 
                       : <Iconify icon="eva:checkmark-fill" />
-                  }
-                >
-                  Aprovar proposta
-                </Button>
+                    }
+                    >
+                    Aprovar proposta
+                  </Button>
+                </span>
               </Tooltip>
-              <Tooltip title="Clique para reprovar a proposta">
-                <Button
-                  variant="contained"
-                  color="error"
-                  disabled={proposal?.status !== "AA"}
-                  onClick={() => refuseProposal()}
-                  startIcon={isLoadingRefuseProposal
+              <Tooltip title={hasCreatePermission ? "Clique para reprovar a proposta" : NO_PERMISSION_ACTION}>
+                <span>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    disabled={proposal?.status !== "AA" || !hasCreatePermission}
+                    onClick={() => refuseProposal()}
+                    startIcon={isLoadingRefuseProposal
                       ? <CircularProgress size='20px' color="inherit" /> 
-                      : <Iconify icon="ph:x-bold" />
-                  }
-                >
-                  Reprovar proposta
-                </Button>
+                        : <Iconify icon="ph:x-bold" />
+                    }
+                  >
+                    Reprovar proposta
+                  </Button>
+                </span>
               </Tooltip>
             </Box>
           )}

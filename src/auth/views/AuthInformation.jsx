@@ -13,22 +13,33 @@ export default function AuthInformation(props) {
     setShowPassword,
     handleSubmit,
     error,
+    setError,
     email,
     password,
     handlePasswordChange,
-    verifyError
+    verifyError,
+    name,
+    setName
   } = props;
   
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing={3}>
         <TextField 
+          error={!!error?.first_name}
+          helperText={!!error?.first_name && error?.first_name}
+          name="name" 
+          label="Nome gerente" 
+          value={name} 
+          onChange={(e) => { verifyError('first_name',error,setError); setName(e.target.value) }} 
+        />
+        <TextField 
           error={!!error?.email}
           helperText={error?.email}
-          name="email" 
+          name="email"
           label="Email" 
           value={email} 
-          onChange={(e) => { verifyError('email'); setEmail(e.target.value) }} 
+          onChange={(e) => { verifyError('email',error,setError); setEmail(e.target.value) }} 
         />
         <TextField
           fullWidth
@@ -37,7 +48,7 @@ export default function AuthInformation(props) {
           name="password"
           label="Senha"
           value={password}
-          onChange={(e) => handlePasswordChange(e)}
+          onChange={(e) => {verifyError('password',error,setError); handlePasswordChange(e)}}
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
@@ -68,7 +79,6 @@ export default function AuthInformation(props) {
         <LoadingButton
           loading={loading} 
           variant="contained"
-          disabled={!email || !password}
           size="large" 
           sx={{ minWidth: '45%' }} 
           onClick={handleSubmit} 

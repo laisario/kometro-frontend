@@ -63,6 +63,8 @@ export default function DocumentDetailPage() {
     }
   }, [idRevisao, swiper, revisoes])
 
+  const admin = 'dashboard'
+
   return (
     <>
       <Helmet>
@@ -89,7 +91,7 @@ export default function DocumentDetailPage() {
                     setOpenFormReview={setOpenFormReview} 
                     user={user} 
                     form={formReview}
-                    />
+                  />
                   {!!revisoes?.length &&
                     <Box>
                       <Box display="flex" flexDirection="row" justifyContent="space-between">
@@ -100,7 +102,7 @@ export default function DocumentDetailPage() {
                           <Button 
                             size='small' 
                             onClick={() => navigate(
-                              `/admin/documento/${id}/revisoes`, 
+                              `/${admin}/documento/${id}/revisoes`, 
                               { sate: { data: { user, titulo: document?.titulo } } }
                             )}
                           >
@@ -116,7 +118,7 @@ export default function DocumentDetailPage() {
                         }
                         spaceBetween={50}
                         slidesPerView={1}
-                        onSlideChange={(swiper) => navigate(`/admin/documento/${id}/${revisoes[swiper?.activeIndex]?.id}`)}
+                        onSlideChange={(swiper) => navigate(`/${admin}/documento/${id}/${revisoes[swiper?.activeIndex]?.id}`)}
                         onSwiper={(swiper) => setSwiper(swiper)}
                         >
                         {revisoes.map(revisao => (

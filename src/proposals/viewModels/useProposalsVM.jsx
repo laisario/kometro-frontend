@@ -5,8 +5,8 @@ import useResponsive from '../../theme/hooks/useResponsive';
 import ProposalsContext from '../context';
 import AssetsContext from '../../assets/context';
 import  ClientsContext from '../../clients/context';
-import { useWatch } from 'react-hook-form';
 import { axios } from '../../api';
+import useAssets from '../../assets/hooks/useAssets';
 
 function useProposalsVM() {
   const [selectedOrders, setSelectedOrders] = useState([]);
@@ -36,9 +36,9 @@ function useProposalsVM() {
 
   
   const {
-    allAssets,
+    assets: allAssets,
     isLoadingAssets,
-  } = useContext(AssetsContext);
+  } = useAssets()
   
   const {
     clients,

@@ -1,8 +1,10 @@
-import { Box, Button, Card, CardActions, CardContent, Chip, Divider, Typography } from '@mui/material'
+import { Box, Button, Card, CardActions, CardContent, Chip, Divider, Tooltip, Typography } from '@mui/material'
 import React from 'react'
 import titleCase from '../../utils/formatTitle';
 import { fDate } from '../../utils/formatTime';
 import { criticalAnalysisMonths } from '../../utils/documents';
+import useAuth from '../../auth/hooks/useAuth';
+import { NO_PERMISSION_ACTION } from '../../utils/messages';
 
 function InformationCard(props) {
   const { 
@@ -14,6 +16,7 @@ function InformationCard(props) {
     form,
   } = props;
   const isCreator = data?.criador?.id === user?.id
+  const { hasCreatePermission } = useAuth()
   return (
     <Card sx={{bgcolor: 'background.paper'}}>
       <CardContent sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -65,22 +68,32 @@ function InformationCard(props) {
       <CardActions sx={{ display: 'flex', flexDirection: 'row', justifyContent: "flex-end" }}>
         {isCreator &&
           (<>
-            <Button 
-              variant="outlined" 
-              size="small" 
-              onClick={() => {setOpenFormReview(true); form.setValue('tipo', 'revalidar') }}
-              color='secondary'
-              >
-              Revalidar
-            </Button>
-            <Button 
-              variant="contained" 
-              size="small" 
-              color='secondary'
-              onClick={() => {setOpenFormReview(true); form.setValue('tipo', 'revisar')} }
-              >
-              Revisar
-            </Button>
+            <Tooltip title={!hasCreatePermission && NO_PERMISSION_ACTION}>
+              <span>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  onClick={() => {setOpenFormReview(true); form.setValue('tipo', 'revalidar') }}
+                  color='secondary'
+                  disabled={!hasCreatePermission}
+                >
+                  Revalidar
+                </Button>
+              </span>
+            </Tooltip>
+            <Tooltip title={!hasCreatePermission && NO_PERMISSION_ACTION}>
+              <span>
+                <Button 
+                  variant="contained" 
+                  size="small" 
+                  color='secondary'
+                  disabled={!hasCreatePermission}
+                  onClick={() => {setOpenFormReview(true); form.setValue('tipo', 'revisar')} }
+                >
+                  Revisar
+                </Button>
+              </span>
+            </Tooltip>
           </>)
         }
       </CardActions>

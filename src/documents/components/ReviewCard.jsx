@@ -1,9 +1,11 @@
-import { Alert, Button, Card, CardActions, CardContent, Typography, CircularProgress, Box, Divider } from '@mui/material';
+import { Alert, Button, Card, CardActions, CardContent, Typography, CircularProgress, Box, Divider, Tooltip } from '@mui/material';
 import React, { useMemo } from 'react';
 import { useTheme } from '@emotion/react';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import PersonIcon from '@mui/icons-material/Person';
 import { fDate } from '../../utils/formatTime';
+import { NO_PERMISSION_ACTION } from '../../utils/messages';
+import useAuth from '../../auth/hooks/useAuth';
 
 function ReviewCard(props) {
   const { 
@@ -16,7 +18,8 @@ function ReviewCard(props) {
   const theme = useTheme();
   const userApproved = useMemo(() => revisao?.aprovacoes?.some(aprovacao => aprovacao?.aprovador?.id === user?.id), [user, revisao])
   const approversIds = useMemo(() => revisao?.aprovadores?.map((approver) => approver?.id ), [revisao])
- 
+  const { hasCreatePermission } = useAuth()
+  
   return (
     <Card sx={{ 
       px: 4, 
@@ -71,17 +74,23 @@ function ReviewCard(props) {
       )}
       {!!error && <Alert severity="error">{error}</Alert>}
       <CardActions sx={{ display: 'flex', flexDirection: 'row', justifyContent: "flex-end" }}>
-        {approversIds?.includes(user?.id) &&
-          <Button
-            size="small" 
-            onClick={() => mutateApproveReview({revisao, userApproved})}
-          >
-            {
-              isLoadingApproveReview 
-                ? <CircularProgress />
-                : userApproved ? "Retirar aprovação" : "Aprovar"
-            }
-          </Button>
+        {approversIds?.includes(user?.id) ? (
+          <Tooltip title={!hasCreatePermission && NO_PERMISSION_ACTION}>
+            <span>
+              <Button
+                size="small" 
+                onClick={() => mutateApproveReview({revisao, userApproved})}
+                disabled={!hasCreatePermission}
+              >
+                {
+                  isLoadingApproveReview 
+                    ? <CircularProgress />
+                    : userApproved ? "Retirar aprovação" : "Aprovar"
+                }
+              </Button>
+            </span>
+          </Tooltip>
+        ) : <Typography color="text.secondary" variant='body2'>Você não é aprovador dessa {revisao?.tipo === 'revalidar' ? 'revalidação' : 'revisão'}</Typography>
         }
       </CardActions>
     </Card>

@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from 'react-query';
 import {buildTreeItems} from '../provider'
 import 'dayjs/locale/pt-br';
 import { axios } from '../../api';
+import {getErrorMessage} from '../../utils/error'
 
 function useSectorMutations(setOpenCreateSectorId, setExpandedItems, setSelectedItem, handleCloseCreateSector) {
   const [error, setError] = useState({});
@@ -64,7 +65,7 @@ function useSectorMutations(setOpenCreateSectorId, setExpandedItems, setSelected
   }
 
   const deleteSector = async (data) => {
-    await axios.delete(`/setores/${data?.id}/`);
+    await axios.delete(`/setores/${Number(data?.id)}/`);
   };
   
   const { 
@@ -88,8 +89,9 @@ function useSectorMutations(setOpenCreateSectorId, setExpandedItems, setSelected
         queryClient.setQueryData(['setores'], context.previousSectors);
       }
       setError(erro?.response?.data)
-      enqueueSnackbar('Ocorreu um erro ao deletar o setor. Tente mais tarde!', {
-        variant: 'error'
+      enqueueSnackbar(getErrorMessage(erro?.response?.status), {
+        variant: 'error',
+        autoHideDuration: 2000,
       });
     },
   })
@@ -123,8 +125,9 @@ function useSectorMutations(setOpenCreateSectorId, setExpandedItems, setSelected
       }
 
       setError(erro?.response?.data)
-      enqueueSnackbar('Falha ao atualizar Setor, tente novamente!', {
-        variant: 'error'
+      enqueueSnackbar(getErrorMessage(erro?.response?.status), {
+        variant: 'error',
+        autoHideDuration: 2000,
       });
     }
   })
@@ -172,8 +175,9 @@ function useSectorMutations(setOpenCreateSectorId, setExpandedItems, setSelected
       }
   
       setError(err?.response?.data);
-      enqueueSnackbar('Falha ao criar Setor, tente novamente!', {
+      enqueueSnackbar(getErrorMessage(err?.response?.status), {
         variant: 'error',
+        autoHideDuration: 2000,
       });
     },
   

@@ -4,8 +4,9 @@ import { useMutation, useQueryClient } from 'react-query';
 import 'dayjs/locale/pt-br';
 import dayjs from 'dayjs';
 import { axios } from '../../api';
+import {getErrorMessage} from '../../utils/error'
 
-function useAssetMutations(handleCleanCreateForm, handleClose) {
+function useAssetMutations(handleCleanCreateForm, handleClose,handleCloseCreateInstrument) {
   const [error, setError] = useState({});
   const queryClient = useQueryClient();
 
@@ -28,7 +29,8 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
     onError: (erro) => {
       setError(erro?.response?.data)
       enqueueSnackbar('Ocorreu um erro ao deletar o instrumento. Tente mais tarde!', {
-        variant: 'error'
+        variant: 'error',
+        autoHideDuration: 2000
       });
     },
   })
@@ -166,6 +168,7 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
     mutationFn: createInstrumentClient,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['setores'] })
+      handleCloseCreateInstrument('create')
       enqueueSnackbar('Instrumento criado com sucesso!', {
         variant: 'success'
       });
@@ -174,15 +177,24 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
       const errors = erro?.response?.data;
     
       const mensagemDetalhada =
-        errors && typeof errors === 'object'
-          ? Object.entries(errors)
-              .map(([campo, mensagens]) => {
-                const nomeFormatado =
-                  campo === 'instrumento' ? 'Instrumento base' : campo.charAt(0).toUpperCase() + campo.slice(1);
-                return `${nomeFormatado} - ${mensagens.join(', ')}`;
-              })
-              .join('\n')
-          : null;
+      errors && typeof errors === "object"
+        ? Object.entries(errors)
+            .map(([campo, mensagens]) => {
+              let nomeFormatado;
+
+              if (campo === "instrumento") {
+                nomeFormatado = "Instrumento base";
+              } else if (campo === "non_field_errors") {
+                return "Você já possui um instrumento com essa Tag. Escolha outra.";
+              } else {
+                nomeFormatado =
+                  campo.charAt(0).toUpperCase() + campo.slice(1);
+              }
+
+              return `${nomeFormatado} - ${mensagens.join(", ")}`;
+            })
+            .join("\n")
+        : null;
     
       setError(errors);
     
@@ -211,9 +223,9 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
       queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
     },
     onError: (erro) => {
-      setError(erro?.response?.data)
-      enqueueSnackbar('Falha ao atualizar instrumento, tente novamente!', {
-        variant: 'error'
+      enqueueSnackbar(getErrorMessage(erro?.response?.status), {
+        variant: 'error',
+        autoHideDuration: 2000
       });
     }
   })
@@ -231,9 +243,9 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
       });
     },
     onError: (erro) => {
-      setError(erro?.response?.data)
-      enqueueSnackbar('Ocorreu um erro ao deletar o instrumento. Tente mais tarde!', {
-        variant: 'error'
+      enqueueSnackbar(getErrorMessage(erro?.response?.status), {
+        variant: 'error',
+        autoHideDuration: 2000
       });
     },
   })
@@ -244,15 +256,33 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
     mutationFn: async(data) => await axios.patch(`/instrumentos/${data?.id}/mudar_posicao/`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['setores'] })
-      queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
       enqueueSnackbar('Mudança posição realizada com sucesso!', {
         variant: 'success'
       });
     },
     onError: (erro) => {
-      setError(erro?.response?.data)
-      enqueueSnackbar('Ocorreu um erro ao mudar a posição do instrumento. Tente mais tarde!', {
-        variant: 'error'
+      enqueueSnackbar(getErrorMessage(erro?.response?.status), {
+        variant: 'error',
+        autoHideDuration: 2000
+      });
+    },
+  })
+
+
+  const { 
+    mutate: duplicateInstrument, 
+  } = useMutation({
+    mutationFn: async(id) => await axios.post(`/instrumentos/${+(id)}/duplicar/`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['setores'] })
+      enqueueSnackbar('Duplicação realizada com sucesso!', {
+        variant: 'success'
+      });
+    },
+    onError: (erro) => {
+      enqueueSnackbar(getErrorMessage(erro?.response?.status), {
+        variant: 'error',
+        autoHideDuration: 2000
       });
     },
   })
@@ -274,7 +304,8 @@ function useAssetMutations(handleCleanCreateForm, handleClose) {
     mutateUpdateClient,
     isLoadingUpdateClient,
     mutateDeleteClient,
-    mutateChangePosition
+    mutateChangePosition,
+    duplicateInstrument
   }
 }
 

@@ -47,7 +47,7 @@ function FormElaborate(props) {
   } = props;
   const [anexos, setAnexos] = useState([])
   const [loadingAnexo, setLoadingAnexo] = useState(false)
-  const totalOriginal = data?.total || 0;
+  const [total, setTotal] = useState(0)
   const [totalComDesconto, setTotalComDesconto] = useState(data?.totalComDesconto);
 
   const defaultValues = useMemo(() => ({
@@ -66,21 +66,41 @@ function FormElaborate(props) {
     cidade: data?.enderecoDeEntrega?.bairro?.cidade || "",
     estado: data?.enderecoDeEntrega?.estado || "",
     complemento: data?.enderecoDeEntrega?.complemento || "",
-    total: totalOriginal,
-    descontoPercentual: Number(data?.descontoPercentual).toFixed(0) || 0
+    total: total || 0,
+    descontoPercentual: Number(data?.descontoPercentual).toFixed(0) || 0,
+    local: data?.local || 'P'
   }), [data])
-
+  
   const form = useForm({ defaultValues });
-
+  
   useEffect(() => {
     form?.reset(defaultValues)
   }, [defaultValues])
-  
+
+  useEffect(() => {
+    setAnexos(data?.anexos?.map((anexo) => anexo))
+  }, [])
   const {
     enderecoDeEntrega,
     validade,
     responsavel,
+    local
   } = useWatch({ control: form.control })
+  
+  useEffect(() => {
+    const getValue = (item) => {
+      if (!!item?.precoAlternativoCalibracao) {
+        return item.precoAlternativoCalibracao
+      } else if (local === "C") {
+        return Number(item?.instrumento?.precoCalibracaoNoCliente)
+      } else {
+        return Number(item?.instrumento?.precoCalibracaoNoLaboratorio)
+      }
+    }
+    setTotal(data?.instrumentos?.reduce((acc, cur) => {
+      return acc + (getValue(cur) || 0)
+    }, 0))
+  }, [local, data])
   
   const { users } = useUsers();
   
@@ -118,27 +138,26 @@ function FormElaborate(props) {
     setLoadingAnexo(false)
   }
 
-  useEffect(() => {
-    setAnexos(data?.anexos?.map((anexo) => anexo))
-  }, [])
-
   const descontoPercentual = form.watch("descontoPercentual")
 
   const handleCalcularDesconto = () => {
     const descontoFloat = parseFloat(descontoPercentual);
     const totalComDesconto =
       !isNaN(descontoFloat) && descontoFloat >= 0 && descontoFloat <= 100
-        ? (totalOriginal * (1 - descontoFloat / 100)).toFixed(2)
-        : totalOriginal;
+        ? (total * (1 - descontoFloat / 100)).toFixed(2)
+        : total;
     setTotalComDesconto(totalComDesconto)
+    form.setValue('total', totalComDesconto)
   }
+
+  console.log(total, "bbbbbbbbb", form.watch('total'))
 
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Elaboração da proposta</DialogTitle>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
         <DialogContent>
-        <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 2 }}>
             <Typography>Anexos</Typography>
             <Box display="flex" gap={2} flexWrap="nowrap" overflow="auto" flexShrink={0}>
               <Paper onClick={() => ref?.current?.click()} sx={{ cursor: 'pointer', display: 'flex', flexShrink: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: 100, width: 100 }} elevation={4}>
@@ -201,7 +220,7 @@ function FormElaborate(props) {
             />
           </Box>
           <Box display="flex" gap={2}>
-            <FormControl sx={{ width: '50%' }} size="small">
+            <FormControl sx={{ width: '30%' }} size="small">
               <InputLabel id="select-responsible">Responsável</InputLabel>
               <Select
                 labelId="select-responsible"
@@ -215,13 +234,26 @@ function FormElaborate(props) {
                 {users?.map((user) => <MenuItem key={user?.id} value={user?.id}>{user?.username}</MenuItem>)}
               </Select>
             </FormControl>
-            {data?.showBusinessDays && (<TextField
+            <TextField
+              id="local"
+              label="Local"
+              sx={{ width: '30%' }}
+              select
+              size="small"
+              defaultValue="P"
+              {...form?.register("local")}
+            >
+              <MenuItem value="P">Permanente</MenuItem>
+              <MenuItem value="C">Cliente</MenuItem>
+              <MenuItem value="T">Terceirizado</MenuItem>
+            </TextField>
+            {form.watch('local') !== "T" && (<TextField
               id="diasUteis"
               label="Dias Úteis"
               name="diasUteis"
               type="number"
               variant="outlined"
-              sx={{ width: '50%' }}
+              sx={{ width: '30%' }}
               {...form.register("diasUteis")}
               size="small"
             />)}
@@ -257,7 +289,7 @@ function FormElaborate(props) {
             />
           )}
           <Box display="flex" gap={1} >
-            {+totalOriginal !== 0 && (
+            {+total !== 0 && (
               <Box>
                 <Stack direction="row" flexWrap={'wrap'} alignItems="center" spacing={2}>
                   <Typography>Desconto</Typography>
@@ -265,7 +297,7 @@ function FormElaborate(props) {
                     placeholder="0"
                     variant="outlined"
                     InputProps={{
-                      endAdornment: <InputAdornment position="end">% de {data?.total}</InputAdornment>,
+                      endAdornment: <InputAdornment position="end">% de {total}</InputAdornment>,
                     }}
                     size="small"
                     type="number"
@@ -279,7 +311,7 @@ function FormElaborate(props) {
           
                 <Stack direction="row" alignItems="center" spacing={2} mt={2}>
                   <Typography>Total:</Typography>
-                  <Typography variant="subtitle1">R$ {totalComDesconto}</Typography>
+                  <Typography variant="subtitle1">R$ {totalComDesconto ? totalComDesconto : total}</Typography>
                 </Stack>
               </Box>
             )}

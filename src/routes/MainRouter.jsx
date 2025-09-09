@@ -21,6 +21,7 @@ import LoginPage from '../auth/pages/LoginPage'
 import RegisterBasicsPage from '../auth/pages/RegisterBasicsPage'
 import RegisterAuthPage from '../auth/pages/RegisterAuthPage'
 import RegisterLocationPage from '../auth/pages/RegisterLocationPage'
+import UserAccessPage from '../access/pages/UserAccessPage.jsx';
 
 
 export default function MainRouter() {
@@ -55,6 +56,10 @@ export default function MainRouter() {
                 <Route path="instrumento/:id" element={<AssetDetailPage />} />
                 <Route path="propostas" element={<ProposalsPage />} />
                 <Route path="proposta/:id" element={<ProposalDetailsPage />} />
+                <Route path="documentos" element={<DocumentsPage />} />
+                <Route path="documento/:id/:idRevisao" element={<DocumentDetailPage />} />
+                <Route path="documento/:id/revisoes" element={<DocumentReviews />} />
+                <Route path="acessos" element={<UserAccessPage />} />
               </Route>
 
               <Route path="/admin" element={<CommonLayout />}>
@@ -67,6 +72,7 @@ export default function MainRouter() {
                 <Route path="documento/:id/revisoes" element={<DocumentReviews />} />
                 <Route path="clientes" element={<ClientsPage />} />
                 <Route path="cliente/:id" element={<ClientDetailsPage />} />
+                <Route path="acessos" element={<UserAccessPage />} />
               </Route>
 
               <Route element={<SimpleLayout />}>

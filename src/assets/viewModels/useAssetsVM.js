@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import AssetsContext from "../context";
+import AssetsContext from "../components/context";
 import useResponsive from '../../theme/hooks/useResponsive';
 import useAsset from "../hooks/useAsset";
 import useSectorMutations from "../hooks/useSectorMutations";
@@ -13,7 +13,6 @@ const useAssetsVm = () => {
   const [valueCheckbox, setValueCheckbox] = useState({
     tag: true,
     numeroDeSerie: true,
-    observacoes: true,
     laboratorio: true,
     setor: true,
     posicaoDoInstrumento: true,
@@ -23,20 +22,34 @@ const useAssetsVm = () => {
     dataUltimaChecagem: true,
     dataDaProximaChecagem: true,
     frequenciaDeChecagem: true,
+    normativos: true,
   });
   const [selected, setSelected] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [openCreateSectorId, setOpenCreateSectorId] = useState(null);
   const [openEditSector, setOpenEditSector] = useState(false);
-  const {user} = useAuth()
-  const { sectors, isLoadingSectors } = useContext(AssetsContext);
   const [expandedItems, setExpandedItems] = useState([])
   const [selectedItem, setSelectedItem] = useState(null)
-
-  const { asset, isLoadingAsset, } = useAsset(selectedItem?.type === 'instrument' ? selectedItem?.id?.split("-")[1]  : null);
-  const { assets, search, setSearch, assetFilterForm } = useAssets();
+  const [openFormCreateInstrument, setOpenFormCreateInstrument] = useState({
+    status: false,
+    type: '',
+  });
+  
+  
+  const { sectors, isLoadingSectors } = useContext(AssetsContext);
+  
+  const {user} = useAuth()
+  const { asset, isLoadingAsset } = useAsset(selectedItem?.type === 'instrument' ? selectedItem?.id?.split("-")[1]  : null);
+  const { 
+    assets, 
+    search, 
+    setSearch, 
+    assetFilterForm,
+    isFetchingAssets
+  } = useAssets();
   
   const handleCloseCreateSector = () => setOpenCreateSectorId(null);
+  
   
   const {
     mutateDeleteSectors,
@@ -49,7 +62,11 @@ const useAssetsVm = () => {
   } = useSectorMutations(setOpenCreateSectorId, setExpandedItems, setSelectedItem, handleCloseCreateSector)
   
   const { defaultAssets, search: searchDA, setSearch: setSearchDA, isFetching } = useDefaultAssets();
-
+  
+  const handleCloseCreateInstrument = (type) => {
+    setOpenFormCreateInstrument((prev) => ({type, status: false}))
+    setError({})
+  }
   const { 
     mutateCreateClient,
     mutateUpdateClient,
@@ -57,8 +74,9 @@ const useAssetsVm = () => {
     mutateDeleteClient,
     error,
     setError,
-    mutateChangePosition
-  } = useAssetMutations();
+    mutateChangePosition,
+    duplicateInstrument
+  } = useAssetMutations(null,null,handleCloseCreateInstrument);
 
   const handleCreate = (selectedItem) => {
     const params = {
@@ -108,16 +126,20 @@ const useAssetsVm = () => {
     setValueCheckbox({
       tag: true,
       numeroDeSerie: true,
-      observacoes: true,
       laboratorio: true,
+      setor: true,
       posicaoDoInstrumento: true,
       dataUltimaCalibracao: true,
-      frequenciaDeCalibracao: true,
       dataDaProximaCalibracao: true,
+      frequenciaDeCalibracao: true,
+      dataUltimaChecagem: true,
       dataDaProximaChecagem: true,
+      frequenciaDeChecagem: true,
+      normativos: true,
     });
     setError(false);
     setSelectAll(false)
+    assetFilterForm.reset()
   };
 
   return {
@@ -168,7 +190,12 @@ const useAssetsVm = () => {
     searchDA,
     isFetching,
     assetFilterForm,
-    mutateChangePosition
+    mutateChangePosition,
+    duplicateInstrument,
+    openFormCreateInstrument, 
+    setOpenFormCreateInstrument,
+    handleCloseCreateInstrument,
+    isFetchingAssets
   }
 }
 

@@ -1,10 +1,9 @@
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { Box, Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, TextField, Tooltip, Typography } from '@mui/material';
-import CheckIcon from '@mui/icons-material/Check';
-import { useRef, useState, useEffect } from 'react';
+import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
 import useAuth from '../../auth/hooks/useAuth';
 import CreateInstrument from './CreateInstrument';
 import CustomTreeItem from './CustomTreeItem';
+import { NO_PERMISSION_ACTION } from "../../utils/messages";
 
 const TreeHeader = (props) => {
   const {
@@ -18,13 +17,19 @@ const TreeHeader = (props) => {
     setSearchDA,
     searchDA,
     isFetching,
-  } = props
+    error,
+    setError,
+    handleCloseCreateInstrument,
+    hasCreatePermission,
+  } = props;
+  console.log(hasCreatePermission, 'YYYYYYYYYYYY', !hasCreatePermission)
+
   return (
     <>
       <Stack direction="row" alignItems="center" spacing={1}>
         <CreateInstrument 
-          handleClose={() => setOpenFormCreateInstrument(false)}
-          open={openFormCreateInstrument}
+          handleClose={() => handleCloseCreateInstrument("create")}
+          open={openFormCreateInstrument?.type === 'create' && openFormCreateInstrument?.status}
           defaultAssets={defaultAssets}
           setor={selectedItem}
           cliente={cliente}
@@ -32,14 +37,32 @@ const TreeHeader = (props) => {
           setSearchDA={setSearchDA}
           searchDA={searchDA}
           isFetching={isFetching}
+          error={error}
+          setError={setError}
         />
-        
         <Typography sx={{ flexGrow: 1 }}>Setores</Typography>
-
-        <Button size="small" onClick={() => { handleCreate(); }}>
-          Criar setor
-        </Button>
-        {selectedItem && <Button variant='contained' onClick={() => setOpenFormCreateInstrument(true)} color='info' size="small">Criar instrumento</Button>}
+        <Tooltip placement="top" title={!hasCreatePermission && NO_PERMISSION_ACTION}>
+          <span>
+            <Button size="small" disabled={!hasCreatePermission} onClick={handleCreate}>
+              Criar setor
+            </Button>
+          </span>
+        </Tooltip>
+        {selectedItem && (
+          <Tooltip placement="top" title={!hasCreatePermission && NO_PERMISSION_ACTION}>
+            <span>
+              <Button 
+                variant='contained' 
+                onClick={() => setOpenFormCreateInstrument({status: true, type: 'create'})} 
+                color='info' 
+                size="small"
+                disabled={!hasCreatePermission}
+              >
+                Criar instrumento
+              </Button>
+            </span>
+          </Tooltip>
+        )}  
       </Stack>
     </>
   )
@@ -64,9 +87,14 @@ function SetorTree(props) {
     setSearchDA,
     searchDA,
     isFetching,
+    duplicateInstrument,
+    error,
+    openFormCreateInstrument, 
+    setOpenFormCreateInstrument,
+    setError,
+    handleCloseCreateInstrument
   } = props;
-  const [openFormCreateInstrument, setOpenFormCreateInstrument] = useState(false)
-  const { user } = useAuth();
+  const { user, hasCreatePermission } = useAuth();
 
   const handleSubmit = (sectorName, id) => {
     onEditSetor({id, nome: sectorName })
@@ -103,6 +131,10 @@ function SetorTree(props) {
         setSearchDA={setSearchDA}
         searchDA={searchDA}
         isFetching={isFetching}
+        error={error}
+        setError={setError}
+        handleCloseCreateInstrument={handleCloseCreateInstrument}
+        hasCreatePermission={hasCreatePermission}
       />
       <RichTreeView
         items={setores}
@@ -110,19 +142,22 @@ function SetorTree(props) {
         expandedItems={expandedItems}
         selectedItems={selectedItem ? [selectedItem?.id] : []}
         slots={{
-          item:(props) => <CustomTreeItem 
-            setSelectedItem={setSelectedItem} 
-            onDeleteSetor={onDeleteSetor} 
-            handleEditSector={onEditSetor} 
-            selectedItem={selectedItem} 
-            handleCreate={handleCreate}
-            handleEdit={handleEdit}
-            handleCloseCreateSector={handleCloseCreateSector}
-            {...props} 
-            handleSubmit={(sectorName) => handleSubmit(sectorName, props?.itemId)} 
-            isEditing={Number(props?.itemId) === Number(openCreateSectorId)}
-          />
-        }}
+          item:(props) => (
+            <CustomTreeItem 
+              setSelectedItem={setSelectedItem} 
+              onDeleteSetor={onDeleteSetor} 
+              handleEditSector={onEditSetor} 
+              selectedItem={selectedItem} 
+              handleCreate={handleCreate}
+              handleEdit={handleEdit}
+              handleCloseCreateSector={handleCloseCreateSector}
+              {...props} 
+              handleSubmit={(sectorName) => handleSubmit(sectorName, props?.itemId)} 
+              isEditing={Number(props?.itemId) === Number(openCreateSectorId)}
+              duplicateInstrument={duplicateInstrument}
+              hasCreatePermission={hasCreatePermission}
+            />
+        )}}
       />
     </Box>
   );

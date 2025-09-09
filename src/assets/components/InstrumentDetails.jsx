@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Chip, Stack, IconButton, MenuItem, Menu, CardHeader, Grid, useTheme, Box } from '@mui/material';
+import { Card, CardContent, Typography, Chip, Stack, IconButton, MenuItem, Menu, CardHeader, Grid, useTheme, Box, Tooltip, ListItemIcon } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React, { useState } from 'react'
 import useAuth from '../../auth/hooks/useAuth';
@@ -8,6 +8,7 @@ import { fDate } from '../../utils/formatTime';
 import EmptyYet from '../../components/EmptyYet';
 import { dateDistanceText, findDateStatusColor } from '../../utils/date';
 import InstrumentPosition from './InstrumentPosition';
+import LockIcon from '@mui/icons-material/Lock';
 
 
 const tipoSinalMap = {
@@ -45,17 +46,20 @@ const OptionsMenu = ({
   asset,
   mutateDeleteClient,
   setSelectedItem,
-  openForm, 
-  setOpenForm,
+  openFormCreateInstrument, 
+  setOpenFormCreateInstrument,
   isFetching,
   searchDA,
   setSearchDA,
-  setores
+  setores, 
+  error,
+  handleCloseCreateInstrument,
+  setError
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   
   const open = Boolean(anchorEl);
-  const { user } = useAuth();
+  const { user, hasDeletePermission, hasEditPermission } = useAuth();
   
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -86,21 +90,33 @@ const OptionsMenu = ({
             'aria-labelledby': 'basic-button',
           },
         }}
+      >
+        <MenuItem 
+          disabled={!hasEditPermission} 
+          onClick={() => setOpenFormCreateInstrument({status: true, type: 'edit'})}
         >
-        <MenuItem onClick={() => setOpenForm({status: true, type: 'edit'})}>Editar</MenuItem>
-        <MenuItem onClick={() => setOpenForm({status: true, type: 'delete'})}>Excluir</MenuItem>
+          {!hasEditPermission && <ListItemIcon><LockIcon fontSize='small' /></ListItemIcon>}
+          Editar
+        </MenuItem>
+        <MenuItem 
+          disabled={!hasDeletePermission} 
+          onClick={() => setOpenFormCreateInstrument({status: true, type: 'delete'})}
+        >
+          {!hasDeletePermission && <ListItemIcon><LockIcon fontSize='small' /></ListItemIcon>}
+          Excluir
+        </MenuItem>
       </Menu>
 
       <ConfirmDeleteDialog
-        open={openForm?.type === 'delete' && openForm?.status}
-        onClose={() => setOpenForm({status: false, type: 'delete'})}
+        open={openFormCreateInstrument?.type === 'delete' && openFormCreateInstrument?.status}
+        onClose={() => setOpenFormCreateInstrument({status: false, type: 'delete'})}
         type="instrument"
         onConfirm={() => {mutateDeleteClient(asset?.id); setSelectedItem(null)}}
-        />
+      />
 
       <CreateInstrument
-        handleClose={() => setOpenForm({status: false, type: 'edit'})}
-        open={openForm?.type === 'edit' && openForm?.status}
+        handleClose={() => handleCloseCreateInstrument("edit")}
+        open={openFormCreateInstrument?.type === 'edit' && openFormCreateInstrument?.status}
         defaultAssets={defaultAssets}
         setor={selectedItem}
         cliente={user?.cliente}
@@ -110,6 +126,8 @@ const OptionsMenu = ({
         setSearchDA={setSearchDA}
         searchDA={searchDA}
         setores={setores}
+        error={error}
+        setError={setError}
       />
     </div>
   )
@@ -127,33 +145,38 @@ function InstrumentDetails({
   searchDA,
   setSearchDA,
   setores,
-  mutateChangePosition
+  mutateChangePosition,
+  error,
+  setError,
+  openFormCreateInstrument, 
+  setOpenFormCreateInstrument,
+  handleCloseCreateInstrument,
+  mutateCreateClient
 }) {
-  const { user } = useAuth();
-  const [openForm, setOpenForm] = useState({
-    status: false,
-    type: '',
-  });
+  const { user, hasCreatePermission } = useAuth();
+
   if (!instrumento) {
     return (
       <>
         <EmptyYet
           content="instrumento"
-          onCreate={() =>  setOpenForm({status: true, type: 'create'})}
+          onCreate={() =>  setOpenFormCreateInstrument({status: true, type: 'create'})}
           imageAlt="Mascote da empresa"
-          />
+        />
         <CreateInstrument
-          handleClose={() => setOpenForm({status: false, type: 'create'})}
-          open={openForm?.type === 'create' && openForm?.status}
+          handleClose={() => handleCloseCreateInstrument("create")}
+          open={openFormCreateInstrument?.type === 'create' && openFormCreateInstrument?.status}
           defaultAssets={defaultAssets}
           setor={selectedItem}
           cliente={user?.cliente}
-          mutate={mutateUpdateClient}
+          mutate={mutateCreateClient}
+          error={error}
+          setError={setError}
+          setSearchDA={setSearchDA}
         />
       </>
     )
   }
-  
   const tipoDeInstrumento = instrumento?.instrumento?.tipoDeInstrumento;
   const theme = useTheme()
   return (
@@ -180,12 +203,15 @@ function InstrumentDetails({
               asset={instrumento}
               mutateDeleteClient={mutateDeleteClient}
               setSelectedItem={setSelectedItem}
-              openForm={openForm}
-              setOpenForm={setOpenForm}
+              openFormCreateInstrument={openFormCreateInstrument}
+              setOpenFormCreateInstrument={setOpenFormCreateInstrument}
               isFetching={isFetching}
               setSearchDA={setSearchDA}
               searchDA={searchDA}
               setores={setores}
+              error={error}
+              setError={setError}
+              handleCloseCreateInstrument={handleCloseCreateInstrument}
             />
           </Box>
         </Stack>
@@ -283,27 +309,29 @@ function InstrumentDetails({
             </Grid>
           )}
 
-          {(instrumento?.criterioDeAceitacao ||
-            instrumento?.referenciaDoCriterio ||
-            instrumento?.instrumento?.tipoDeServio ||
-            instrumento?.observacaoCriterioAceitacao) && (
+          {(!!instrumento?.criteriosAceitacao?.length) && (
             <Grid item xs={12} sm={6} md={6}>
-              <Typography variant="subtitle2" my={1}>Critério de aceitação</Typography>
-              {!!instrumento?.criterioDeAceitacao && (
-                <Typography variant="body2">
-                  Critério de aceitação: {instrumento.criterioDeAceitacao} {instrumento.unidade}
-                </Typography>
-              )}
-              {!!instrumento?.referenciaDoCriterio && (
-                <Typography variant="body2">Memória de cálculo: {instrumento.referenciaDoCriterio}</Typography>
-              )}
+              <Typography variant="subtitle2" my={1}>{instrumento?.criteriosAceitacao?.length > 1 ? 'Critérios de aceitação' : 'Critério de aceitação'}</Typography>
+              {instrumento?.criteriosAceitacao?.map((criterio, i) => (
+                <div key={`${criterio?.tipo} ${i}` }>
+                  <Typography variant="body2" fontWeight={700}>{criterio?.tipo}</Typography>
+                  {!!criterio?.criterioDeAceitacao && (
+                    <Typography variant="body2">
+                      Critério de aceitação: {criterio.criterioDeAceitacao} {criterio.unidade}
+                    </Typography>
+                  )}
+                  {!!criterio?.referenciaDoCriterio && (
+                    <Typography variant="body2">Memória de cálculo: {criterio.referenciaDoCriterio}</Typography>
+                  )}
+                  {!!criterio?.observacaoCriterioAceitacao && (
+                    <Typography variant="body2">Observação: {criterio.observacaoCriterioAceitacao}</Typography>
+                  )}
+                </div>
+              ))}
               {!!instrumento?.instrumento?.tipoDeServio && (
                 <Typography variant="body2">
                   Tipo de serviço: {tipoServicoMap[instrumento.instrumento.tipoDeServio] || 'Desconhecido'}
                 </Typography>
-              )}
-              {!!instrumento?.observacaoCriterioAceitacao && (
-                <Typography variant="body2">Observação: {instrumento.observacaoCriterioAceitacao}</Typography>
               )}
             </Grid>
           )}
@@ -329,6 +357,15 @@ function InstrumentDetails({
                   const isLast = index === arr.length - 1;
                   return `${norma?.nome}${isLast ? '.' : ', '}`;
                 })}
+              </Typography>
+            </Grid>
+          )}
+
+          {!!instrumento?.observacao && (
+            <Grid item xs={12} sm={6} md={6}>
+              <Typography variant="subtitle2" my={1}>Observação</Typography>
+              <Typography variant="body2">
+                {instrumento?.observacao}
               </Typography>
             </Grid>
           )}

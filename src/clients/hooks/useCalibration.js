@@ -28,14 +28,14 @@ const useCalibrations = (id, instrumento, checagem) => {
   
   const handleSearchOS = debounce((value) => setDebouncedSearch(value));
   useEffect(() => { handleSearchOS(search) }, [search, handleSearchOS])
-  
   const defaultValues = useMemo(() => ({
-    local: selectedCalibration?.local ? selectedCalibration?.local : '',
+    local: selectedCalibration?.local ? selectedCalibration?.local : 'P',
     data: selectedCalibration?.data ? selectedCalibration?.data : null,
     ordemDeServico: selectedCalibration?.ordemDeServico ? selectedCalibration?.ordemDeServico : '',
     observacoes: selectedCalibration?.observacoes ? selectedCalibration?.observacoes : '',
-    maiorErro: selectedCalibration?.maiorErro ? selectedCalibration?.maiorErro : null,
-    incerteza: selectedCalibration?.incerteza ? selectedCalibration?.incerteza : null,
+    criterio: selectedCalibration?.resultados?.length && selectedCalibration?.resultados[0]?.criterio?.id ? selectedCalibration?.resultados[0]?.criterio?.id  : null,
+    maiorErro: selectedCalibration?.resultados?.length && selectedCalibration?.resultados[0]?.maiorErro ? selectedCalibration?.resultados[0]?.maiorErro : null,
+    incerteza: selectedCalibration?.resultados?.length && selectedCalibration?.resultados[0]?.incerteza ? selectedCalibration?.resultados[0]?.incerteza : null,
     preco: !!selectedCalibration?.preco ? selectedCalibration.preco : null,
     laboratorio: !!selectedCalibration?.laboratorio ? selectedCalibration.laboratorio : '',
     observacaoFornecedor: !!selectedCalibration?.observacaoFornecedor ? selectedCalibration.observacaoFornecedor : '',
@@ -43,14 +43,13 @@ const useCalibrations = (id, instrumento, checagem) => {
   
   const form = useForm({ defaultValues })
   const formCreate = useForm({ defaultValues: {
-    local: '',
+    local: 'P',
     data: null,
     ordemDeServico: '',
     observacoes: '',
     maiorErro: null,
     incerteza: null,
-    criterioDeAceitacao: '',
-    referenciaDoCriterio: null,
+    criterio: null,
     arquivo: null,
     numero: '',
     anexos: [],
@@ -265,6 +264,39 @@ const useCalibrations = (id, instrumento, checagem) => {
     },
   })
 
+  const exportMovements = async() => {
+    try {
+      const resposta = await axios.get(
+        `/instrumentos/${Number(instrumento)}/exportar_movimentacoes/`,
+        { responseType: "blob" }
+      );
+  
+  
+      if (resposta.status === 200) {
+        const url = window.URL.createObjectURL(new Blob([resposta.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `relatorio_movimentacoes_${instrumento}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        enqueueSnackbar('Exportação realizada com sucesso!', {
+          variant: 'success'
+        });
+      } else {
+        enqueueSnackbar('Erro ao exportar movimentações. Tente novamente!', {
+          variant: 'error'
+        });
+      }
+    } catch (error) {
+      enqueueSnackbar('Erro ao exportar movimentações. Tente novamente!', {
+        variant: 'error'
+      });
+    }
+  }
+
+
+
   return {
     data,
     error,
@@ -296,6 +328,7 @@ const useCalibrations = (id, instrumento, checagem) => {
     error,
     setError,
     isLoadingCalibrations,
+    exportMovements
   }
 }
 

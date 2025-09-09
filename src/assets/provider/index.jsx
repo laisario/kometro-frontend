@@ -1,4 +1,4 @@
-import AssetsContext from "../context";
+import AssetsContext from "../components/context";
 import { useQuery } from 'react-query';
 import { axios } from '../../api';
 import useAuth from "../../auth/hooks/useAuth";

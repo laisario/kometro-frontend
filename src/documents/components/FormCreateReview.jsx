@@ -19,6 +19,8 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {  useWatch } from 'react-hook-form';
 import useUsers from '../../auth/hooks/useUsers';
 import { availableFormats } from '../../utils/documents';
+import useAuth from '../../auth/hooks/useAuth';
+import useClient from '../../clients/hooks/useClient';
 
 function FormCreateReview(props) {
   const { 
@@ -31,7 +33,8 @@ function FormCreateReview(props) {
     error,
     setError
   } = props;
-  const { users } = useUsers();
+  const { user } = useAuth();
+  const { client } = useClient(user?.cliente || null)
 
   const {
     arquivo,
@@ -48,7 +51,7 @@ function FormCreateReview(props) {
     }
   };
   
-  const usersWithoutCreator = users?.filter((user) => user.id !== idCreator)
+  const usersWithoutCreator = client?.usuarios?.filter((user) => user.id !== idCreator)
 
   return (
     <Dialog

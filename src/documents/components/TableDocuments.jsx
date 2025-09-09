@@ -47,6 +47,7 @@ function TableDocuments(props) {
   }
 
   const isFiltering = formFilter?.formState?.isDirty
+  const admin = 'dashboard'
 
   return (
     <Card>
@@ -86,7 +87,7 @@ function TableDocuments(props) {
                         aria-checked={isItemSelected}
                         tabIndex={-1}
                         key={row.id}
-                        onClick={() => { navigate(`/admin/documento/${row?.id}/${row?.revisoes[0]?.id || 0}`) }}
+                        onClick={() => { navigate(`/${admin}/documento/${row?.id}/${row?.revisoes[0]?.id || 0}`) }}
                           sx={{ cursor: 'pointer' }}
                           >
                           <TableCell padding="checkbox">

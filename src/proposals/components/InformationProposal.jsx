@@ -14,6 +14,7 @@ import dayjs from 'dayjs';
 import { capitalizeFirstLetter as CFL, titleCase } from '../../utils/formatString';
 import FilesSelection from './FilesSelection';
 import { statusMessages, statusColor, statusString } from '../../utils/proposals';
+import { localLabels } from '../../utils/assets';
 
 
 
@@ -45,8 +46,8 @@ function InformationProposol(props) {
   return (
     <Grid container justifyContent="space-between" flexDirection={isMobile ? 'column-reverse' : 'row'}>
       <Box>
-        {+(data?.total) > 0 &&
-          <Typography variant="h6">Total: R${data?.totalComDesconto}</Typography>
+        {+(data?.totalComDesconto || data?.total) > 0 &&
+          <Typography variant="h6">Total: R${data?.totalComDesconto ? data?.totalComDesconto : data?.total}</Typography>
         }
         {!!data?.dataCriacao && admin &&
           <Typography variant="subtitle1" fontWeight="500">
@@ -80,6 +81,7 @@ function InformationProposol(props) {
           </Typography>
         }
         {!!data?.responsavel?.username && (<Typography variant="subtitle1" fontWeight="500">Funcionário responsável: {titleCase(data?.responsavel?.username)}</Typography>)}
+        {!!data?.local && (<Typography variant="subtitle1" fontWeight="500">Local calibração: {localLabels[data?.local]}</Typography>)}
       </Box>
       <Box display="flex" mb={isMobile ? 2 : 0}  flexDirection={isMobile ? "row" : "column"} gap={1}>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>

@@ -1,4 +1,4 @@
-import { Link, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Paper, TextField, Typography, Accordion, AccordionSummary, AccordionDetails, Grid, InputAdornment } from '@mui/material';
+import { Link, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, FormLabel, Paper, TextField, Typography, Accordion, AccordionSummary, AccordionDetails, Grid, InputAdornment, MenuItem } from '@mui/material';
 import React, { useEffect, useRef } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import 'dayjs/locale/pt-br';
@@ -26,7 +26,8 @@ function Form(props) {
     isLoadingCreation,
     error,
     setError,
-    checagem
+    checagem,
+    criterios
   } = props;
 
   const { fields: anexos, append, remove, } = useFieldArray({
@@ -87,16 +88,21 @@ function Form(props) {
             helperText={!!error?.ordem_de_servico && error?.ordem_de_servico}
           />
           <TextField
-            autoFocus
             id="local"
             label="Local"
             sx={{ width: isMobile ? '100%' : '50%' }}
+            select
+            defaultValue="P"
             {...form?.register("local", {
               onChange: (e) => {if (error?.local) setError({})},
             })}
             error={!!error?.local}
             helperText={!!error?.local && error?.local}
-          />
+          >
+            <MenuItem value="P">Permanente</MenuItem>
+            <MenuItem value="C">Cliente</MenuItem>
+            <MenuItem value="T">Terceirizado</MenuItem>
+          </TextField>
           <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
             <DatePicker
               label={checagem ? 'Data da checagem' : "Data da calibração"}
@@ -106,30 +112,6 @@ function Form(props) {
               sx={{ width: isMobile ? '100%' : '50%' }}
             />
           </LocalizationProvider>
-        </Row>
-        <Row>
-          <TextField
-            autoFocus
-            id="maiorErro"
-            label="Maior erro"
-            fullWidth
-            {...form?.register("maiorErro", {
-              onChange: (e) => {if (error?.maior_erro) setError({})},
-            })}
-            error={!!error?.maior_erro}
-            helperText={!!error?.maior_erro && error?.maior_erro}
-          />
-          {!checagem && <TextField
-            autoFocus
-            id="incerteza"
-            label="Incerteza"
-            fullWidth
-            {...form?.register("incerteza", {
-              onChange: (e) => {if (error?.incerteza) setError({})},
-            })}
-            error={!!error?.incerteza}
-            helperText={!!error?.incerteza && error?.incerteza}
-          />}
         </Row>
         <TextField
           autoFocus
@@ -144,6 +126,69 @@ function Form(props) {
           error={!!error?.observacoes}
           helperText={!!error?.observacoes && error?.observacoes}
         />
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom mt={2}>
+              Resultado por Critério de Aceitação
+            </ Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+          {!!criterios?.length ? (
+            <Row>
+             <TextField
+                id="criterio"
+                label="Critério de aceitação"
+                fullWidth
+                select
+                {...form?.register("criterio", {
+                  onChange: (e) => {if (error?.criterio) setError({})},
+                })}
+                defaultValue={calibration?.resultados?.[0]?.criterio?.id || ""}
+                error={!!error?.criterio}
+                helperText={!!error?.criterio && error?.criterio}
+                SelectProps={{
+                  renderValue: (selectedId) => {
+                    const selected = criterios.find(c => c.id === selectedId);
+                    return selected ? selected.tipo : "";
+                  }
+                }}
+              > 
+                {criterios?.map((criterio) => (
+                  <MenuItem key={criterio?.id} value={criterio?.id}>
+                    <div>
+                      <strong>{criterio?.tipo}</strong>: {criterio.criterioDeAceitacao} {criterio.unidade} <br/>
+                      <small>{criterio?.referenciaDoCriterio} - {criterio?.observacaoCriterioAceitacao}</small>
+                    </div>
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                autoFocus
+                id="maiorErro"
+                label="Maior erro"
+                fullWidth
+                {...form?.register("maiorErro", {
+                  valueAsNumber: true,
+                  onChange: (e) => {if (error?.maior_erro) setError({})},
+                })}
+                error={!!error?.maior_erro}
+                helperText={!!error?.maior_erro && error?.maior_erro}
+              />
+              {!checagem && <TextField
+                autoFocus
+                id="incerteza"
+                label="Incerteza"
+                fullWidth
+                {...form?.register("incerteza", {
+                  onChange: (e) => {if (error?.incerteza) setError({})},
+                })}
+                error={!!error?.incerteza}
+                helperText={!!error?.incerteza && error?.incerteza}
+              />}
+            </Row>
+          ) : <Typography color='info'  variant="body2">Este instrumento ainda não possui nenhum critério registrado. Por favor, edite o instrumento e adicione ao menos um critério.</Typography> }
+          </AccordionDetails>
+        </Accordion>
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="subtitle1" color="text.secondary" gutterBottom mt={2}>

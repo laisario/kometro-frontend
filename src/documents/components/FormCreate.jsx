@@ -30,6 +30,8 @@ import useProcedures from '../hooks/useProcedures';
 import useUsers from '../../auth/hooks/useUsers';
 import { availableFormats } from '../../utils/documents';
 import useResponsive from '../../theme/hooks/useResponsive';
+import useClient from '../../clients/hooks/useClient';
+import useAuth from '../../auth/hooks/useAuth';
 
 
 export default function FormCreate(props) {
@@ -46,16 +48,17 @@ export default function FormCreate(props) {
 
   const isMobile = useResponsive('down', 'md');
   const { procedures } = useProcedures();
-  const { users } = useUsers();
-
+  const { user } = useAuth();
+  const { client } = useClient(user?.cliente || null)
+  
   const handleChange = (event) => {
     const { name, files } = event.target;
     if (error['arquivo']) setError((prevError) => delete prevError?.arquivo)
-    if (name === 'arquivo') {
-      form.setValue("arquivo", files[0]);
-    }
-  };
-
+      if (name === 'arquivo') {
+        form.setValue("arquivo", files[0]);
+      }
+    };
+    
   const {
     status,
     codigo,
@@ -66,7 +69,7 @@ export default function FormCreate(props) {
     frequencia,
     arquivo,
   } = useWatch({ control: form.control })
-
+  
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
@@ -161,7 +164,7 @@ export default function FormCreate(props) {
                       error={!!error?.elaborador}
                       helperText={!!error?.elaborador && error?.elaborador}
                     >
-                      {users?.map(({ username, id }) => (
+                      {client?.usuarios?.map(({ username, id }) => (
                         <MenuItem key={id} value={id}>
                           {username}
                         </MenuItem>

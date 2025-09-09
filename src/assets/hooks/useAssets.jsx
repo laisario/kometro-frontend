@@ -7,6 +7,7 @@ import { useForm, useWatch } from "react-hook-form";
 const useAssets = (id) => {
   const [debouncedSearchFilter, setDebouncedSearchFilter] = useState('')
   const [search, setSearch] = useState('')
+  const [debouncedSearchNormaFilter, setDebouncedSearchNormaFilter] = useState('')
 
   const assetFilterForm = useForm({
     defaultValues: {
@@ -14,6 +15,7 @@ const useAssets = (id) => {
       dateStart: "",
       dateStop: "",
       filterByDate: false,
+      norma: '',
     }
   })
 
@@ -21,11 +23,13 @@ const useAssets = (id) => {
     dateStart,
     dateStop,
     filterByDate,
-    status
+    status,
+    norma,
   } = useWatch({ control: assetFilterForm.control })
   
   const { 
-    data: assets, 
+    data: assets,
+    isFetching: isFetchingAssets,
   } = useQuery({
     queryKey: [
       'instrumentos', 
@@ -35,6 +39,7 @@ const useAssets = (id) => {
       dateStop,
       filterByDate,
       status,
+      debouncedSearchNormaFilter,
     ], 
     queryFn: async () => {
       const response = await axios.get('/instrumentos/', {
@@ -45,6 +50,7 @@ const useAssets = (id) => {
           dateStop,
           filterByDate,
           status,
+          norma: debouncedSearchNormaFilter,
         }
       });
       
@@ -55,13 +61,17 @@ const useAssets = (id) => {
   });
   
   const handleSearchFilter = debounce((value) => setDebouncedSearchFilter(value), 1500);
+  const handleSearchNormaFilter = debounce((value) => setDebouncedSearchNormaFilter(value), 1500);
+
   useEffect(() => { handleSearchFilter(search) }, [search, handleSearchFilter])
+  useEffect(() => { handleSearchNormaFilter(norma) }, [norma, handleSearchNormaFilter])
 
   return {
     assets, 
     search,
     setSearch,
-    assetFilterForm
+    assetFilterForm,
+    isFetchingAssets,
   }
 };
 

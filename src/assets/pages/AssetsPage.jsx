@@ -53,6 +53,11 @@ function AssetsPage() {
     isFetching,
     assetFilterForm,
     mutateChangePosition,
+    duplicateInstrument,
+    openFormCreateInstrument, 
+    setOpenFormCreateInstrument,
+    handleCloseCreateInstrument,
+    isFetchingAssets,
   } = useAssetsVM();
   return (
     <>
@@ -106,6 +111,7 @@ function AssetsPage() {
             selectAll={selectAll}
             assets={assets}
             assetFilterForm={assetFilterForm}
+            isFetchingAssets={isFetchingAssets}
           />
           {isLoadingSectors
             ? <Loading />
@@ -140,6 +146,12 @@ function AssetsPage() {
                       setSearchDA={setSearchDA}
                       searchDA={searchDA}
                       isFetching={isFetching}
+                      duplicateInstrument={duplicateInstrument}
+                      error={error}
+                      openFormCreateInstrument={openFormCreateInstrument}
+                      setOpenFormCreateInstrument={setOpenFormCreateInstrument}
+                      handleCloseCreateInstrument={handleCloseCreateInstrument}
+                      setError={setError}
                     />
                   </Grid>
 
@@ -164,6 +176,7 @@ function AssetsPage() {
                       <InstrumentDetails
                         instrumento={asset}
                         mutateUpdateClient={mutateUpdateClient}
+                        mutateCreateClient={mutateCreateClient}
                         isLoadingUpdateClient={isLoadingUpdateClient}
                         defaultAssets={defaultAssets}
                         selectedItem={selectedItem}
@@ -176,6 +189,9 @@ function AssetsPage() {
                         searchDA={searchDA}
                         setores={sectors}
                         mutateChangePosition={mutateChangePosition}
+                        openFormCreateInstrument={openFormCreateInstrument}
+                        setOpenFormCreateInstrument={setOpenFormCreateInstrument}
+                        handleCloseCreateInstrument={handleCloseCreateInstrument}
                       />
                     </Box>
 

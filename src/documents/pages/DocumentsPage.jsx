@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import { 
   Button, 
   Grid, 
+  Tooltip, 
   Typography, 
 } from '@mui/material';
 import FormCreate from '../components/FormCreate';
@@ -13,6 +14,8 @@ import CsvViewer from '../../components/CsvViewer';
 import Loading from '../../components/Loading';
 import { useDocumentsVM } from '../viewModels/useDocumentsVM';
 import TableDocuments from '../components/TableDocuments';
+import useAuth from '../../auth/hooks/useAuth';
+import { NO_PERMISSION_ACTION } from '../../utils/messages';
 
 
 export default function DocumentsPage() {
@@ -49,6 +52,7 @@ export default function DocumentsPage() {
     handleClose,
     user,
   } = useDocumentsVM();
+  const { hasCreatePermission } = useAuth()
 
   return (
     <>
@@ -69,9 +73,13 @@ export default function DocumentsPage() {
               </Button>
             </Grid>
             <Grid item>
-              <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenForm}>
-                Novo documento
-              </Button>
+              <Tooltip placement='top' title={!hasCreatePermission && NO_PERMISSION_ACTION}>
+                <span>
+                  <Button disabled={!hasCreatePermission} variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenForm}>
+                    Novo documento
+                  </Button>
+                </span>
+              </Tooltip>
             </Grid>
           </Grid>
         </Grid>

@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useMemo, useState } from 'react';
 import {
   Table, TableBody, TableCell, TableHead, TableRow,
   Checkbox, Box
@@ -10,31 +10,41 @@ const InstrumentoTable = forwardRef(({ csvContent, selectAll, instrumentos, valu
   const fieldMap = {
     tag: { label: 'Tag', path: 'tag' },
     numeroDeSerie: { label: 'Número de Série', path: 'numeroDeSerie' },
-    observacoes: { label: 'Observações', path: 'observacaoStatus' },
     laboratorio: { label: 'Laboratório', path: 'laboratorio' },
     setor: { label: 'Setor', path: 'setor.nome' },
     posicaoDoInstrumento: { label: 'Posição do Instrumento', path: 'posicao' },
     dataUltimaCalibracao: { label: 'Data Última Calibração', path: 'dataUltimaCalibracao' },
     dataDaProximaCalibracao: { label: 'Data da Próxima Calibração', path: 'dataProximaCalibracao' },
-    frequenciaDeCalibracao: { label: 'Frequência de Calibração', isComplex: true },
+    frequenciaDeCalibracao: { label: 'Frequência de Calibração' },
     dataUltimaChecagem: { label: 'Data Última Checagem', path: 'dataUltimaChecagem' },
     dataDaProximaChecagem: { label: 'Data da Próxima Checagem', path: 'dataProximaChecagem' },
-    frequenciaDeChecagem: { label: 'Frequência de Checagem', isComplex: true },
+    frequenciaDeChecagem: { label: 'Frequência de Checagem' },
+    normativos: { label: 'Normativos' },
   };
 
   const activeFields = Object.keys(valueCheckbox).filter((key) => valueCheckbox[key]);
 
-  const handleRowSelect = (id) => {
-    setSelected((prev) =>
-      prev.includes(+id)
-        ? prev.filter((x) => +x !== +id)
-        : [...prev, +id]
-    );
+  const handleRowSelect = (id, instrumento) => {
+    setSelected((prev) => {
+      const exists = prev.find((item) => item.id === id);
+  
+      if (exists) {
+        return prev.filter((item) => item.id !== id);
+      }
+      return [...prev, { id, instrumento }];
+    });
   };
 
   const getValue = (item, path) => {
-    return path.split('.').reduce((acc, part) => acc?.[part], item) ?? '';
+    return path?.split('.')?.reduce((acc, part) => acc?.[part], item) ?? '';
   };
+
+  const list = useMemo(() => {
+    if (csvContent && !!selected?.length) {
+      return selected?.map((inst) => inst?.instrumento)
+    }
+    return instrumentos
+  }, [csvContent])
 
   return (
     <div >
@@ -56,18 +66,18 @@ const InstrumentoTable = forwardRef(({ csvContent, selectAll, instrumentos, valu
           </TableRow>
         </TableHead>
         <TableBody>
-          {instrumentos?.map((inst) => (
+          {list?.map((inst) => (
             <TableRow key={inst.id} hover>
               <TableCell padding="checkbox">
                 {!csvContent && <Checkbox
                   size="small"
-                  checked={selected.includes(inst.id) || selectAll}
-                  onChange={() => handleRowSelect(inst.id)}
+                  checked={selected.find((instrumento) => +instrumento?.id === +inst?.id) || selectAll}
+                  onChange={() => handleRowSelect(inst.id, inst)}
                 />}
               </TableCell>
               {activeFields.map((fieldKey) => {
                 const field = fieldMap[fieldKey];
-                if (field?.isComplex && fieldKey === 'frequenciaDeCalibracao') {
+                if (fieldKey === 'frequenciaDeCalibracao') {
                   const freq = inst?.frequenciaCalibracao;
                   return (
                     <TableCell key={fieldKey}>
@@ -78,7 +88,7 @@ const InstrumentoTable = forwardRef(({ csvContent, selectAll, instrumentos, valu
                   );
                 }
 
-                if (field?.isComplex && fieldKey === 'frequenciaDeChecagem') {
+                if (fieldKey === 'frequenciaDeChecagem') {
                   const freq = inst?.frequenciaChecagem;
                   return (
                     <TableCell key={fieldKey}>
@@ -106,9 +116,18 @@ const InstrumentoTable = forwardRef(({ csvContent, selectAll, instrumentos, valu
                   );
                 }
 
+                if (fieldKey === 'normativos') {
+                  const lastNorm = inst?.normativos?.length - 1
+                  return (
+                    <TableCell key={fieldKey}>
+                      {inst?.normativos?.map((n, i) => `${n?.nome} ${i == lastNorm ? '.' : ','} `)}
+                    </TableCell>
+                  );
+                }
+
                 return (
                   <TableCell key={fieldKey}>
-                    {getValue(inst, field.path)}
+                    {getValue(inst, field?.path)}
                   </TableCell>
                 );
               })}

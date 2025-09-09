@@ -2,15 +2,19 @@ import {
   Stack,
   Chip,
   Menu,
-  MenuItem
+  MenuItem,
+  ListItemIcon
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useRef, useState } from 'react';
+import useAuth from '../../auth/hooks/useAuth';
+import LockIcon from '@mui/icons-material/Lock';
 
 function InstrumentPosition({instrumento, positionMap, mutateChangePosition}) {
   const [posicao, setPosicao] = useState(instrumento?.posicao || '');
   const [anchorEl, setAnchorEl] = useState(null);
   const triggerRef = useRef(null);
+  const { hasEditPermission } = useAuth();
 
   const handleToggleMenu = (event) => {
     if (anchorEl) {
@@ -63,7 +67,9 @@ function InstrumentPosition({instrumento, positionMap, mutateChangePosition}) {
               <MenuItem
                 key={key}
                 onClick={() => handleChangePosicao(key)}
+                disabled={!hasEditPermission}
               >
+                {!hasEditPermission && <ListItemIcon><LockIcon fontSize='small' /></ListItemIcon>}
                 {value.label}
               </MenuItem>
             ))}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import {jwtDecode} from 'jwt-decode';
 import AuthContext from '../context';
+import { axios } from '../../api';
 
 const AuthProvider = ({ children }) => {
   const token = window.localStorage.getItem('token');
@@ -11,14 +12,32 @@ const AuthProvider = ({ children }) => {
   const [clienteId, setClienteId] = useState(storedClienteId || null);
   const navigate = useNavigate();
 
+  const getUser = async(id) => {
+    const decoded = jwtDecode(token);
+      if (decoded && decoded?.user_id) {
+        const userResponse = await axios.get(`/users/${decoded?.user_id}/`);
+        setUser({ 
+          token, 
+          nome: decoded?.nome, 
+          admin: decoded?.admin, 
+          id: decoded?.user_id, 
+          cliente: decoded?.cliente, 
+          roles: userResponse?.data?.groups
+        });
+      }
+  }
+
+  
+
   useEffect(() => {
     if (token) {
-      const decoded = jwtDecode(token);
-      if (decoded && decoded?.user_id) {
-        setUser({ token, nome: decoded?.nome, admin: decoded?.admin, id: decoded?.user_id, cliente: decoded?.cliente });
+      const saveUser = async() => {
+        return await getUser()
       }
+      saveUser()
     }
   }, [token]);
+
 
   const redirectUsers = useCallback((user) => {
     const adminRoutes = ['/admin'];

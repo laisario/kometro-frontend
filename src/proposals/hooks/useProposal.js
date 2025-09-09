@@ -135,7 +135,6 @@ const useProposal = (id, cliente) => {
 
   const elaborate = async ({ addressClient, data }) => {
     const formValues = data;
-
     const formatDayjs = (date) => dayjs.isDayjs(date) ? date.format('YYYY-MM-DD') : null;
     const commonData = {
       total: formValues?.total || 0,
@@ -144,10 +143,10 @@ const useProposal = (id, cliente) => {
       numero: formValues?.numeroProposta || '',
       validade: formatDayjs(formValues?.validade),
       status: formValues?.status || null,
-      prazoDePagamento: formatDayjs(formValues?.prazoDePagamento),
       responsavel: formValues?.responsavel || null,
       diasUteis: formValues?.diasUteis || null,
       descontoPercentual: formValues?.descontoPercentual || null,
+      local: formValues?.local || null,
     };
 
     if (formValues?.enderecoDeEntrega === 'enderecoCadastrado') {

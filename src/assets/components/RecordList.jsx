@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardContent } from '@mui/material'
+import { Box, Button, Card, CardContent, Tooltip } from '@mui/material'
 import React, { useState } from 'react'
 import useResponsive from '../../theme/hooks/useResponsive';
 import CalibrationPanel from '../../clients/components/CalibrationPanel';
@@ -10,6 +10,8 @@ import useCalibrations from '../../clients/hooks/useCalibration';
 import Form from '../../clients/components/Form';
 import AddIcon from '@mui/icons-material/Add';
 import Movimentations from './InstrumentMovimentations';
+import useAuth from '../../auth/hooks/useAuth';
+import { EXPORT_ACTION, NO_PERMISSION_ACTION } from '../../utils/messages';
 
 const recordList = [
   {
@@ -21,6 +23,18 @@ const recordList = [
     label: 'Checagem'
   }
 ]
+
+const dataButton = {
+  '1': 'Criar calibração',
+  '2': 'Criar checagem',
+  '3': 'Exportar movimentações',
+}
+
+const messageTooltip = {
+  '1': NO_PERMISSION_ACTION,
+  '2': NO_PERMISSION_ACTION,
+  '3': EXPORT_ACTION,
+}
 
 function RecordList({asset}) {
   const isMobile = useResponsive('down', 'md');
@@ -52,14 +66,16 @@ function RecordList({asset}) {
     isLoadingCalibrations,
     setError,
     formCertificate,
+    exportMovements
   } = useCalibrations(null, asset?.id, value === "2")
+
+  const { hasCreatePermission } = useAuth()
 
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
     setSelectedCalibration({});
   };
-  const calibracoes = '1'
   const movimentacoes = '3'
   return (
     <Card>
@@ -89,18 +105,25 @@ function RecordList({asset}) {
               form={formCreate}
               isLoadingCreation={isLoadingCreation}
               error={error}
+              setError={setError}
               formCertificate={formCertificate}
               checagem={value === '2'}
+              criterios={asset?.criteriosAceitacao}
             />
-            {value !== movimentacoes && <Button 
-              startIcon={<AddIcon />} 
-              variant='contained' 
-              size='small' 
-              onClick={handleOpenForm}
-              sx={{ mt: isMobile ? 1 : 0}}
-            >
-              {value === calibracoes ? 'Cria calibração' : 'Criar checagem'}
-            </Button>}
+            <Tooltip placement="top-start" title={hasCreatePermission ? value === movimentacoes && messageTooltip[movimentacoes] : messageTooltip[value]}>
+              <span>
+                <Button 
+                  startIcon={<AddIcon />} 
+                  variant='contained'
+                  disabled={!hasCreatePermission && value !== movimentacoes}
+                  size='small' 
+                  onClick={value === movimentacoes ? exportMovements : handleOpenForm}
+                  sx={{ my: isMobile ? 1 : 0}}
+                  >
+                  {dataButton[value]}
+                </Button>
+              </span>
+            </Tooltip>
           </Box>
           {recordList?.map((record) => (
             <TabPanel key={record?.label} value={record?.value} sx={{p:0, pt: 2}}>
@@ -131,7 +154,7 @@ function RecordList({asset}) {
             </TabPanel>
           ))}
           <TabPanel sx={{ p: 0}} value={movimentacoes}>
-            <Movimentations asset={asset} movimentations={asset?.historicoPosicoes} />
+            <Movimentations isMobile={isMobile} asset={asset} movimentationsPosition={asset?.historicoPosicoes} movimentationsSector={asset?.historicoSetores} />
           </TabPanel>
         </TabContext>
       </CardContent>

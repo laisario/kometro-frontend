@@ -12,6 +12,8 @@ export const useDocument = (id) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
+  const admin = 'dashboard'
+
   const formReview = useForm({
     defaultValues: {
       arquivo: null,
@@ -67,7 +69,7 @@ export const useDocument = (id) => {
       queryClient.invalidateQueries({ queryKey: ['documentos'] });
       formReview.reset();
       setOpenFormReview(false);
-      navigate(`/admin/documento/${id}/${data?.data?.revisaoId}`, { replace: true });
+      navigate(`/${admin}/documento/${id}/${data?.data?.revisaoId}`, { replace: true });
       enqueueSnackbar(`${data?.data?.revisao?.tipo === 'revalidar' ? 'Revalidação criada com sucesso!' : 'Revisão criada com sucesso!'}`, {
         variant: 'success'
       });

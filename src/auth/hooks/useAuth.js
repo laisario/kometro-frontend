@@ -21,6 +21,8 @@ const errorMessagesRegister = {
   500: 'Erro no servidor. Tente novamente mais tarde.',
 }
 
+const creationPermissionGroups = ['gerente', 'registrador']
+
 export default function useAuth() {
   const { user, setUser, clienteId, setClienteId } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -74,10 +76,8 @@ export default function useAuth() {
   
   const errorMsgLogin = useMemo(() => errorMessagesLogin[errorLogin?.status], [errorLogin?.status])
   
-  const registerBasics = async ({ nome, telefone, cpf, empresa, razaoSocial, cnpj, ie, nomeFantasia, filial }) => {
-    const payload = empresa
-    ? { empresa, razaoSocial, cnpj, ie, nomeFantasia, filial }
-    : { nome, telefone, cpf, };
+  const registerBasics = async ({ empresa, razaoSocial, cnpj, ie, nomeFantasia, filial }) => {
+    const payload = { empresa, razaoSocial, cnpj, ie, nomeFantasia, filial }
 
     const response = await axios.post('/register/basics/', payload);
     window.localStorage.setItem('clienteId', response?.data);
@@ -129,8 +129,8 @@ export default function useAuth() {
   );
 
 
-  const registerAuth = async ({ password, email }) => {
-    const payload = { clienteId, password, username: email };
+  const registerAuth = async ({ password, email, name }) => {
+    const payload = { clienteId, password, username: email, firstName: name };
     const response = await axios.post('/register/auth/', payload);
     return response;
   };
@@ -163,6 +163,12 @@ export default function useAuth() {
     setUser(null);
   };
 
+  const roles = user?.roles?.map((role) => role?.name)
+
+  const hasCreatePermission = useMemo(() => roles?.some((role) => creationPermissionGroups?.includes(role)), [roles])
+  const hasDeletePermission =  useMemo(() => roles?.includes('gerente'), [roles])
+  const hasEditPermission =  useMemo(() => roles?.includes('gerente'), [roles])
+
   return { 
     user,
     cliente: clienteId,
@@ -181,5 +187,8 @@ export default function useAuth() {
     error,
     setError,
     verifyError,
+    hasCreatePermission,
+    hasDeletePermission,
+    hasEditPermission,
   };
 };
