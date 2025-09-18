@@ -52,7 +52,7 @@ function CardInformation({ instrument, isMobile, admin, removeInstrumentProposal
             colorValue="black"
             title="Faixa atendida"
             isMobile={isMobile}
-            value={`${instrument?.instrumento?.minimo} ${!!instrument?.instrumento?.maximo ? `- ${instrument?.instrumento?.maximo}` : ''} ${!!instrument?.instrumento?.unidade ? ` ${instrument?.instrumento?.unidade}` : ''}`}
+            value={`${instrument?.instrumento?.minimo} ${instrument?.instrumento?.maximo ? `- ${instrument?.instrumento?.maximo}` : ''} ${instrument?.instrumento?.unidade ? ` ${instrument?.instrumento?.unidade}` : ''}`}
           />
         )}
         {!!instrument?.instrumento?.tipoDeInstrumento?.modelo && (

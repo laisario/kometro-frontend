@@ -1,6 +1,5 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async';
-import useAssetsVM from '../viewModels/useAssetsVM';
 import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ExportFilter from '../components/ExportFilter';
@@ -10,6 +9,11 @@ import SetorTree from '../components/SetorTree';
 import InstrumentDetails from '../components/InstrumentDetails';
 import RecordList from '../components/RecordList';
 import SearchWithDropdown from '../components/SearchWithDropdown';
+import ButtonTooltip from '../../components/ButtonTooltip';
+import SettingsIcon from '@mui/icons-material/Settings';
+import PreferencesForm from '../components/PreferencesForm';
+import { NO_PERMISSION_ACTION } from '../../utils/messages';
+import useAssetsVm from '../viewModels/useAssetsVM';
 
 function AssetsPage() {
   const {
@@ -30,13 +34,9 @@ function AssetsPage() {
     asset, 
     mutateDeleteSectors,
     mutateUpdateSectors, 
-    mutateCreateSectors, 
     openCreateSectorId,
-    openEditSector,
     handleCreate,
-    handleOpenEditSector,
     handleCloseCreateSector,
-    handleCloseEditSector,
     defaultAssets,
     mutateCreateClient,
     expandedItems,
@@ -48,8 +48,6 @@ function AssetsPage() {
     isLoadingUpdateClient,
     mutateDeleteClient,
     assets,
-    setSearchDA,
-    searchDA,
     isFetching,
     assetFilterForm,
     mutateChangePosition,
@@ -58,7 +56,12 @@ function AssetsPage() {
     setOpenFormCreateInstrument,
     handleCloseCreateInstrument,
     isFetchingAssets,
-  } = useAssetsVM();
+    openPreferenceForm,
+    handleOpenPreferenceForm,
+    handleClosePreferenceForm,
+    hasEditPermission
+  } = useAssetsVm();
+
   return (
     <>
       <Helmet>
@@ -95,6 +98,16 @@ function AssetsPage() {
             >
               Exportar
             </Button>
+            <ButtonTooltip 
+              title={hasEditPermission ? "Preferências" : NO_PERMISSION_ACTION} 
+              disabled={!hasEditPermission} 
+              action={handleOpenPreferenceForm} 
+              icon={<SettingsIcon />}   
+            />
+            <PreferencesForm 
+              open={openPreferenceForm} 
+              handleClose={handleClosePreferenceForm}
+            />
           </Box>
         </Stack>
         <Box>
@@ -115,7 +128,7 @@ function AssetsPage() {
           />
           {isLoadingSectors
             ? <Loading />
-            : (!!sectors?.length
+            : (sectors?.length
               ? (
                 <Grid container sx={{ height: '100vh' }} spacing={4}>
                   <Grid
@@ -143,8 +156,6 @@ function AssetsPage() {
                       selectedItem={selectedItem}
                       setSelectedItem={setSelectedItem}
                       handleCloseCreateSector={handleCloseCreateSector}
-                      setSearchDA={setSearchDA}
-                      searchDA={searchDA}
                       isFetching={isFetching}
                       duplicateInstrument={duplicateInstrument}
                       error={error}
@@ -185,8 +196,6 @@ function AssetsPage() {
                         error={error}
                         setError={setError}
                         isFetching={isFetching}
-                        setSearchDA={setSearchDA}
-                        searchDA={searchDA}
                         setores={sectors}
                         mutateChangePosition={mutateChangePosition}
                         openFormCreateInstrument={openFormCreateInstrument}

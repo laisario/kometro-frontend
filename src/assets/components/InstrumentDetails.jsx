@@ -9,6 +9,7 @@ import EmptyYet from '../../components/EmptyYet';
 import { dateDistanceText, findDateStatusColor } from '../../utils/date';
 import InstrumentPosition from './InstrumentPosition';
 import LockIcon from '@mui/icons-material/Lock';
+import { frequenceCriterion } from '../../utils/assets';
 
 
 const tipoSinalMap = {
@@ -49,8 +50,6 @@ const OptionsMenu = ({
   openFormCreateInstrument, 
   setOpenFormCreateInstrument,
   isFetching,
-  searchDA,
-  setSearchDA,
   setores, 
   error,
   handleCloseCreateInstrument,
@@ -123,8 +122,6 @@ const OptionsMenu = ({
         mutate={mutateUpdateClient}
         asset={asset}
         isFetching={isFetching}
-        setSearchDA={setSearchDA}
-        searchDA={searchDA}
         setores={setores}
         error={error}
         setError={setError}
@@ -142,8 +139,6 @@ function InstrumentDetails({
   mutateDeleteClient,
   setSelectedItem,
   isFetching,
-  searchDA,
-  setSearchDA,
   setores,
   mutateChangePosition,
   error,
@@ -154,7 +149,6 @@ function InstrumentDetails({
   mutateCreateClient
 }) {
   const { user, hasCreatePermission } = useAuth();
-
   if (!instrumento) {
     return (
       <>
@@ -172,11 +166,11 @@ function InstrumentDetails({
           mutate={mutateCreateClient}
           error={error}
           setError={setError}
-          setSearchDA={setSearchDA}
         />
       </>
     )
   }
+ 
   const tipoDeInstrumento = instrumento?.instrumento?.tipoDeInstrumento;
   const theme = useTheme()
   return (
@@ -206,8 +200,6 @@ function InstrumentDetails({
               openFormCreateInstrument={openFormCreateInstrument}
               setOpenFormCreateInstrument={setOpenFormCreateInstrument}
               isFetching={isFetching}
-              setSearchDA={setSearchDA}
-              searchDA={searchDA}
               setores={setores}
               error={error}
               setError={setError}
@@ -267,8 +259,6 @@ function InstrumentDetails({
             </Grid>
           )}
 
-
-
           {(tipoDeInstrumento?.resolucao ||
             instrumento?.instrumento?.minimo ||
             instrumento?.instrumento?.maximo ||
@@ -294,6 +284,7 @@ function InstrumentDetails({
           {(instrumento?.frequenciaChecagem?.quantidade || instrumento?.frequenciaCalibracao?.quantidade) && (
             <Grid item xs={12} sm={6} md={6}>
               <Typography variant="subtitle2" my={1}>Frequência</Typography>
+              <Typography variant="body2" my={1}>Critério de frequência: {instrumento?.criterioFrequencia ? frequenceCriterion[instrumento?.criterioFrequencia] : frequenceCriterion[instrumento?.cliente?.criterioFrequenciaPadrao]}</Typography>
               {!!instrumento?.frequenciaChecagem?.quantidade && (
                 <Typography variant="body2">
                   Checagem: {instrumento.frequenciaChecagem.quantidade}{' '}

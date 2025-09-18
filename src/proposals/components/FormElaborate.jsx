@@ -89,7 +89,7 @@ function FormElaborate(props) {
   
   useEffect(() => {
     const getValue = (item) => {
-      if (!!item?.precoAlternativoCalibracao) {
+      if (item?.precoAlternativoCalibracao) {
         return item.precoAlternativoCalibracao
       } else if (local === "C") {
         return Number(item?.instrumento?.precoCalibracaoNoCliente)
@@ -150,7 +150,6 @@ function FormElaborate(props) {
     form.setValue('total', totalComDesconto)
   }
 
-  console.log(total, "bbbbbbbbb", form.watch('total'))
 
   return (
     <Dialog open={open} onClose={handleClose}>

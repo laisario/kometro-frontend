@@ -54,7 +54,7 @@ const ProposalsProvider = ({ children }) => {
   const { 
     data: allProposals, 
     error: errorProposals, 
-    isLoading: isLoadingProposals 
+    isFetching: isLoadingProposals 
   } = useQuery(
     ['propostas', 
     page, 
@@ -72,7 +72,7 @@ const ProposalsProvider = ({ children }) => {
           search: debouncedSearchFilter,
           data_criacao_after: dateStart ? dayjs(dateStart).format('YYYY-MM-DD') : null,
           data_criacao_before: dateStop ? dayjs(dateStop).format('YYYY-MM-DD') : null,
-          status: !!statusParam ? statusParam : status
+          status: statusParam ? statusParam : status
         }
       });
       return response?.data;

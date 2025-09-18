@@ -5,59 +5,36 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import Groups2Icon from '@mui/icons-material/Groups2';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 
-export const navConfigClient = [
-  {
-    title: 'página inicial',
-    path: '/dashboard/app',
-    icon: <HomeIcon />,
-  },
-  {
-    title: 'meus instrumentos',
-    path: '/dashboard/instrumentos',
-    icon: <ScaleIcon />,
-  },
-  {
-    title: 'minhas propostas',
-    path: '/dashboard/propostas',
-    icon: <ShoppingCartIcon />,
-  },
-  {
-    title: 'Documentos',
-    path: '/dashboard/documentos',
-    icon: <DescriptionIcon />
-  },
-  {
-    title: 'Acessos',
-    path: '/dashboard/acessos',
-    icon: <GroupAddIcon />
-  },
-];
-
-export const navConfigAdmin = [
-  {
-    title: 'Página inicial',
-    path: '/admin/app',
-    icon: <HomeIcon />,
-  },
-  {
-    title: 'Clientes',
-    path: '/admin/clientes',
-    icon: <Groups2Icon />
-  },
-  {
-    title: 'propostas',
-    path: '/admin/propostas',
-    icon: <ShoppingCartIcon />,
-  },
-  {
-    title: 'Documentos',
-    path: '/admin/documentos',
-    icon: <DescriptionIcon />
-  },
-  {
-    title: 'Acessos',
-    path: '/admin/acessos',
-    icon: <GroupAddIcon />
-  },
-]
+export const navConfig = (admin, hasPermission) => {
+  const data = [
+    {
+      title: 'página inicial',
+      path: `/${admin? "admin" : "dashboard"}/app`,
+      icon: <HomeIcon />,
+    },
+    {
+      title: admin ? 'Clientes' : 'Instrumentos',
+      path: admin ? '/admin/clientes' : '/dashboard/instrumentos',
+      icon: admin ?  <Groups2Icon /> : <ScaleIcon />,
+    },
+    {
+      title: 'Propostas',
+      path: `/${admin? "admin" : "dashboard"}/propostas`,
+      icon: <ShoppingCartIcon />,
+    },
+    {
+      title: 'Documentos',
+      path: `/${admin? "admin" : "dashboard"}/documentos`,
+      icon: <DescriptionIcon />
+    },
+  ]
+  if (hasPermission) {
+    data.push({
+      title: 'Acessos',
+      path: `/${admin? "admin" : "dashboard"}/acessos`,
+      icon: <GroupAddIcon />
+    })
+  }
+  return data
+};
 

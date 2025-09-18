@@ -6,13 +6,13 @@ import useAuth from "../../auth/hooks/useAuth";
 export const buildTreeItems = (sector, parentId = null) => {
   const children = [];
 
-  if (!!sector?.subsetores?.length) {
+  if (sector?.subsetores?.length) {
     sector.subsetores.forEach((sub) => {
       children.push(buildTreeItems(sub, sector.id));
     });
   }
 
-  if (!!sector?.instrumentos?.length) {
+  if (sector?.instrumentos?.length) {
     sector.instrumentos.forEach((instr) => {
       children.push({
         id:`instrument-${instr.id}`,

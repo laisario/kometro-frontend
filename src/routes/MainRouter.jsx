@@ -22,9 +22,13 @@ import RegisterBasicsPage from '../auth/pages/RegisterBasicsPage'
 import RegisterAuthPage from '../auth/pages/RegisterAuthPage'
 import RegisterLocationPage from '../auth/pages/RegisterLocationPage'
 import UserAccessPage from '../access/pages/UserAccessPage.jsx';
+import RegisterFromInvite from '../auth/pages/ResgisterFromInvite.jsx';
+import useAuth from '../auth/hooks/useAuth.js';
 
 
 export default function MainRouter() {
+  // const { user } = useAuth()
+  // const hasPermission = user?.roles?.some((role) => role?.name === 'gerente')
   return (
     <DocumentsProvider>
       <ClientsProvider>
@@ -41,6 +45,7 @@ export default function MainRouter() {
                 <Route path="basics" element={<RegisterBasicsPage />} />
                 <Route path="auth" element={<RegisterAuthPage />} />
                 <Route path="location" element={<RegisterLocationPage />} />
+                <Route path="invite/:token" element={<RegisterFromInvite />} />
               </Route>
 
               <Route element={<SimpleLayout />}>
@@ -72,7 +77,7 @@ export default function MainRouter() {
                 <Route path="documento/:id/revisoes" element={<DocumentReviews />} />
                 <Route path="clientes" element={<ClientsPage />} />
                 <Route path="cliente/:id" element={<ClientDetailsPage />} />
-                <Route path="acessos" element={<UserAccessPage />} />
+                {/* {hasPermission && <Route path="acessos" element={<UserAccessPage />} />} */}
               </Route>
 
               <Route element={<SimpleLayout />}>

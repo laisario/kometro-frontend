@@ -133,7 +133,7 @@ function Form(props) {
             </ Typography>
           </AccordionSummary>
           <AccordionDetails>
-          {!!criterios?.length ? (
+          {criterios?.length ? (
             <Row>
              <TextField
                 id="criterio"

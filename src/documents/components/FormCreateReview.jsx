@@ -21,6 +21,7 @@ import useUsers from '../../auth/hooks/useUsers';
 import { availableFormats } from '../../utils/documents';
 import useAuth from '../../auth/hooks/useAuth';
 import useClient from '../../clients/hooks/useClient';
+import useUserWithPermission from '../hooks/useUserWithPermission';
 
 function FormCreateReview(props) {
   const { 
@@ -52,6 +53,7 @@ function FormCreateReview(props) {
   };
   
   const usersWithoutCreator = client?.usuarios?.filter((user) => user.id !== idCreator)
+  const { usersWithPermission } = useUserWithPermission(usersWithoutCreator)
 
   return (
     <Dialog
@@ -104,7 +106,7 @@ function FormCreateReview(props) {
                     label="Aprovadores"
                     fullWidth
                   >
-                    {usersWithoutCreator?.map(({ username, id }) => (
+                    {usersWithPermission?.map(({ username, id }) => (
                       <MenuItem key={id} value={id}>
                         {username}
                       </MenuItem>

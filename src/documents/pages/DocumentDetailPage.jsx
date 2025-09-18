@@ -54,7 +54,6 @@ export default function DocumentDetailPage() {
     mutateApproveReview, 
     isLoadingApproveReview,
   } = useDocumentVM(id);
-
   useEffect(() => {
     if (idRevisao && swiper && !!revisoes?.length) {
       const ids = revisoes?.map(revisao => revisao?.id)
@@ -63,7 +62,7 @@ export default function DocumentDetailPage() {
     }
   }, [idRevisao, swiper, revisoes])
 
-  const admin = 'dashboard'
+  const admin = user?.admin ? 'admin' : 'dashboard'
 
   return (
     <>
@@ -145,7 +144,7 @@ export default function DocumentDetailPage() {
                 handleClose={handleCloseReview}
                 error={error}
                 setError={setError}
-                />
+              />
             </Container>
           )}
     </>

@@ -34,11 +34,18 @@ const useAssetsVm = () => {
     status: false,
     type: '',
   });
-  
-  
+  const [openPreferenceForm, setOpenPreferenceForm] = useState(false)
+  const handleOpenPreferenceForm = () => {
+    setOpenPreferenceForm(true);
+  };
+
+  const handleClosePreferenceForm = () => {
+    setOpenPreferenceForm(false);
+  };
+
   const { sectors, isLoadingSectors } = useContext(AssetsContext);
   
-  const {user} = useAuth()
+  const {user, hasEditPermission} = useAuth()
   const { asset, isLoadingAsset } = useAsset(selectedItem?.type === 'instrument' ? selectedItem?.id?.split("-")[1]  : null);
   const { 
     assets, 
@@ -61,7 +68,7 @@ const useAssetsVm = () => {
     errorSectors,
   } = useSectorMutations(setOpenCreateSectorId, setExpandedItems, setSelectedItem, handleCloseCreateSector)
   
-  const { defaultAssets, search: searchDA, setSearch: setSearchDA, isFetching } = useDefaultAssets();
+  const { defaultAssets, isFetching } = useDefaultAssets();
   
   const handleCloseCreateInstrument = (type) => {
     setOpenFormCreateInstrument((prev) => ({type, status: false}))
@@ -107,7 +114,7 @@ const useAssetsVm = () => {
 
   useEffect(() => {
     if (selectAll) {
-      setSelected(assets?.results?.map(({ id }) => id))
+      setSelected(assets?.results?.map((intrument) => ({id: intrument?.id, instrumento: intrument})))
     } else {
       setSelected([])
     }
@@ -186,8 +193,6 @@ const useAssetsVm = () => {
     isLoadingUpdateClient,
     mutateDeleteClient,
     assets,
-    setSearchDA,
-    searchDA,
     isFetching,
     assetFilterForm,
     mutateChangePosition,
@@ -195,7 +200,11 @@ const useAssetsVm = () => {
     openFormCreateInstrument, 
     setOpenFormCreateInstrument,
     handleCloseCreateInstrument,
-    isFetchingAssets
+    isFetchingAssets,
+    openPreferenceForm,
+    handleOpenPreferenceForm,
+    handleClosePreferenceForm,
+    hasEditPermission
   }
 }
 

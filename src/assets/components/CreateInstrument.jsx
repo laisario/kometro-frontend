@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, IconButton, InputAdornment, InputLabel, List, MenuItem, Select, Stack, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from '@mui/material'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import useResponsive from '../../theme/hooks/useResponsive';
 import { useForm, useWatch } from 'react-hook-form';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -8,8 +8,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import useNorms from '../hooks/useNorms';
-import { fDate } from '../../utils/formatTime';
-import ContentRow from '../../components/ContentRowCard';
+import useClient from '../../clients/hooks/useClient';
+import { frequenceCriterion } from '../../utils/assets';
 
 
 function flattenSectors(data, depth = 0) {
@@ -310,59 +310,59 @@ function CreateInstrument(props) {
     asset, 
     error, 
     setError,
-    searchDA,
-    setSearchDA,
     isFetching,
     setores = [],
   } = props;
+  const { client } = useClient(cliente)
+  const isMobile = useResponsive('down', 'md');
   const options = useMemo(() => flattenSectors(setores), [setores]);
+  
 
   const [instrumentoSelecionado, setInstrumentoSelecionado] = useState(asset ? {
-    descricao: !!asset?.instrumento?.tipoDeInstrumento?.descricao ? asset?.instrumento?.tipoDeInstrumento?.descricao : '',
-    modelo: !!asset?.instrumento?.tipoDeInstrumento?.modelo ? asset?.instrumento?.tipoDeInstrumento?.modelo : '',
-    fabricante: !!asset?.instrumento?.tipoDeInstrumento?.fabricante ? asset?.instrumento?.tipoDeInstrumento?.fabricante : '',
-    procedimentoRelacionado: !!asset?.instrumento?.procedimentoRelacionado?.codigo ? asset?.instrumento?.procedimentoRelacionado?.codigo :'',
-    tipoDeServico: !!asset?.instrumento?.tipoDeServico ? asset?.instrumento?.tipoDeServico : '',
-    minimo:  !!asset?.instrumento?.minimo ? asset?.instrumento?.minimo : null,
-    maximo:  !!asset?.instrumento?.maximo ? asset?.instrumento?.maximo : null,
-    unidade:  !!asset?.instrumento?.unidade ? asset?.instrumento?.unidade : '',
-    resolucao:  !!asset?.instrumento?.tipoDeInstrumento?.resolucao ? asset?.instrumento?.tipoDeInstrumento?.resolucao : null,
-    tipoSinal:  !!asset?.instrumento?.tipoSinal ? asset?.instrumento?.tipoSinal : '',
-    capacidadeMedicao: !!asset?.instrumento?.capacidadeDeMedicao?.valor ? asset?.instrumento?.capacidadeDeMedicao?.valor : null,
-    unidadeCapacidade: !!asset?.instrumento?.capacidadeDeMedicao?.unidade ? asset?.instrumento?.capacidadeDeMedicao?.unidade : '',
+    descricao: asset?.instrumento?.tipoDeInstrumento?.descricao ? asset?.instrumento?.tipoDeInstrumento?.descricao : '',
+    modelo: asset?.instrumento?.tipoDeInstrumento?.modelo ? asset?.instrumento?.tipoDeInstrumento?.modelo : '',
+    fabricante: asset?.instrumento?.tipoDeInstrumento?.fabricante ? asset?.instrumento?.tipoDeInstrumento?.fabricante : '',
+    procedimentoRelacionado: asset?.instrumento?.procedimentoRelacionado?.codigo ? asset?.instrumento?.procedimentoRelacionado?.codigo :'',
+    tipoDeServico: asset?.instrumento?.tipoDeServico ? asset?.instrumento?.tipoDeServico : '',
+    minimo:  asset?.instrumento?.minimo ? asset?.instrumento?.minimo : null,
+    maximo:  asset?.instrumento?.maximo ? asset?.instrumento?.maximo : null,
+    unidade:  asset?.instrumento?.unidade ? asset?.instrumento?.unidade : '',
+    resolucao:  asset?.instrumento?.tipoDeInstrumento?.resolucao ? asset?.instrumento?.tipoDeInstrumento?.resolucao : null,
+    tipoSinal:  asset?.instrumento?.tipoSinal ? asset?.instrumento?.tipoSinal : '',
+    capacidadeMedicao: asset?.instrumento?.capacidadeDeMedicao?.valor ? asset?.instrumento?.capacidadeDeMedicao?.valor : null,
+    unidadeCapacidade: asset?.instrumento?.capacidadeDeMedicao?.unidade ? asset?.instrumento?.capacidadeDeMedicao?.unidade : '',
   } : null);
-  const [norms, setNorms] = useState(!!asset?.normativos?.length ? asset?.normativos : []);
+  const [norms, setNorms] = useState(asset?.normativos?.length ? asset?.normativos : []);
   const [showFormNewAsset, setShowFormNewAsset] = useState(false);
   const [showFormNewNorm, setShowFormNewNorm] = useState(false);
   const [inputNorm, setInputNorm] = useState('');
-  const [setorId, setSetorId] = useState(!!asset?.setor?.id ? asset?.setor?.id : null);
-  const isMobile = useResponsive('down', 'md');
+  const [setorId, setSetorId] = useState(asset?.setor?.id ? asset?.setor?.id : null);
   const { normas } = useNorms(cliente);
   
   const selectedOption = useMemo(() => options?.find((opt) => opt?.id === setorId) || null, [asset?.setor?.id, setorId, options]);
 
   const form = useForm({
     defaultValues: {
-      tag: !!asset?.tag ? asset.tag : '',
-      numeroDeSerie: !!asset?.numeroDeSerie ? asset.numeroDeSerie : '',
-      classe: !!asset?.classe ? asset.classe : '',
-      posicao: !!asset?.posicao ? asset.posicao : "I",
-      observacao: !!asset?.observacao ? asset.observacao : '',
+      tag: asset?.tag ? asset.tag : '',
+      numeroDeSerie: asset?.numeroDeSerie ? asset.numeroDeSerie : '',
+      classe: asset?.classe ? asset.classe : '',
+      posicao: asset?.posicao ? asset.posicao : "I",
+      observacao: asset?.observacao ? asset.observacao : '',
       frequenciaChecagem: {
-        quantidade: !!asset?.frequenciaChecagem?.quantidade ? asset.frequenciaChecagem.quantidade : null,
-        periodo: !!asset?.frequenciaChecagem?.periodo ? asset.frequenciaChecagem.periodo : 'dia',
+        quantidade: asset?.frequenciaChecagem?.quantidade ? asset.frequenciaChecagem.quantidade : null,
+        periodo: asset?.frequenciaChecagem?.periodo ? asset.frequenciaChecagem.periodo : 'dia',
       },
       frequenciaCalibracao: {
-        quantidade: !!asset?.frequenciaCalibracao?.quantidade ? asset.frequenciaCalibracao.quantidade : null,
-        periodo: !!asset?.frequenciaCalibracao?.periodo ? asset.frequenciaCalibracao.periodo : 'dia',
+        quantidade: asset?.frequenciaCalibracao?.quantidade ? asset.frequenciaCalibracao.quantidade : null,
+        periodo: asset?.frequenciaCalibracao?.periodo ? asset.frequenciaCalibracao.periodo : 'dia',
       },
-      pontosDeCalibracao: !!asset?.pontosDeCalibracao?.length ? asset?.pontosDeCalibracao?.map((p) => p?.nome) : [],
-      dataUltimaCalibracao: !!asset?.dataUltimaCalibracao ? asset?.dataUltimaCalibracao : null,
-      dataUltimaChecagem: !!asset?.dataUltimaChecagem ? asset?.dataUltimaChecagem : null,
-      criteriosAceitacao: !!asset?.criteriosAceitacao?.length ? asset?.criteriosAceitacao : [],
+      pontosDeCalibracao: asset?.pontosDeCalibracao?.length ? asset?.pontosDeCalibracao?.map((p) => p?.nome) : [],
+      dataUltimaCalibracao: asset?.dataUltimaCalibracao ? asset?.dataUltimaCalibracao : null,
+      dataUltimaChecagem: asset?.dataUltimaChecagem ? asset?.dataUltimaChecagem : null,
+      criteriosAceitacao: asset?.criteriosAceitacao?.length ? asset?.criteriosAceitacao : [],
+      criterioFrequencia: asset?.criterioFrequencia || null,
     }
   });
-
   const onSubmit = (data) => {
     const payload = {
       ...data,
@@ -391,9 +391,25 @@ function CreateInstrument(props) {
       });
     }
   }
- 
+
+  const {
+    posicao,
+    criterioFrequencia
+  } = useWatch({ control: form?.control })
+  
+
+  const podeMostrarCalibracao = useMemo(() =>  criterioFrequencia === 'S' || asset?.criterioFrequencia === "S"
+  ? posicao === 'U'
+  : !asset?.calibracoes?.length, [posicao, criterioFrequencia])
+   
+
+  const podeMostrarChecagem = useMemo(() => criterioFrequencia === 'S' || asset?.criterioFrequencia === "S"
+  ? posicao === 'U'
+  : !asset?.checagens?.length, [criterioFrequencia, posicao])
+
+
   return (
-    <Dialog onClose={handleClose} open={open} fullScreen={isMobile}>
+    <Dialog onClose={() => {handleClose(); form.reset()}} open={open} fullScreen={isMobile}>
       <DialogTitle>{asset ? 'Editar instrumento' : 'Crie seu instrumento'}</DialogTitle>
       <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
         {!asset?.id && <Typography
@@ -410,27 +426,18 @@ function CreateInstrument(props) {
           Busque pelo nome do instrumento (ex: paquímetro, balança...)
         </Typography>
         <Autocomplete
-          options={[...(defaultAssets?.results || []), 'CRIAR_NOVO']}
+          options={defaultAssets?.results || []}
           multiple={false}
           fullWidth
           loading={isFetching}
           loadingText={'Procurando...'}
           value={instrumentoSelecionado}
-          inputValue={searchDA}               
-          onInputChange={(e, val, reason) => {
-            if (reason === 'input') setSearchDA(val);
-          }}
           onChange={(event, newValue) => {
             if (error?.instrumento) setError((prev) => ({ ...prev, instrumento: undefined }));
-
             setInstrumentoSelecionado(newValue);
-            setSearchDA(getInstrumentoLabel(newValue));
           }}
+          getOptionLabel={(option) => getInstrumentoLabel(option)}
           noOptionsText='Sem resultados'
-          getOptionLabel={(option) => {
-            if (option === 'CRIAR_NOVO') return '';
-            return option?.tipoDeInstrumento?.descricao || '';
-          }}
           renderOption={(props, option) => {
             const tipo = option?.tipoDeInstrumento || {};
             const procedimento = option?.procedimentoRelacionado?.codigo || '—';
@@ -448,8 +455,8 @@ function CreateInstrument(props) {
             const minimo = option?.minimo || '—';
             const maximo = option?.maximo || '—';
             const unidade = option?.unidade || '—';
-            const capacidade = option?.capacidadeDeMedicao?.valor || '—';
-            const unidadeCapacidade = option?.capacidadeDeMedicao?.unidade || '—';
+            const capacidade = option?.capacidadeMedicao|| '—';
+            const unidadeCapacidade = option?.unidadeCapacidade || '—';
 
             return (
               <MenuItem
@@ -594,6 +601,23 @@ function CreateInstrument(props) {
           </AccordionSummary>
           <AccordionDetails>
             <Grid container spacing={2}>
+              <Grid item xs={12} sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 2, alignItems: !isMobile && 'center'}}>
+                <FormControl sx={{width: isMobile ? '100%' : '50%'}}>
+                  <InputLabel id="passagem-tempo-label">
+                    Critério de frequência
+                  </InputLabel>
+                  <Select
+                    labelId="passagem-tempo-label"
+                    label="Critério de frequência"
+                    value={form.watch('criterioFrequencia')}
+                    onChange={(e) => form.setValue('criterioFrequencia', e.target.value)}
+                  >
+                    <MenuItem value="C">Tempo de calendário</MenuItem>
+                    <MenuItem value="S">Tempo de serviço</MenuItem>
+                  </Select>
+                </FormControl>
+                <Typography variant='body2' color='secondary'>Preferência atual: {asset?.criterioFrequencia ? frequenceCriterion[asset?.criterioFrequencia] : frequenceCriterion[client?.criterioFrequenciaPadrao]}</Typography>
+              </Grid>
               <Grid item xs={12}>
                 <Grid container alignItems="center" spacing={2}>
                   <Grid item xs={12} sm={2}>
@@ -625,7 +649,7 @@ function CreateInstrument(props) {
                       <MenuItem value="ano">Ano</MenuItem>
                     </TextField>
                   </Grid>
-                  {!asset && <Grid item xs={12} sm={4}>
+                  {podeMostrarChecagem&& <Grid item xs={12} sm={4}>
                   <TextField
                     label="Data última checagem"
                     type="date"
@@ -669,7 +693,7 @@ function CreateInstrument(props) {
                       <MenuItem value="ano">Ano</MenuItem>
                     </TextField>
                   </Grid>
-                  {!asset?.calibracoes?.length && <Grid item xs={12} sm={4}>
+                  {podeMostrarCalibracao && <Grid item xs={12} sm={4}>
                     <TextField
                       label="Data última calibração"
                       type="date"
@@ -836,7 +860,7 @@ function CreateInstrument(props) {
         </Box>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between' }}>
-        <Button onClick={handleClose}>Cancelar</Button>
+        <Button onClick={() => {handleClose(); form.reset()}}>Cancelar</Button>
         <Button
           onClick={() => {form.handleSubmit(onSubmit)(); setInstrumentoSelecionado(null)}}  
           variant="contained"

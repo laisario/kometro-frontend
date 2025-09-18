@@ -11,7 +11,7 @@ import useAuth from '../../auth/hooks/useAuth';
 import LockIcon from '@mui/icons-material/Lock';
 
 function InstrumentPosition({instrumento, positionMap, mutateChangePosition}) {
-  const [posicao, setPosicao] = useState(instrumento?.posicao || '');
+  const [posicao, setPosicao] = useState(instrumento?.posicao);
   const [anchorEl, setAnchorEl] = useState(null);
   const triggerRef = useRef(null);
   const { hasEditPermission } = useAuth();

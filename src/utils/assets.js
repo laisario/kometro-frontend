@@ -16,4 +16,9 @@ export const colorPositionInstrument = {
     E: 'secondary',
     I: 'info',
     F: 'warning',
-  };
+};
+
+export const frequenceCriterion = {
+    S: 'Tempo de serviço',
+    C: 'Tempo de calendário'
+}

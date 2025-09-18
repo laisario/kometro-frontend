@@ -4,15 +4,16 @@ import { axios, axiosForFiles } from "../../api";
 import { enqueueSnackbar } from "notistack";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import useAuth from "../../auth/hooks/useAuth";
 
 export const useDocument = (id) => {
   const [openFormReview, setOpenFormReview] = useState(false);
   const [error, setError] = useState(null);
-
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const admin = 'dashboard'
+  const admin = user?.admin ? 'admin' : 'dashboard'
 
   const formReview = useForm({
     defaultValues: {

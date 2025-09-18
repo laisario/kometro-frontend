@@ -32,7 +32,7 @@ import { availableFormats } from '../../utils/documents';
 import useResponsive from '../../theme/hooks/useResponsive';
 import useClient from '../../clients/hooks/useClient';
 import useAuth from '../../auth/hooks/useAuth';
-
+import useUserWithPermission from '../hooks/useUserWithPermission';
 
 export default function FormCreate(props) {
   const { 
@@ -50,14 +50,14 @@ export default function FormCreate(props) {
   const { procedures } = useProcedures();
   const { user } = useAuth();
   const { client } = useClient(user?.cliente || null)
-  
+
   const handleChange = (event) => {
     const { name, files } = event.target;
     if (error['arquivo']) setError((prevError) => delete prevError?.arquivo)
       if (name === 'arquivo') {
         form.setValue("arquivo", files[0]);
       }
-    };
+  };
     
   const {
     status,
@@ -69,6 +69,9 @@ export default function FormCreate(props) {
     frequencia,
     arquivo,
   } = useWatch({ control: form.control })
+  
+  const { usersWithPermission } = useUserWithPermission(client?.usuarios)
+
   
   return (
     <>
@@ -164,7 +167,7 @@ export default function FormCreate(props) {
                       error={!!error?.elaborador}
                       helperText={!!error?.elaborador && error?.elaborador}
                     >
-                      {client?.usuarios?.map(({ username, id }) => (
+                      {usersWithPermission?.map(({ username, id }) => (
                         <MenuItem key={id} value={id}>
                           {username}
                         </MenuItem>

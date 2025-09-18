@@ -16,7 +16,7 @@ const ClientsProvider = ({ children }) => {
   const { 
     data: clients, 
     error: errorClients, 
-    isLoading: isLoadingClients, 
+    isFetching: isLoadingClients, 
   } = useQuery(['clientes', page, rowsPerPage, debouncedSearch], async () => {
     const response = await axios.get('/clientes/', { params: { page: page + 1, page_size: rowsPerPage, search: debouncedSearch } });
     return response?.data;

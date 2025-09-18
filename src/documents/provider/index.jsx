@@ -49,7 +49,7 @@ const DocumentsProvider = ({ children }) => {
     status: statusFilter,
   } = useWatch({ control: formFilter.control })
 
-  const { data, isLoading, } = useQuery(
+  const { data, isFetching, } = useQuery(
     ['documentos', page, rowsPerPage, debouncedSearch, statusFilter, vencidoParam],
     async () => {
       let params = {
@@ -147,7 +147,7 @@ const DocumentsProvider = ({ children }) => {
         rowsPerPage,
         handleChangePage,
         handleChangeRowsPerPage,
-        isLoading,
+        isLoading: isFetching,
         formFilter,
         mutateCreate,
         errorCreate,

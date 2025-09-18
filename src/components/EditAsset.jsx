@@ -376,7 +376,7 @@ function EditAsset(props) {
                     onChange: (e) => {if (error?.frequencia) setError({})},
                   })}
                   error={!!error?.frequencia}
-                  helperText={!!error?.frequencia ? error?.frequencia : "Em meses"}
+                  helperText={error?.frequencia ? error?.frequencia : "Em meses"}
                   sx={{ width: '30%' }}
                 />
               )}

@@ -169,6 +169,8 @@ export default function useAuth() {
   const hasDeletePermission =  useMemo(() => roles?.includes('gerente'), [roles])
   const hasEditPermission =  useMemo(() => roles?.includes('gerente'), [roles])
 
+  const isManager = useMemo(() => roles?.includes('gerente'), [roles])
+
   return { 
     user,
     cliente: clienteId,
@@ -190,5 +192,6 @@ export default function useAuth() {
     hasCreatePermission,
     hasDeletePermission,
     hasEditPermission,
+    isManager,
   };
 };

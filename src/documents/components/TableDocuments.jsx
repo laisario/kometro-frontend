@@ -45,9 +45,8 @@ function TableDocuments(props) {
     deleteDocumentos(selectedDocuments); 
     cleanSelectedDocuments();
   }
-
   const isFiltering = formFilter?.formState?.isDirty
-  const admin = 'dashboard'
+  const admin = user?.admin ? 'admin' : 'dashboard'
 
   return (
     <Card>

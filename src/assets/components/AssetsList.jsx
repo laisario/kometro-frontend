@@ -27,7 +27,7 @@ function Row({row}) {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              {!!row?.subsetores?.length 
+              {row?.subsetores?.length 
                 ? (
                   <TableBody>
                     {row.subsetores.map((subsetor) => (
@@ -57,7 +57,7 @@ function Row({row}) {
                     ))}
                   </TableBody>
                 )
-                : !!row?.instrumentos?.length 
+                : row?.instrumentos?.length 
                   ? (<div>aa</div>) 
                   : <Typography>Nada dentro deste setor.</Typography>
               }

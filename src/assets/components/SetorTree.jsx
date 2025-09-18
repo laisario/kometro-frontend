@@ -14,15 +14,13 @@ const TreeHeader = (props) => {
     cliente,
     mutate,
     selectedItem,
-    setSearchDA,
-    searchDA,
     isFetching,
     error,
     setError,
     handleCloseCreateInstrument,
     hasCreatePermission,
+    hasEditPermission,
   } = props;
-  console.log(hasCreatePermission, 'YYYYYYYYYYYY', !hasCreatePermission)
 
   return (
     <>
@@ -34,16 +32,14 @@ const TreeHeader = (props) => {
           setor={selectedItem}
           cliente={cliente}
           mutate={mutate}
-          setSearchDA={setSearchDA}
-          searchDA={searchDA}
           isFetching={isFetching}
           error={error}
           setError={setError}
         />
         <Typography sx={{ flexGrow: 1 }}>Setores</Typography>
-        <Tooltip placement="top" title={!hasCreatePermission && NO_PERMISSION_ACTION}>
+        <Tooltip placement="top" title={!hasEditPermission && NO_PERMISSION_ACTION}>
           <span>
-            <Button size="small" disabled={!hasCreatePermission} onClick={handleCreate}>
+            <Button size="small" disabled={!hasEditPermission} onClick={handleCreate}>
               Criar setor
             </Button>
           </span>
@@ -84,8 +80,6 @@ function SetorTree(props) {
     setSelectedItem,
     handleEdit,
     handleCloseCreateSector,
-    setSearchDA,
-    searchDA,
     isFetching,
     duplicateInstrument,
     error,
@@ -94,7 +88,7 @@ function SetorTree(props) {
     setError,
     handleCloseCreateInstrument
   } = props;
-  const { user, hasCreatePermission } = useAuth();
+  const { user, hasCreatePermission, hasEditPermission } = useAuth();
 
   const handleSubmit = (sectorName, id) => {
     onEditSetor({id, nome: sectorName })
@@ -128,13 +122,12 @@ function SetorTree(props) {
         cliente={user?.cliente}
         mutate={mutate}
         selectedItem={selectedItem}
-        setSearchDA={setSearchDA}
-        searchDA={searchDA}
         isFetching={isFetching}
         error={error}
         setError={setError}
         handleCloseCreateInstrument={handleCloseCreateInstrument}
         hasCreatePermission={hasCreatePermission}
+        hasEditPermission={hasEditPermission}
       />
       <RichTreeView
         items={setores}

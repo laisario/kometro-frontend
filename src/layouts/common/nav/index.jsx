@@ -10,7 +10,7 @@ import NavSection from '../../../components/nav-section';
 import { Avatar } from '../../../components/avatar'
 import Iconify from '../../../components/Iconify';
 import useAuth from '../../../auth/hooks/useAuth';
-import {navConfigClient, navConfigAdmin} from './config';
+import {navConfig} from './config';
 
 
 const NAV_WIDTH = 280;
@@ -32,7 +32,8 @@ Nav.propTypes = {
 
 export default function Nav({ openNav, onCloseNav, admin }) {
   const { pathname } = useLocation();
-  const { user } = useAuth();
+  const { user, isManager } = useAuth();
+
 
   const isDesktop = useResponsive('up', 'lg');
   useEffect(() => {
@@ -84,7 +85,7 @@ export default function Nav({ openNav, onCloseNav, admin }) {
           </Link>
         </Box>
 
-        <NavSection data={admin ? navConfigAdmin : navConfigClient} />
+        <NavSection data={navConfig(admin, isManager)} />
       </Box>
       {!admin 
         ? (

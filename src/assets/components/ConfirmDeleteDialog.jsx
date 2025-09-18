@@ -38,6 +38,7 @@ export default function ConfirmDeleteDialog({
 
   const handleConfirm = () => {
     onConfirm();
+    onClose();
   };
 
   const { title, message } = getMessage();

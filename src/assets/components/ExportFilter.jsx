@@ -114,7 +114,6 @@ function ExportFilter(props) {
     documentTitle: 'Instrumentos',
     removeAfterPrint: true,
   });
-
   return (
     <Dialog
       open={open}

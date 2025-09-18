@@ -255,7 +255,7 @@ function useAssetMutations(handleCleanCreateForm, handleClose,handleCloseCreateI
   } = useMutation({
     mutationFn: async(data) => await axios.patch(`/instrumentos/${data?.id}/mudar_posicao/`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['setores'] })
+      queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
       enqueueSnackbar('Mudança posição realizada com sucesso!', {
         variant: 'success'
       });

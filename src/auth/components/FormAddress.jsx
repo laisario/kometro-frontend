@@ -80,7 +80,7 @@ function FormAdress({ form, error }) {
                 required
                 {...form.register("numero", {
                   onChange: () => {
-                    if (!!error?.numero?.length) {
+                    if (error?.numero?.length) {
                       form?.clearErrors('numero')
                     }
                   }

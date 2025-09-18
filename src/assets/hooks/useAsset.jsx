@@ -5,7 +5,7 @@ const useAsset = (id) => {
   const { 
     data: asset, 
     error: errorAsset, 
-    isLoading: isLoadingAsset, 
+    isFetching: isLoadingAsset, 
     refetch: refetchAsset 
   } = useQuery({
     queryKey: ['instrumentos', id], 

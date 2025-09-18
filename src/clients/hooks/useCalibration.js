@@ -36,9 +36,9 @@ const useCalibrations = (id, instrumento, checagem) => {
     criterio: selectedCalibration?.resultados?.length && selectedCalibration?.resultados[0]?.criterio?.id ? selectedCalibration?.resultados[0]?.criterio?.id  : null,
     maiorErro: selectedCalibration?.resultados?.length && selectedCalibration?.resultados[0]?.maiorErro ? selectedCalibration?.resultados[0]?.maiorErro : null,
     incerteza: selectedCalibration?.resultados?.length && selectedCalibration?.resultados[0]?.incerteza ? selectedCalibration?.resultados[0]?.incerteza : null,
-    preco: !!selectedCalibration?.preco ? selectedCalibration.preco : null,
-    laboratorio: !!selectedCalibration?.laboratorio ? selectedCalibration.laboratorio : '',
-    observacaoFornecedor: !!selectedCalibration?.observacaoFornecedor ? selectedCalibration.observacaoFornecedor : '',
+    preco: selectedCalibration?.preco ? selectedCalibration.preco : null,
+    laboratorio: selectedCalibration?.laboratorio ? selectedCalibration.laboratorio : '',
+    observacaoFornecedor: selectedCalibration?.observacaoFornecedor ? selectedCalibration.observacaoFornecedor : '',
   }), [selectedCalibration])
   
   const form = useForm({ defaultValues })
@@ -130,6 +130,7 @@ const useCalibrations = (id, instrumento, checagem) => {
       }
   
       queryClient.invalidateQueries({ queryKey: ['calibracoes'] })
+      queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
       enqueueSnackbar(`${checagem ? 'Checagem' : 'Calibração'} criada com sucesso!`, {
         variant: 'success'
       });
