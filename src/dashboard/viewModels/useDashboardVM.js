@@ -1,12 +1,9 @@
-import { useContext } from 'react'
 import useAuth from '../../auth/hooks/useAuth'
 import { useDashboard } from '../hooks/useDashboard'
-import AssetsContext from '../../assets/context'
 
 export const useDashboardVM = () => {
   const { user } = useAuth()
   const { data } = useDashboard()
-
   const instruments = data?.instrumentosRecentes?.map((instrumento) => ({
     id: instrumento?.id,
     isExpired: instrumento?.expirado,
@@ -20,6 +17,7 @@ export const useDashboardVM = () => {
     data: instrumento.expirado
       ? instrumento?.dataUltimaCalibracao
       : instrumento?.dataProximaCalibracao,
+    setor: instrumento?.setor
   }))
 
   const documents = data?.revisoesASeremAprovadas

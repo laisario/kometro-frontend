@@ -41,7 +41,7 @@ export default function InstrumentSearch({ data = [], onSelect }) {
   };
 
   const handleClickItem = (item) => {
-    onSelect?.(item);
+    onSelect(item);
     setSearch('');
     setOpen(false);
   };

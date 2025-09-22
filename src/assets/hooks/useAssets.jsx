@@ -71,7 +71,7 @@ const useAssets = (id) => {
     search,
     setSearch,
     assetFilterForm,
-    isLoadingAssets: isFetchingAssets,
+    isFetchingAssets,
   }
 };
 

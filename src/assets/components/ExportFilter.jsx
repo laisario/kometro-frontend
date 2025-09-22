@@ -89,11 +89,13 @@ function ExportFilter(props) {
     assetFilterForm,
     isFetchingAssets,
   } = props;
+
   const [csvContent, setCsvContent] = useState(null)
   const [parsedCsv, setParsedCsv] = React.useState(null)
   const [loading, setLoading] = useState(false)
   const { CSVDownloader } = useCSVDownloader()
   const status = assetFilterForm?.watch('status')
+
   useEffect(() => {
     if (!csvContent) return
     readString(csvContent, {
@@ -106,7 +108,6 @@ function ExportFilter(props) {
       }
     })
   }, [csvContent, selected])
-
   const printRef = useRef();
 
   const handlePrint = useReactToPrint({

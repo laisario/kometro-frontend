@@ -30,7 +30,6 @@ AppListItems.propTypes = {
 export default function AppListItems({ title, subheader, list, document, ...other }) {
   const navigate = useNavigate();
   const isMobile = useResponsive('down', 'md');
-  
   return (
     <Card>
       <CardHeader title={title} subheader={subheader} />
@@ -91,7 +90,7 @@ const formatData = (data, isDocument) => {
   return {
     title: `${data?.tag} - ${data?.descricao}`,
     subtitle: `${data?.fabricante ? data?.fabricante : 'Fabricante não informado'} | ${data?.modelo ? data?.modelo : 'Modelo não informado'} | ${data?.faixaNominalMin? data?.faixaNominalMin : 'Fai. nominal mínima não informado'} - ${data?.faixaNominalMax ? data?.faixaNominalMax : "Fai. nominal máxima não informada"} ${data?.unidade}`,
-    url: `/dashboard/instrumentos/`,
+    url: `/dashboard/instrumentos/${data?.id}/${data?.setor?.id}`,
     ...data,
   }
 }

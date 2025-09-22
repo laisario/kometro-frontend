@@ -2,7 +2,6 @@ import { Route, Navigate, Routes } from 'react-router';
 import CommonLayout from '../layouts/common/CommonLayout.jsx';
 import SimpleLayout from '../layouts/simple/SimpleLayout.jsx';
 import AssetsPage from '../assets/pages/AssetsPage.jsx';
-import AssetDetailPage from '../assets/pages/AssetDetailPage.jsx';
 import DashboardPage from '../dashboard/pages/DashboardPage.jsx';
 import ProposalsPage from '../proposals/pages/ProposalsPage.jsx';
 import ProposalDetailsPage from '../proposals/pages/ProposalDetailsPage.jsx';
@@ -23,12 +22,9 @@ import RegisterAuthPage from '../auth/pages/RegisterAuthPage'
 import RegisterLocationPage from '../auth/pages/RegisterLocationPage'
 import UserAccessPage from '../access/pages/UserAccessPage.jsx';
 import RegisterFromInvite from '../auth/pages/ResgisterFromInvite.jsx';
-import useAuth from '../auth/hooks/useAuth.js';
 
 
 export default function MainRouter() {
-  // const { user } = useAuth()
-  // const hasPermission = user?.roles?.some((role) => role?.name === 'gerente')
   return (
     <DocumentsProvider>
       <ClientsProvider>
@@ -58,7 +54,7 @@ export default function MainRouter() {
                 <Route index element={<Navigate to="/dashboard/app" />} />
                 <Route path="app" element={<DashboardPage />} />
                 <Route path="instrumentos" element={<AssetsPage />} />
-                <Route path="instrumento/:id" element={<AssetDetailPage />} />
+                <Route path="instrumentos/:id/:idSetor" element={<AssetsPage />} />
                 <Route path="propostas" element={<ProposalsPage />} />
                 <Route path="proposta/:id" element={<ProposalDetailsPage />} />
                 <Route path="documentos" element={<DocumentsPage />} />
@@ -77,7 +73,7 @@ export default function MainRouter() {
                 <Route path="documento/:id/revisoes" element={<DocumentReviews />} />
                 <Route path="clientes" element={<ClientsPage />} />
                 <Route path="cliente/:id" element={<ClientDetailsPage />} />
-                {/* {hasPermission && <Route path="acessos" element={<UserAccessPage />} />} */}
+                <Route path="acessos" element={<UserAccessPage />} />
               </Route>
 
               <Route element={<SimpleLayout />}>

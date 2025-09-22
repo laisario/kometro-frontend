@@ -14,8 +14,10 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import PreferencesForm from '../components/PreferencesForm';
 import { NO_PERMISSION_ACTION } from '../../utils/messages';
 import useAssetsVm from '../viewModels/useAssetsVM';
+import { useParams } from 'react-router';
 
 function AssetsPage() {
+  const { id, idSetor } = useParams();
   const {
     handleClose,
     handleClickOpen,
@@ -60,7 +62,8 @@ function AssetsPage() {
     handleOpenPreferenceForm,
     handleClosePreferenceForm,
     hasEditPermission
-  } = useAssetsVm();
+  } = useAssetsVm(id, idSetor);
+
 
   return (
     <>

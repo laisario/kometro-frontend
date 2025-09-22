@@ -8,7 +8,7 @@ import useAssetMutations from "../hooks/useAssetMutations";
 import useAuth from "../../auth/hooks/useAuth";
 import useAssets from "../hooks/useAssets";
 
-const useAssetsVm = () => {
+const useAssetsVm = (id, idSetor) => {
   const [open, setOpen] = useState(false);
   const [valueCheckbox, setValueCheckbox] = useState({
     tag: true,
@@ -30,6 +30,13 @@ const useAssetsVm = () => {
   const [openEditSector, setOpenEditSector] = useState(false);
   const [expandedItems, setExpandedItems] = useState([])
   const [selectedItem, setSelectedItem] = useState(null)
+  useEffect(() => {
+    if (id && idSetor) {
+      setSelectedItem({id: `instrument-${id}`, type: 'instrument', parentId: idSetor})
+      setExpandedItems(expandedItems => [...expandedItems, idSetor])
+    }
+  }, [])
+
   const [openFormCreateInstrument, setOpenFormCreateInstrument] = useState({
     status: false,
     type: '',
