@@ -199,8 +199,8 @@ function useAssetMutations(handleCleanCreateForm, handleClose,handleCloseCreateI
       setError(errors);
     
       enqueueSnackbar(
-        mensagemDetalhada || 'Falha ao criar instrumento, tente novamente!',
-        { variant: 'error' }
+        mensagemDetalhada || getErrorMessage(erro?.response?.status),
+        { variant: 'error', autoHideDuration: 2000 }
       );
     }
   })
@@ -215,12 +215,15 @@ function useAssetMutations(handleCleanCreateForm, handleClose,handleCloseCreateI
     isLoading: isLoadingUpdateClient,
   } = useMutation({
     mutationFn: updateInstrumentClient,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       enqueueSnackbar('Instrumento atualizado com sucesso!', {
         variant: 'success'
       });
-      queryClient.invalidateQueries({ queryKey: ['setores'] })
       queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
+      if (variables?.previousSetorId !== variables?.setor) {
+        queryClient.invalidateQueries({ queryKey: ['setores'] })
+      }
+      handleCloseCreateInstrument('edit')
     },
     onError: (erro) => {
       enqueueSnackbar(getErrorMessage(erro?.response?.status), {

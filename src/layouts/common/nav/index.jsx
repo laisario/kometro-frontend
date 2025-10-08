@@ -11,6 +11,7 @@ import { Avatar } from '../../../components/avatar'
 import Iconify from '../../../components/Iconify';
 import useAuth from '../../../auth/hooks/useAuth';
 import {navConfig} from './config';
+import { permissionLabel } from '../../../utils/permission';
 
 
 const NAV_WIDTH = 280;
@@ -33,7 +34,6 @@ Nav.propTypes = {
 export default function Nav({ openNav, onCloseNav, admin }) {
   const { pathname } = useLocation();
   const { user, isManager } = useAuth();
-
 
   const isDesktop = useResponsive('up', 'lg');
   useEffect(() => {
@@ -72,17 +72,33 @@ export default function Nav({ openNav, onCloseNav, admin }) {
         </Box>
 
         <Box sx={{ my: 5, mx: 2.5 }}>
-          <Link underline="none">
             <StyledAccount>
               <Avatar size={36} />
 
               <Box sx={{ ml: 2 }}>
-                <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
+                <Typography variant="subtitle2" sx={{ color: 'text.primary', whiteSpace: 'normal', wordBreak: 'break-word', }}>
                   {user?.nome || ''} 
                 </Typography>
+
+                <Box sx={{ mt: 0.5 }}>
+                  {user?.roles?.length ? (
+                    user.roles.map((r, i) => (
+                      <Typography
+                        key={i}
+                        variant="caption"
+                        sx={{ color: 'text.secondary', display: 'block' }}
+                      >
+                        {user?.roles?.length > 1 ? 'Permissões: ' : 'Permissão: '}{permissionLabel[r?.name]}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+                      Sem permissões
+                    </Typography>
+                  )}
+                </Box>
               </Box>
             </StyledAccount>
-          </Link>
         </Box>
 
         <NavSection data={navConfig(admin, isManager)} />

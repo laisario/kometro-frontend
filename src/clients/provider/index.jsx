@@ -5,23 +5,29 @@ import { useForm, useWatch } from 'react-hook-form';
 import _, {debounce} from 'lodash';
 import { axios } from '../../api';
 import { enqueueSnackbar } from 'notistack';
+import useAuth from '../../auth/hooks/useAuth';
+
 
 const ClientsProvider = ({ children }) => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const { 
     data: clients, 
     error: errorClients, 
     isFetching: isLoadingClients, 
-  } = useQuery(['clientes', page, rowsPerPage, debouncedSearch], async () => {
-    const response = await axios.get('/clientes/', { params: { page: page + 1, page_size: rowsPerPage, search: debouncedSearch } });
-    return response?.data;
-  }, {refetchOnReconnect: false,
-    refetchOnWindowFocus: false});
+  } = useQuery(
+    ['clientes', page, rowsPerPage, debouncedSearch], async () => {
+      const response = await axios.get('/clientes/', { params: { page: page + 1, page_size: rowsPerPage, search: debouncedSearch } });
+      return response?.data;
+    }, {
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
+      enabled: user?.admin
+    });
 
   const formFilter = useForm({defaultValues: { search: "" }});
 

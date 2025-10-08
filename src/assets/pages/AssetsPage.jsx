@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Helmet } from 'react-helmet-async';
 import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
 import GetAppIcon from '@mui/icons-material/GetApp';
@@ -40,6 +40,11 @@ function AssetsPage() {
     handleCreate,
     handleCloseCreateSector,
     defaultAssets,
+    searchDA,
+    setSearchDA,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     mutateCreateClient,
     expandedItems,
     setExpandedItems,
@@ -64,6 +69,7 @@ function AssetsPage() {
     hasEditPermission
   } = useAssetsVm(id, idSetor);
 
+  const hasSectors = useMemo(() => !!sectors?.length, [sectors])
 
   return (
     <>
@@ -131,7 +137,7 @@ function AssetsPage() {
           />
           {isLoadingSectors
             ? <Loading />
-            : (sectors?.length
+            : (hasSectors
               ? (
                 <Grid container sx={{ height: '100vh' }} spacing={4}>
                   <Grid
@@ -153,6 +159,11 @@ function AssetsPage() {
                       handleCreate={handleCreate}
                       handleEdit={handleEdit}
                       defaultAssets={defaultAssets}
+                      search={searchDA}
+                      setSearch={setSearchDA}
+                      fetchNextPage={fetchNextPage}
+                      hasNextPage={hasNextPage}
+                      isFetchingNextPage={isFetchingNextPage}
                       mutate={mutateCreateClient}
                       expandedItems={expandedItems}
                       setExpandedItems={setExpandedItems}
@@ -193,6 +204,11 @@ function AssetsPage() {
                         mutateCreateClient={mutateCreateClient}
                         isLoadingUpdateClient={isLoadingUpdateClient}
                         defaultAssets={defaultAssets}
+                        search={searchDA}
+                        setSearch={setSearchDA}
+                        fetchNextPage={fetchNextPage}
+                        hasNextPage={hasNextPage}
+                        isFetchingNextPage={isFetchingNextPage}
                         selectedItem={selectedItem}
                         mutateDeleteClient={mutateDeleteClient}
                         setSelectedItem={setSelectedItem}
@@ -220,7 +236,7 @@ function AssetsPage() {
                   </Grid>
                 </Grid>
               )
-              : <EmptyYet isMobile={isMobile} content="setor"   onCreate={handleCreate} />
+              : <EmptyYet isMobile={isMobile} content="setor" onCreate={handleCreate} />
             )
           }
         </Box>

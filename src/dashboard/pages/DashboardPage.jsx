@@ -116,7 +116,7 @@ export default function DashboardPage() {
                   status: proposta?.status,
                   time: fDate(proposta?.dataCriacao),
                   url: user?.admin ? `/admin/proposta/${proposta?.id}/${proposta?.cliente?.id}` : `/dashboard/proposta/${proposta?.id}`,
-                  client: proposta?.cliente?.empresa?.razaoSocial || proposta?.cliente?.nome,
+                  client: proposta?.cliente?.empresa,
                 }))}
               />
             </Grid>

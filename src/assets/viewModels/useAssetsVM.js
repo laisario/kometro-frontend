@@ -30,6 +30,7 @@ const useAssetsVm = (id, idSetor) => {
   const [openEditSector, setOpenEditSector] = useState(false);
   const [expandedItems, setExpandedItems] = useState([])
   const [selectedItem, setSelectedItem] = useState(null)
+  
   useEffect(() => {
     if (id && idSetor) {
       setSelectedItem({id: `instrument-${id}`, type: 'instrument', parentId: idSetor})
@@ -75,10 +76,18 @@ const useAssetsVm = (id, idSetor) => {
     errorSectors,
   } = useSectorMutations(setOpenCreateSectorId, setExpandedItems, setSelectedItem, handleCloseCreateSector)
   
-  const { defaultAssets, isFetching } = useDefaultAssets();
+  const { 
+    defaultAssets, 
+    isFetching, 
+    search: searchDA, 
+    setSearch: setSearchDA, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage 
+  } = useDefaultAssets();
   
   const handleCloseCreateInstrument = (type) => {
-    setOpenFormCreateInstrument((prev) => ({type, status: false}))
+    setOpenFormCreateInstrument(() => ({type: type, status: false}))
     setError({})
   }
   const { 
@@ -190,6 +199,11 @@ const useAssetsVm = (id, idSetor) => {
     handleCloseCreateSector,
     handleCloseEditSector,
     defaultAssets,
+    searchDA,
+    setSearchDA,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     mutateCreateClient,
     expandedItems,
     setExpandedItems,

@@ -1,12 +1,10 @@
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 import useAuth from '../../auth/hooks/useAuth';
 import useResponsive from '../../theme/hooks/useResponsive';
 import ProposalsContext from '../context';
-import AssetsContext from '../../assets/context';
 import  ClientsContext from '../../clients/context';
 import { axios } from '../../api';
-import useAssets from '../../assets/hooks/useAssets';
 
 function useProposalsVM() {
   const [selectedOrders, setSelectedOrders] = useState([]);
@@ -34,12 +32,6 @@ function useProposalsVM() {
     handleClose
   } = useContext(ProposalsContext);
 
-  
-  const {
-    assets: allAssets,
-    isLoadingAssets,
-  } = useAssets()
-  
   const {
     clients,
     isLoadingClients,
@@ -97,8 +89,6 @@ function useProposalsVM() {
     allProposals,
     selectedOrders,
     setSelectedOrders,
-    allAssets,
-    isLoadingAssets,
     formCreateProposal,
     clients,
     isLoadingClients,

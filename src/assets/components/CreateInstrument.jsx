@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, IconButton, InputAdornment, InputLabel, List, MenuItem, Select, Stack, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from '@mui/material'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import useResponsive from '../../theme/hooks/useResponsive';
 import { useForm, useWatch } from 'react-hook-form';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -10,6 +10,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import useNorms from '../hooks/useNorms';
 import useClient from '../../clients/hooks/useClient';
 import { frequenceCriterion } from '../../utils/assets';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import 'dayjs/locale/pt-br';
+import dayjs from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import VirtualizedInstrumentAutocomplete from './VirtualizedInstrumentAutocomplete';
 
 
 function flattenSectors(data, depth = 0) {
@@ -304,6 +310,11 @@ function CreateInstrument(props) {
     handleClose, 
     open, 
     defaultAssets, 
+    search,
+    setSearch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     setor, 
     cliente, 
     mutate, 
@@ -317,7 +328,6 @@ function CreateInstrument(props) {
   const isMobile = useResponsive('down', 'md');
   const options = useMemo(() => flattenSectors(setores), [setores]);
   
-
   const [instrumentoSelecionado, setInstrumentoSelecionado] = useState(asset ? {
     descricao: asset?.instrumento?.tipoDeInstrumento?.descricao ? asset?.instrumento?.tipoDeInstrumento?.descricao : '',
     modelo: asset?.instrumento?.tipoDeInstrumento?.modelo ? asset?.instrumento?.tipoDeInstrumento?.modelo : '',
@@ -360,15 +370,23 @@ function CreateInstrument(props) {
       dataUltimaCalibracao: asset?.dataUltimaCalibracao ? asset?.dataUltimaCalibracao : null,
       dataUltimaChecagem: asset?.dataUltimaChecagem ? asset?.dataUltimaChecagem : null,
       criteriosAceitacao: asset?.criteriosAceitacao?.length ? asset?.criteriosAceitacao : [],
-      criterioFrequencia: asset?.criterioFrequencia || null,
+      criterioFrequencia: asset?.criterioFrequencia || '',
     }
   });
+
+  const {
+    dataUltimaChecagem,
+    dataUltimaCalibracao,
+  } = useWatch({ control: form?.control })
+
   const onSubmit = (data) => {
     const payload = {
       ...data,
       cliente,
       instrumento: instrumentoSelecionado?.id,
-      normativos: norms
+      normativos: norms,
+      dataUltimaChecagem: dataUltimaChecagem && dayjs(dataUltimaChecagem)?.format('YYYY-MM-DD'),
+      dataUltimaCalibracao: dataUltimaCalibracao && dayjs(dataUltimaCalibracao)?.format('YYYY-MM-DD')
     };
 
     if (!payload.frequenciaCalibracao?.quantidade) {
@@ -382,11 +400,13 @@ function CreateInstrument(props) {
       mutate({
         id: asset.id,
         setor: setorId,
+        previousSetorId: asset?.setor?.id,
         ...payload
       });
     } else {
       mutate({
         ...payload,
+        previousSetorId: null,
         setor: setor?.type === 'sector' ? Number(setor?.id) : Number(setor?.parentId),
       });
     }
@@ -409,7 +429,7 @@ function CreateInstrument(props) {
 
 
   return (
-    <Dialog onClose={() => {handleClose(); form.reset()}} open={open} fullScreen={isMobile}>
+    <Dialog onClose={() => {handleClose()}} open={open} fullScreen={isMobile}>
       <DialogTitle>{asset ? 'Editar instrumento' : 'Crie seu instrumento'}</DialogTitle>
       <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
         {!asset?.id && <Typography
@@ -422,80 +442,27 @@ function CreateInstrument(props) {
         <Typography
           variant="body2"
           color="text.secondary"
+          sx={{ mb: 1 }}
         >
           Busque pelo nome do instrumento (ex: paquímetro, balança...)
         </Typography>
-        <Autocomplete
+        <VirtualizedInstrumentAutocomplete
           options={defaultAssets?.results || []}
-          multiple={false}
-          fullWidth
-          loading={isFetching}
-          loadingText={'Procurando...'}
           value={instrumentoSelecionado}
-          onChange={(event, newValue) => {
+          onChange={(newValue) => {
             if (error?.instrumento) setError((prev) => ({ ...prev, instrumento: undefined }));
             setInstrumentoSelecionado(newValue);
           }}
-          getOptionLabel={(option) => getInstrumentoLabel(option)}
-          noOptionsText='Sem resultados'
-          renderOption={(props, option) => {
-            const tipo = option?.tipoDeInstrumento || {};
-            const procedimento = option?.procedimentoRelacionado?.codigo || '—';
-            const tipoServico =
-              option?.tipoDeServico === 'A' ? 'Acreditado'
-              : option?.tipoDeServico === 'N' ? 'Não Acreditado'
-              : option?.tipoDeServico === 'I' ? 'Interna' : '—';
-            const tipoSinal =
-              option?.tipoSinal === 'A' ? 'Analógico'
-              : option?.tipoSinal === 'D' ? 'Digital' : '—';
-            const descricao = tipo?.descricao || '—';
-            const modelo = tipo?.modelo || '—';
-            const fabricante = tipo?.fabricante || '—';
-            const resolucao = tipo?.resolucao || '—';
-            const minimo = option?.minimo || '—';
-            const maximo = option?.maximo || '—';
-            const unidade = option?.unidade || '—';
-            const capacidade = option?.capacidadeMedicao|| '—';
-            const unidadeCapacidade = option?.unidadeCapacidade || '—';
-
-            return (
-              <MenuItem
-                {...props}
-                key={option?.id}
-                sx={{ display: 'block', alignItems: 'start', whiteSpace: 'normal' }}
-              >
-                <Box>
-                  <Typography fontWeight="bold">
-                    {`${descricao} - ${modelo} / ${fabricante}`}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Procedimento: {procedimento}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Tipo de serviço: {tipoServico} • Sinal: {tipoSinal}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Faixa: {minimo} – {maximo} {unidade}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Resolução: {resolucao}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Capacidade de medição: {capacidade} {unidadeCapacidade}
-                  </Typography>
-                </Box>
-              </MenuItem>
-            );
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Instrumento base"
-              required
-              error={!!error?.instrumento}
-              helperText={error?.instrumento?.[0]}
-            />
-          )}
+          loading={isFetching}
+          error={!!error?.instrumento}
+          helperText={error?.instrumento?.[0]}
+          label="Instrumento base"
+          required
+          onSearch={setSearch}
+          searchValue={search}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
         />
         {asset?.instrumento && (
           <Typography color='warning' variant="body1" sx={{ mt: 1 }}>
@@ -581,7 +548,7 @@ function CreateInstrument(props) {
                   size="small"
                   fullWidth
                   select
-                  defaultValue="I"
+                  value={form.watch('posicao')}
                   {...form.register('posicao')}
                 >
                   <MenuItem value="U">Em uso</MenuItem>
@@ -600,112 +567,118 @@ function CreateInstrument(props) {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 2, alignItems: !isMobile && 'center'}}>
-                <FormControl sx={{width: isMobile ? '100%' : '50%'}}>
-                  <InputLabel id="passagem-tempo-label">
-                    Critério de frequência
-                  </InputLabel>
-                  <Select
-                    labelId="passagem-tempo-label"
-                    label="Critério de frequência"
-                    value={form.watch('criterioFrequencia')}
-                    onChange={(e) => form.setValue('criterioFrequencia', e.target.value)}
-                  >
-                    <MenuItem value="C">Tempo de calendário</MenuItem>
-                    <MenuItem value="S">Tempo de serviço</MenuItem>
-                  </Select>
-                </FormControl>
-                <Typography variant='body2' color='secondary'>Preferência atual: {asset?.criterioFrequencia ? frequenceCriterion[asset?.criterioFrequencia] : frequenceCriterion[client?.criterioFrequenciaPadrao]}</Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Grid container alignItems="center" spacing={2}>
-                  <Grid item xs={12} sm={2}>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                      Checagem
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TextField
-                      label="Quantidade"
-                      type="number"
-                      inputProps={{ min: 0, max: 365 }}
-                      size="small"
-                      fullWidth
-                      {...form.register('frequenciaChecagem.quantidade')}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TextField
-                      label="Frequência"
-                      select
-                      defaultValue='dia'
-                      size="small"
-                      fullWidth
-                      {...form.register('frequenciaChecagem.periodo')}
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+              <Grid container spacing={2}>
+                <Grid item xs={12} sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 2, alignItems: !isMobile && 'center'}}>
+                  <FormControl sx={{width: isMobile ? '100%' : '50%'}}>
+                    <InputLabel id="passagem-tempo-label">
+                      Critério de frequência
+                    </InputLabel>
+                    <Select
+                      labelId="passagem-tempo-label"
+                      label="Critério de frequência"
+                      value={form.watch('criterioFrequencia')}
+                      onChange={(e) => form.setValue('criterioFrequencia', e.target.value)}
                     >
-                      <MenuItem value="dia">Dia</MenuItem>
-                      <MenuItem value="mes">Mês</MenuItem>
-                      <MenuItem value="ano">Ano</MenuItem>
-                    </TextField>
-                  </Grid>
-                  {podeMostrarChecagem&& <Grid item xs={12} sm={4}>
-                  <TextField
-                    label="Data última checagem"
-                    type="date"
-                    fullWidth
-                    size='small'
-                    InputLabelProps={{ shrink: true }}
-                    {...form.register("dataUltimaChecagem")}
-                  />
-                </Grid>}
+                      <MenuItem value="C">Tempo de calendário</MenuItem>
+                      <MenuItem value="S">Tempo de serviço</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <Typography variant='body2' color='secondary'>Preferência atual: {asset?.criterioFrequencia ? frequenceCriterion[asset?.criterioFrequencia] : frequenceCriterion[client?.criterioFrequenciaPadrao]}</Typography>
                 </Grid>
-              </Grid>
+                <Grid item xs={12}>
+                  <Grid container alignItems="center" spacing={2}>
+                    <Grid item xs={12} sm={2}>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        Checagem
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                      <TextField
+                        label="Quantidade"
+                        type="number"
+                        inputProps={{ min: 0, max: 365 }}
+                        size="small"
+                        fullWidth
+                        {...form.register('frequenciaChecagem.quantidade')}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                      <TextField
+                        label="Frequência"
+                        select
+                        size="small"
+                        fullWidth
+                        value={form.watch('frequenciaChecagem.periodo')}
+                        {...form.register('frequenciaChecagem.periodo')}
+                      >
+                        <MenuItem value="dia">Dia</MenuItem>
+                        <MenuItem value="mes">Mês</MenuItem>
+                        <MenuItem value="ano">Ano</MenuItem>
+                      </TextField>
+                    </Grid>
+                    {podeMostrarChecagem && (
+                      <Grid item xs={12} sm={4}>
+                          <DatePicker
+                            label="Data última checagem"
+                            {...form.register("dataUltimaChecagem")}
+                            value={form?.watch('dataUltimaChecagem') ? dayjs(form?.watch('dataUltimaChecagem')) : null}
+                            onChange={newValue => form?.setValue("dataUltimaChecagem", newValue)}
+                            fullWidth
+                            size='small'
+                          />
+                      </Grid>
+                    )}
+                  </Grid>
+                </Grid>
 
-              <Grid item xs={12}>
-                <Grid container alignItems="center"  spacing={2}>
-                  <Grid item xs={12} sm={2}>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                      Calibração
-                    </Typography>
+                <Grid item xs={12}>
+                  <Grid container alignItems="center"  spacing={2}>
+                    <Grid item xs={12} sm={2}>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        Calibração
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                      <TextField
+                        label="Quantidade"
+                        type="number"
+                        inputProps={{ min: 0, max: 100 }}
+                        size="small"
+                        fullWidth
+                        {...form.register('frequenciaCalibracao.quantidade')}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                      <TextField
+                        label="Frequência"
+                        select
+                        size="small"
+                        fullWidth
+                        value={form.watch('frequenciaCalibracao.periodo')}
+                        {...form.register('frequenciaCalibracao.periodo')}
+                        >
+                        <MenuItem value="dia">Dia</MenuItem>
+                        <MenuItem value="mes">Mês</MenuItem>
+                        <MenuItem value="ano">Ano</MenuItem>
+                      </TextField>
+                    </Grid>
+                    {podeMostrarCalibracao && (
+                      <Grid item xs={12} sm={4}>
+                        <DatePicker
+                          label="Data última calibração"
+                          {...form.register("dataUltimaCalibracao")}
+                          value={form?.watch('dataUltimaCalibracao') ? dayjs(form?.watch('dataUltimaCalibracao')) : null}
+                          onChange={newValue => form?.setValue("dataUltimaCalibracao", newValue)}
+                          fullWidth
+                          size='small'
+                          />
+                      </Grid>
+                    )}
                   </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TextField
-                      label="Quantidade"
-                      type="number"
-                      inputProps={{ min: 0, max: 100 }}
-                      size="small"
-                      fullWidth
-                      {...form.register('frequenciaCalibracao.quantidade')}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <TextField
-                      label="Frequência"
-                      select
-                      size="small"
-                      fullWidth
-                      defaultValue='dia'
-                      {...form.register('frequenciaCalibracao.periodo')}
-                    >
-                      <MenuItem value="dia">Dia</MenuItem>
-                      <MenuItem value="mes">Mês</MenuItem>
-                      <MenuItem value="ano">Ano</MenuItem>
-                    </TextField>
-                  </Grid>
-                  {podeMostrarCalibracao && <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="Data última calibração"
-                      type="date"
-                      fullWidth
-                      size='small'
-                      InputLabelProps={{ shrink: true }}
-                      {...form.register("dataUltimaCalibracao")}
-                    />
-                  </Grid>}
                 </Grid>
               </Grid>
-            </Grid>
+            </LocalizationProvider>
           </AccordionDetails>
         </Accordion>
         <Accordion>

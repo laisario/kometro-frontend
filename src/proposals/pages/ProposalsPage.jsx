@@ -27,6 +27,7 @@ import GetAppIcon from '@mui/icons-material/GetApp';
 import CsvViewer from '../../components/CsvViewer';
 import useAuth from '../../auth/hooks/useAuth';
 import { NO_PERMISSION_ACTION } from '../../utils/messages';
+import { useMemo } from 'react';
 
 function ProposalsPage() {
   const {
@@ -61,6 +62,7 @@ function ProposalsPage() {
   } = useProposalsVM()
   const isFiltering = formFilter?.formState?.isDirty
   const { hasCreatePermission } = useAuth()
+  const hasProposals = useMemo(() => !!allProposals?.results?.length , [allProposals])
   return (
     <>
       <Helmet>
@@ -111,7 +113,7 @@ function ProposalsPage() {
                 deleteOrder={deleteOrder}
                 isMobile={isMobile}
                 />
-                {!allProposals?.results?.length 
+                {!hasProposals
                   ? <EmptyYet table content="proposta" isFiltering={isFiltering} onClick={handleOpen} isMobile={isMobile} />  
                   : (<>
                       <TableContainer>

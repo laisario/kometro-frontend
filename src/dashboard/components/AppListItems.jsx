@@ -90,7 +90,7 @@ const formatData = (data, isDocument) => {
   return {
     title: `${data?.tag} - ${data?.descricao}`,
     subtitle: `${data?.fabricante ? data?.fabricante : 'Fabricante não informado'} | ${data?.modelo ? data?.modelo : 'Modelo não informado'} | ${data?.faixaNominalMin? data?.faixaNominalMin : 'Fai. nominal mínima não informado'} - ${data?.faixaNominalMax ? data?.faixaNominalMax : "Fai. nominal máxima não informada"} ${data?.unidade}`,
-    url: `/dashboard/instrumentos/${data?.id}/${data?.setor?.id}`,
+    url: `/dashboard/instrumentos/${data?.id}/${data?.setor}`,
     ...data,
   }
 }
@@ -146,7 +146,7 @@ function ListItem({ data, isDocument }) {
           </Typography>
           {isDocument && data?.cliente && (
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              {formattedData?.cliente?.empresa} - {formattedData?.cliente?.nome}
+              {formattedData?.cliente?.empresa}
             </Typography>
           )}
         </Box>

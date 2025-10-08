@@ -4,6 +4,7 @@ import { useDashboard } from '../hooks/useDashboard'
 export const useDashboardVM = () => {
   const { user } = useAuth()
   const { data } = useDashboard()
+  
   const instruments = data?.instrumentosRecentes?.map((instrumento) => ({
     id: instrumento?.id,
     isExpired: instrumento?.expirado,

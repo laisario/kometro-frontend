@@ -11,6 +11,11 @@ const TreeHeader = (props) => {
     openFormCreateInstrument, 
     setOpenFormCreateInstrument,
     defaultAssets,
+    search,
+    setSearch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     cliente,
     mutate,
     selectedItem,
@@ -29,6 +34,11 @@ const TreeHeader = (props) => {
           handleClose={() => handleCloseCreateInstrument("create")}
           open={openFormCreateInstrument?.type === 'create' && openFormCreateInstrument?.status}
           defaultAssets={defaultAssets}
+          search={search}
+          setSearch={setSearch}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
           setor={selectedItem}
           cliente={cliente}
           mutate={mutate}
@@ -73,6 +83,11 @@ function SetorTree(props) {
     openCreateSectorId,
     handleCreate,
     defaultAssets,
+    search,
+    setSearch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     mutate,
     expandedItems,
     setExpandedItems,
@@ -119,6 +134,11 @@ function SetorTree(props) {
         openFormCreateInstrument={openFormCreateInstrument}
         setOpenFormCreateInstrument={setOpenFormCreateInstrument}
         defaultAssets={defaultAssets}
+        search={search}
+        setSearch={setSearch}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
         cliente={user?.cliente}
         mutate={mutate}
         selectedItem={selectedItem}

@@ -4,7 +4,7 @@ import _, {debounce} from 'lodash';
 import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
-const useAssets = (id) => {
+const useAssets = () => {
   const [debouncedSearchFilter, setDebouncedSearchFilter] = useState('')
   const [search, setSearch] = useState('')
   const [debouncedSearchNormaFilter, setDebouncedSearchNormaFilter] = useState('')
@@ -33,7 +33,6 @@ const useAssets = (id) => {
   } = useQuery({
     queryKey: [
       'instrumentos', 
-      id, 
       debouncedSearchFilter,
       dateStart,
       dateStop,
@@ -44,7 +43,6 @@ const useAssets = (id) => {
     queryFn: async () => {
       const response = await axios.get('/instrumentos/', {
         params: {
-          id,
           search: debouncedSearchFilter,
           dateStart,
           dateStop,

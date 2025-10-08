@@ -18,7 +18,6 @@ export const buildTreeItems = (sector, parentId = null) => {
         id:`instrument-${instr.id}`,
         label: instr.tag || instr.numeroDeSerie || 'Instrumento',
         itemType: 'instrument',
-        instrumentoData: instr,
         parentId: String(sector.id),
       });
     });
@@ -52,9 +51,12 @@ const AssetsProvider = ({ children }) => {
         const items = response?.data?.map((sect) => buildTreeItems(sect));
 
         return items
+
       },
       refetchOnWindowFocus: false,
-      refetchOnReconnect:false,
+      refetchOnReconnect:false,    
+      enabled: !!user?.cliente,
+      refetchOnMount: true
     }
 
   );

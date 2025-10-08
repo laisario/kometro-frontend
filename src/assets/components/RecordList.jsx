@@ -6,7 +6,7 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import useCalibrations from '../../clients/hooks/useCalibration';
+import useCalibrationsMutations from '../../clients/hooks/useCalibrationMutation';
 import Form from '../../clients/components/Form';
 import AddIcon from '@mui/icons-material/Add';
 import Movimentations from './InstrumentMovimentations';
@@ -67,7 +67,7 @@ function RecordList({asset}) {
     setError,
     formCertificate,
     exportMovements
-  } = useCalibrations(null, asset?.id, value === "2")
+  } = useCalibrationsMutations(null, asset?.id, value === "2")
 
   const { hasCreatePermission } = useAuth()
 

@@ -4,6 +4,7 @@ import useGroups from '../hooks/useGroups';
 import CopyAllIcon from '@mui/icons-material/CopyAll';
 import { enqueueSnackbar } from 'notistack';
 import useInvitesMutations from '../hooks/useInvitesMutations';
+import { permissionLabel } from '../../utils/permission';
 
 function InviteGenerator() {
   const [grupo, setGrupo] = useState('');
@@ -49,7 +50,7 @@ function InviteGenerator() {
           )
           : groups?.results?.map((group) => (
           <MenuItem key={group?.id} value={group?.id}>
-            {group?.name}
+            {permissionLabel[group?.name]}
           </MenuItem>
         ))}
       </TextField>

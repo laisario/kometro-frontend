@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { 
   Checkbox, 
   TableRow, 
@@ -47,6 +47,7 @@ function TableDocuments(props) {
   }
   const isFiltering = formFilter?.formState?.isDirty
   const admin = user?.admin ? 'admin' : 'dashboard'
+  const hasDocuments = useMemo(() => !!data?.results?.length, [data] )
 
   return (
     <Card>
@@ -59,7 +60,7 @@ function TableDocuments(props) {
         filter={filter}
         setFilter={setFilter}
       />
-      {!data?.results?.length 
+      {!hasDocuments
         ? <EmptyYet table content="documento" isMobile={isMobile} isFiltering={isFiltering} /> 
         : (
             <>

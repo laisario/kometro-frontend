@@ -53,7 +53,12 @@ const OptionsMenu = ({
   setores, 
   error,
   handleCloseCreateInstrument,
-  setError
+  setError,
+  search,
+  setSearch,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   
@@ -117,6 +122,11 @@ const OptionsMenu = ({
         handleClose={() => handleCloseCreateInstrument("edit")}
         open={openFormCreateInstrument?.type === 'edit' && openFormCreateInstrument?.status}
         defaultAssets={defaultAssets}
+        search={search}
+        setSearch={setSearch}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
         setor={selectedItem}
         cliente={user?.cliente}
         mutate={mutateUpdateClient}
@@ -135,6 +145,11 @@ function InstrumentDetails({
   instrumento,   
   mutateUpdateClient,
   defaultAssets,
+  search,
+  setSearch,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
   selectedItem,
   mutateDeleteClient,
   setSelectedItem,
@@ -148,7 +163,7 @@ function InstrumentDetails({
   handleCloseCreateInstrument,
   mutateCreateClient
 }) {
-  const { user, hasCreatePermission } = useAuth();
+  const { user } = useAuth();
   if (!instrumento) {
     return (
       <>
@@ -161,6 +176,11 @@ function InstrumentDetails({
           handleClose={() => handleCloseCreateInstrument("create")}
           open={openFormCreateInstrument?.type === 'create' && openFormCreateInstrument?.status}
           defaultAssets={defaultAssets}
+          search={search}
+          setSearch={setSearch}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
           setor={selectedItem}
           cliente={user?.cliente}
           mutate={mutateCreateClient}
@@ -203,6 +223,11 @@ function InstrumentDetails({
               setores={setores}
               error={error}
               setError={setError}
+              search={search}
+              setSearch={setSearch}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
               handleCloseCreateInstrument={handleCloseCreateInstrument}
             />
           </Box>
