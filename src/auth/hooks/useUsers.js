@@ -15,7 +15,11 @@ const useUsers = (id) => {
     return response?.data?.results;
   }, { 
     refetchOnReconnect: false,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    staleTime: 15 * 60 * 1000,
+    cacheTime: 60 * 60 * 1000,
+    refetchOnMount: false,
+    refetchInterval: false,
   });
 
   return {

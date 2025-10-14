@@ -58,11 +58,13 @@ function ProposalsPage() {
     error,
     setError,
     exportOrders,
-    csvContent
+    csvContent,
+    user,
   } = useProposalsVM()
   const isFiltering = formFilter?.formState?.isDirty
   const { hasCreatePermission } = useAuth()
   const hasProposals = useMemo(() => !!allProposals?.results?.length , [allProposals])
+  console.log(allProposals, rowsPerPage, page)
   return (
     <>
       <Helmet>
@@ -175,14 +177,14 @@ function ProposalsPage() {
                         </Table>
                       </TableContainer>
                       <TablePagination
-                      rowsPerPageOptions={[5, 10, 25, 100]}
-                      component="div"
-                      count={allProposals?.count || 0}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage}
-                      labelRowsPerPage="Linhas por páginas"
+                        rowsPerPageOptions={[5, 10, 25, 100]}
+                        component="div"
+                        count={allProposals?.count || 0}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        labelRowsPerPage="Linhas por páginas"
                       />
                     </>
                   )
@@ -194,7 +196,7 @@ function ProposalsPage() {
         <FormCreateProposal 
           open={open} 
           onClose={handleClose} 
-          admin={admin} 
+          user={user} 
           mutateCreateProposal={mutateCreateProposal}
           isLoadingCreateProposal={isLoadingCreateProposal}
           formCreateProposal={formCreateProposal}

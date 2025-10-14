@@ -15,6 +15,7 @@ import PreferencesForm from '../components/PreferencesForm';
 import { NO_PERMISSION_ACTION } from '../../utils/messages';
 import useAssetsVm from '../viewModels/useAssetsVM';
 import { useParams } from 'react-router';
+import useSectorTree from '../hooks/useSectorTree';
 
 function AssetsPage() {
   const { id, idSetor } = useParams();
@@ -24,8 +25,6 @@ function AssetsPage() {
     handleCheckboxSelectAll,
     handleChangeCheckbox,
     isMobile,
-    sectors,
-    isLoadingSectors, 
     open,
     error,
     selectAll,
@@ -66,8 +65,14 @@ function AssetsPage() {
     openPreferenceForm,
     handleOpenPreferenceForm,
     handleClosePreferenceForm,
-    hasEditPermission
+    hasEditPermission,
+    page,
+    rowsPerPage,
+    handleChangePage,
+    handleChangeRowsPerPage,
   } = useAssetsVm(id, idSetor);
+
+  const { sectors, isLoadingSectors } = useSectorTree();
 
   const hasSectors = useMemo(() => !!sectors?.length, [sectors])
 
@@ -134,6 +139,10 @@ function AssetsPage() {
             assets={assets}
             assetFilterForm={assetFilterForm}
             isFetchingAssets={isFetchingAssets}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            handleChangePage={handleChangePage}
+            handleChangeRowsPerPage={handleChangeRowsPerPage}
           />
           {isLoadingSectors
             ? <Loading />
@@ -230,7 +239,11 @@ function AssetsPage() {
                           overflowY: 'auto',
                         }}
                       >
-                        <RecordList asset={asset} />
+                        <Card>
+                          <CardContent>
+                            <RecordList asset={asset} adminPreview />
+                          </CardContent>
+                        </Card>
                       </Box>
                     )}
                   </Grid>

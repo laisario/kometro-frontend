@@ -4,16 +4,16 @@ import { Search } from '@mui/icons-material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import useResponsive from '../../theme/hooks/useResponsive';
+import useClientMutations from '../hooks/useClientMutations';
 
 function TableToolbar(props) {
   const { 
     numSelected, 
     form, 
     selectedClients, 
-    deleteClients, 
-    isDeleting 
   } = props;
   const isDesktop = useResponsive('up', 'md');
+  const { deleteClients, isDeleting } = useClientMutations();
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">

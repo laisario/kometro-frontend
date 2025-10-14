@@ -28,7 +28,6 @@ function ClientsPage() {
     formFilter,
     handleChangePage,
     handleChangeRowsPerPage,
-    deleteClients,
     rowsPerPage,
     page,
     isMobile,
@@ -38,11 +37,13 @@ function ClientsPage() {
     setSelectedClients,
     navigate,
     handleClick,
-    isDeleting,
     user
   } = useClientsVM();
 
   const areThereClients = useMemo(() => !!clients?.results?.length, [clients?.results]);
+  
+  console.log(clients?.results)
+  
   return (
     <>
       <Helmet>
@@ -64,10 +65,8 @@ function ClientsPage() {
             <Card>
               <TableToolbar
                 numSelected={selectedClients?.length}
-                deleteClients={() => { deleteClients(selectedClients); setSelectedClients([]) }}
                 form={formFilter}
                 isLoadingClients={isLoadingClients}
-                isDeleting={isDeleting}
               />
               <TableContainer sx={{ minWidth: 800 }}>
                 <Table
@@ -105,7 +104,7 @@ function ClientsPage() {
                             />
                           </TableCell>
                           <TableCell>
-                            {row?.empresa?.razaoSocial || row?.nome || row?.usuario?.username}
+                            {row?.empresa}
                           </TableCell>
                         </TableRow>
                       );

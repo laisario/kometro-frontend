@@ -1,10 +1,10 @@
 import { enqueueSnackbar } from 'notistack';
 import React, { useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query';
-import {buildTreeItems} from '../provider'
 import 'dayjs/locale/pt-br';
 import { axios } from '../../api';
 import {getErrorMessage} from '../../utils/error'
+import { buildTreeItems } from './useSectorTree';
 
 function useSectorMutations(setOpenCreateSectorId, setExpandedItems, setSelectedItem, handleCloseCreateSector) {
   const [error, setError] = useState({});

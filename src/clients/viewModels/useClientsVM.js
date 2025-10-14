@@ -1,8 +1,8 @@
-import React, { useContext, useState } from 'react'
-import ClientsContext from '../context'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router';
 import useAuth from '../../auth/hooks/useAuth';
 import useResponsive from '../../theme/hooks/useResponsive';
+import useClients from '../hooks/useClients';
 
 function useClientsVM() {
   const [selectedClients, setSelectedClients] = useState([]);
@@ -14,15 +14,13 @@ function useClientsVM() {
   const {
     clients, 
     errorClients, 
-    isLoadingClients, 
+    isLoadingClients,
     formFilter,
     handleChangePage,
     handleChangeRowsPerPage,
-    deleteClients,
-    isDeleting,
     rowsPerPage,
-    page
-  } = useContext(ClientsContext);
+    page,
+  } = useClients(user);
 
   const isSelected = (id) => selectedClients.indexOf(id) !== -1;
 
@@ -47,8 +45,6 @@ function useClientsVM() {
     formFilter,
     handleChangePage,
     handleChangeRowsPerPage,
-    deleteClients,
-    isDeleting,
     rowsPerPage,
     page,
     isMobile,

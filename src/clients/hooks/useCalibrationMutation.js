@@ -18,7 +18,6 @@ const useCalibrationsMutations = (id, instrumento, checagem) => {
   const [error, setError] = useState({});
   const queryClient = useQueryClient();
 
-  const { data, isLoadingCalibrations } = useCalibration(id, debouncedSearch, instrumento, checagem)
   
   const handleSearchOS = debounce((value) => setDebouncedSearch(value));
 
@@ -295,7 +294,6 @@ const useCalibrationsMutations = (id, instrumento, checagem) => {
 
 
   return {
-    data,
     error,
     search,
     setSearch,
@@ -324,8 +322,9 @@ const useCalibrationsMutations = (id, instrumento, checagem) => {
     formCreate,
     error,
     setError,
-    isLoadingCalibrations,
-    exportMovements
+    exportMovements,
+    debouncedSearch,
+    checagem
   }
 }
 

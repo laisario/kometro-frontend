@@ -16,7 +16,6 @@ const errorMessagesLogin = {
 };
 
 const errorMessagesRegister = {
-  // 400: 'Todos os campos obrigatórios devem ser preenchidos.',
   409: 'Este email já está em uso.',
   500: 'Erro no servidor. Tente novamente mais tarde.',
 }

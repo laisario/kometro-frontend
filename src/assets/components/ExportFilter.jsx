@@ -88,6 +88,10 @@ function ExportFilter(props) {
     handleCheckboxSelectAll,
     assetFilterForm,
     isFetchingAssets,
+    page,
+    rowsPerPage,
+    handleChangePage,
+    handleChangeRowsPerPage,
   } = props;
 
   const [csvContent, setCsvContent] = useState(null)
@@ -276,16 +280,23 @@ function ExportFilter(props) {
             <Divider sx={{ml: 2, mr: 2}} orientation='vertical' />
           </>
         )}
-        {isFetchingAssets ? <Loading /> : <InstrumentoTable 
-          instrumentos={assets?.results} 
-          valueCheckbox={valueCheckbox}
-          selected={selected}
-          setSelected={setSelected}
-          selectAll={selectAll}
-          handleCheckboxSelectAll={handleCheckboxSelectAll}
-          csvContent={csvContent}
-          ref={printRef}
-        />}
+        {isFetchingAssets ? <Loading /> : (
+          <InstrumentoTable 
+            instrumentos={assets?.results} 
+            valueCheckbox={valueCheckbox}
+            selected={selected}
+            setSelected={setSelected}
+            selectAll={selectAll}
+            handleCheckboxSelectAll={handleCheckboxSelectAll}
+            csvContent={csvContent}
+            ref={printRef}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            handleChangePage={handleChangePage}
+            handleChangeRowsPerPage={handleChangeRowsPerPage}
+            count={assets?.count}
+          />
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={() => { setCsvContent(null); handleClose() }}>Cancelar</Button>

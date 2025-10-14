@@ -2,11 +2,10 @@ import { Stack, Box, Button, Divider, CircularProgress } from '@mui/material'
 import React from 'react'
 import Calibrations from './Calibrations';
 import PreviewCalibration from './PreviewCalibration';
-
+import useCalibration from '../hooks/useCalibration';
 
 function CalibrationPanel(props) {
   const {
-    calibrations,
     mutateDeleteCalibration,
     isDeletingCalibration,
     isLoadingCreation,
@@ -24,11 +23,14 @@ function CalibrationPanel(props) {
     openCreateCertificate,
     setOpenCreateCertificate,
     error,
-    isLoadingCalibrations,
     setError,
     isMobile,
-    checagem
+    checagem,
+    debouncedSearch,
+    assetId
   } = props;
+  
+  const { data: calibrations, isLoadingCalibrations } = useCalibration(null, debouncedSearch, assetId, checagem)
   
   return (
     <Stack flexDirection={isMobile ? 'column' : 'row'} width="100%" gap={2} divider={<Divider orientation={isMobile ? "horizontal" : "vertical"} flexItem />} justifyContent='space-between'>

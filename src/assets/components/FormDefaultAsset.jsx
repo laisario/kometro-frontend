@@ -11,11 +11,12 @@ import {
   DialogActions,
   Stack,
   DialogTitle,
+  InputAdornment,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import useDefaultAssetMutations from '../hooks/useDefaultAssetMutations';
 
-function FormDefaultAsset({open, onClose, setInstrumentoSelecionado}) {
+function FormDefaultAsset({open, onClose, setInstrumentoSelecionado, adminPreview}) {
   const form = useForm({ defaultValues: {
     descricao: '',
     modelo: '',
@@ -29,6 +30,8 @@ function FormDefaultAsset({open, onClose, setInstrumentoSelecionado}) {
     tipoSinal: '',
     capacidadeMedicao: null,
     unidadeCapacidade: '',
+    precoCalibracaoNoCliente: null,
+    precoCalibracaoNoLaboratorio: null,
   }});
   const { mutateCreateDefaultAsset, errorDefaultAsset, setError } = useDefaultAssetMutations(onClose, form, setInstrumentoSelecionado)
 
@@ -166,6 +169,33 @@ function FormDefaultAsset({open, onClose, setInstrumentoSelecionado}) {
             {...form.register("unidadeCapacidade")}
           />
         </Stack>
+
+        {adminPreview && <>
+          <Typography variant="subtitle1" mt={3} mb={2}>Preços calibração</Typography>
+
+          <Stack direction='row' gap={2}>
+            <TextField
+              label="No cliente"
+              InputProps={{
+                startAdornment: (
+                    <InputAdornment position="start">R$</InputAdornment>
+                ),
+              }}
+              fullWidth
+              {...form.register("precoCalibracaoNoCliente")}
+            />
+            <TextField
+              label="No laboratório"
+              InputProps={{
+                startAdornment: (
+                    <InputAdornment position="start">R$</InputAdornment>
+                ),
+              }}
+              fullWidth
+              {...form.register("precoCalibracaoNoLaboratorio")}
+            />
+          </Stack>
+        </>}
       </DialogContent>
     
       <DialogActions sx={{ justifyContent: 'space-between' }}>

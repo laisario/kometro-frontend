@@ -1,40 +1,65 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useMemo } from 'react'
 import useResponsive from '../../theme/hooks/useResponsive';
 import useAuth from '../../auth/hooks/useAuth';
 import { useNavigate } from 'react-router';
 import { statusColor, status } from '../../utils/documents';
 import { axios } from '../../api';
-import DocumentsContext from '../context';
+import useDocuments from '../hooks/useDocuments';
+import useDocumentMutations from '../hooks/useDocumentMutations';
+import { isPastFromToday } from '../../utils/formatTime';
+
 
 export const useDocumentsVM = () => {
   const [selectedDocuments, setSelectedDocuments] = useState([]);
   const [csvContent, setCsvContent] = useState(null);
   const [filter, setFilter] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const isMobile = useResponsive('down', 'md');
-  const { user } = useAuth()
+  const { user } = useAuth();
+
+  const handleClose = () => {
+    form.reset()
+    setOpen(false);
+  };
+
   const {
     data,
-    deleteDocumentos,
-    isDeleting,
     page,
     rowsPerPage,
-    handleChangePage,
-    handleChangeRowsPerPage,
-    isLoading,
+    error,
     formFilter,
+    form,
+    setError,
+    setOpen,
+    open,
+    setPage,
+    setRowsPerPage,
+  } = useDocuments();
+
+  const {
     mutateCreate,
-    errorCreate,
     isCreating,
     isSuccessCreate,
-    error,
-    setError,
-    open,
-    setOpen,
-    form,
-    handleClose,
-  } = useContext(DocumentsContext);
+    errorCreate,
+    deleteDocumentos,
+    isDeleting,
+  } = useDocumentMutations(handleClose, setError);
+
+
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+  
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const expiredDocuments = useMemo(() =>  data?.results?.filter((document) =>
+    isPastFromToday(document?.data_validade)
+  ), [data]);
 
   const handleOpenForm = () => {
     setOpen(true);
@@ -98,7 +123,6 @@ export const useDocumentsVM = () => {
     rowsPerPage,
     handleChangePage,
     handleChangeRowsPerPage,
-    isLoading,
     formFilter,
     mutateCreate,
     errorCreate,
@@ -111,5 +135,6 @@ export const useDocumentsVM = () => {
     form,
     handleClose,
     user,
+    expiredDocuments,
   }
 }

@@ -24,7 +24,6 @@ function PreviewCalibration(props) {
     setError,
     checagem
   } = props;
-
   return (
     <Box sx={{
       width: isMobile ? '100%' : '68%',
@@ -33,7 +32,7 @@ function PreviewCalibration(props) {
       alignItems: 'center',
       borderRadius: 4,
     }}>
-      {!Object.keys(calibration)?.length
+      {!Object?.keys(calibration)?.length
         ? <Typography color='grey' fontWeight={400} textAlign="center">Selecione uma {checagem ? 'checagem' : 'calibração'} para visualizá-la</Typography>
         : (
           <Calibration

@@ -1,4 +1,3 @@
-import AssetsContext from "../components/context";
 import { useQuery } from 'react-query';
 import { axios } from '../../api';
 import useAuth from "../../auth/hooks/useAuth";
@@ -32,46 +31,42 @@ export const buildTreeItems = (sector, parentId = null) => {
   };
 };
 
-const AssetsProvider = ({ children }) => {
-  const { user } = useAuth();
 
-  const { 
-    data: sectors,
-    isFetching: isLoadingSectors,
-  } = useQuery(
-    {
-      queryKey: ['setores'], 
-      queryFn: async () => {
-        const params = {
-          cliente_id: user?.cliente,
-        };
+const useSectorTree = () => {
+    const { user } = useAuth();
 
-        const response = await axios.get('/setores/hierarquia/', { params });
+    const { 
+      data: sectors,
+      isFetching: isLoadingSectors,
+    } = useQuery(
+      {
+        queryKey: ['setores'], 
+        queryFn: async () => {
+          const params = {
+            cliente_id: user?.cliente,
+          };
+  
+          const response = await axios.get('/setores/hierarquia/', { params });
+  
+          const items = response?.data?.map((sect) => buildTreeItems(sect));
+  
+          return items
+  
+        },
+        refetchOnWindowFocus: false,
+        refetchOnReconnect:false,    
+        enabled: !!user?.cliente,
+        refetchOnMount: true
+      }
+  
+    );
 
-        const items = response?.data?.map((sect) => buildTreeItems(sect));
-
-        return items
-
-      },
-      refetchOnWindowFocus: false,
-      refetchOnReconnect:false,    
-      enabled: !!user?.cliente,
-      refetchOnMount: true
-    }
-
-  );
-
-
-  return (
-    <AssetsContext.Provider
-      value={{
+    return {
         sectors,
         isLoadingSectors,
-      }}
-    >
-      {children}
-    </AssetsContext.Provider>
-  );
+    }
+
+  
 };
 
-export default AssetsProvider;
+export default useSectorTree;

@@ -2,8 +2,6 @@ import {
   TextField,
   Button,
   CircularProgress,
-  Chip,
-  Checkbox,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -11,13 +9,13 @@ import {
   Autocomplete,
 } from '@mui/material';
 import { verifyError } from '../../utils/error';
-import useClientAssets from '../../assets/hooks/useClientAsset';
+import VirtualizedInstrumentAutocomplete from './VirtualizedInstrumentAutocomplete';
 
 function FormCreateProposal(props) {
   const { 
     onClose, 
     open, 
-    admin,
+    user,
     mutateCreateProposal,
     isLoadingCreateProposal,
     formCreateProposal,
@@ -29,8 +27,6 @@ function FormCreateProposal(props) {
   
   const instruments = formCreateProposal?.watch("instrumentos");
   const client = formCreateProposal?.watch('cliente');
-  
-  const { assets, isLoadingAssets } = useClientAssets(admin ? client?.id : clients?.results[0]?.id);
 
   return (
     <Dialog
@@ -40,7 +36,7 @@ function FormCreateProposal(props) {
     >
       <DialogTitle>Criar novo pedido de calibração</DialogTitle>
       <DialogContent>
-        {admin && (
+        {user?.admin && (
           <Autocomplete
             autoHighlight
             options={clients?.results || []}
@@ -67,44 +63,19 @@ function FormCreateProposal(props) {
           />
         )}
 
-        {<Autocomplete
-          multiple
-          autoHighlight
-          options={assets?.results || []}
-          isOptionEqualToValue={(option, value) => option?.id === value?.id}
-          getOptionLabel={(instrument) => `${instrument?.instrumento?.tipoDeInstrumento?.descricao} - ${instrument?.instrumento?.minimo} - ${instrument?.instrumento?.maximo} ${instrument?.instrumento?.unidade} ${!!instrument?.tag && `| ${instrument?.tag}`} ${!!instrument?.numeroDeSerie && `| ${instrument?.numeroDeSerie}`} `}
-          disableCloseOnSelect
-          loading={isLoadingAssets}
-          renderTags={(value, getTagProps) => value?.map((tag, index) => <Chip {...getTagProps({ index })} key={tag?.tag} label={tag?.tag} />)}
-          name="instrumentos"
+        <VirtualizedInstrumentAutocomplete
+          clientId={user?.admin ? client?.id : user?.cliente}
           value={instruments}
-          loadingText="Carregando..."
-          noOptionsText="Sem resultados"
-          {...formCreateProposal.register("instrumentos")}
-          onChange={(event, newValue) => {verifyError("instrumentos", error, setError); formCreateProposal?.setValue('instrumentos', newValue)}}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              helperText={!!error['instrumentos']?.length && error['instrumentos'][0]}
-              error={!!error['instrumentos']?.length}
-              label={admin ? "Instrumentos do cliente" : "Instrumentos"}
-              placeholder="Pesquisar instrumento"
-            />
-          )}
-          renderOption={(props, instrumento, { selected }) => {
-            const { key, ...optionProps } = props;
-            return (
-              <li key={key} {...optionProps}>
-                <Checkbox
-                  style={{ marginRight: 8 }}
-                  checked={selected}
-                />
-                {instrumento?.instrumento?.tipoDeInstrumento?.descricao} - {instrumento?.instrumento?.minimo} - {instrumento?.instrumento?.maximo} {instrumento?.instrumento?.unidade} {!!instrumento?.tag && `| ${instrumento?.tag}`} {!!instrumento?.numeroDeSerie && `| ${instrumento?.numeroDeSerie}`}
-              </li>
-            );
+          onChange={(event, newValue) => {
+            verifyError("instrumentos", error, setError);
+            formCreateProposal?.setValue('instrumentos', newValue);
           }}
+          error={!!error['instrumentos']?.length}
+          helperText={!!error['instrumentos']?.length && error['instrumentos'][0]}
+          label={user?.admin ? "Instrumentos do cliente" : "Instrumentos"}
+          placeholder="Pesquisar instrumento"
           sx={{ my: 2 }}
-        />}
+        />
         <TextField
           type="text"
           multiline
@@ -119,8 +90,7 @@ function FormCreateProposal(props) {
       <DialogActions sx={{ mt: 3, mb: 2 }} >
         <Button onClick={() => { onClose(); formCreateProposal.reset() }}>Cancelar</Button>
         <Button 
-          onClick={mutateCreateProposal} 
-          type="submit" 
+          onClick={() => mutateCreateProposal(formCreateProposal.getValues())} 
           variant="contained"
         >
           Enviar proposta

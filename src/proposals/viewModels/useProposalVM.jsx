@@ -1,9 +1,9 @@
-import React, { useContext, useState } from 'react'
+import { useState } from 'react'
 import useResponsive from '../../theme/hooks/useResponsive';
 import useProposal from '../hooks/useProposal';
 import { useNavigate, useParams } from 'react-router';
 import useAuth from '../../auth/hooks/useAuth';
-import ProposalsContext from '../context';
+import useProposalMutations from '../hooks/useProposalMutations';
 
 const useProposalVM = () => {
   const [edit, setEdit] = useState(false);
@@ -14,7 +14,7 @@ const useProposalVM = () => {
   const { user } = useAuth();
   const navigate = useNavigate()
 
-  const { deleteOrder, isDeleting } = useContext(ProposalsContext)
+  const { deleteOrder, isDeleting } = useProposalMutations()
   
   const deleteOrderAndNavigate = () => {
     deleteOrder([id])

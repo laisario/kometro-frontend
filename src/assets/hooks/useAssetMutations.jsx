@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { axios } from '../../api';
 import {getErrorMessage} from '../../utils/error'
 
-function useAssetMutations(handleCleanCreateForm, handleClose,handleCloseCreateInstrument) {
+function useAssetMutations(handleClose, adminPreview) {
   const [error, setError] = useState({});
   const queryClient = useQueryClient();
 
@@ -100,32 +100,30 @@ function useAssetMutations(handleCleanCreateForm, handleClose,handleCloseCreateI
     cliente: form?.client,
   })
 
-  const updateInstrument = async (form) => {
-    const data = formatedData(form);
-    const response = await axios.patch(`/instrumentos/${form?.instrumento}/`, data);
+  const updateInstrument = async (data) => {
+    const response = await axios.patch(`/instrumentos/${data?.id}/`, data);
     return response;
   }
 
-  const { 
-    mutate: mutateUpdate, 
-    isLoading: isLoadingUpdate, 
-  } = useMutation({
-    mutationFn: updateInstrument,
-    onSuccess: () => {
-      enqueueSnackbar('Instrumento atualizado com sucesso!', {
-        variant: 'success'
-      });
-      queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
-      queryClient.invalidateQueries({ queryKey: ['propostas'] })
-      handleClose()
-    },
-    onError: (erro) => {
-      setError(erro?.response?.data)
-      enqueueSnackbar('Falha ao atualizar instrumento, tente novamente!', {
-        variant: 'error'
-      });
-    }
-  })
+  // const { 
+  //   mutate: mutateUpdate, 
+  //   isLoading: isLoadingUpdate, 
+  // } = useMutation({
+  //   mutationFn: updateInstrument,
+  //   onSuccess: () => {
+  //     enqueueSnackbar('Instrumento atualizado com sucesso!', {
+  //       variant: 'success'
+  //     });
+  //     queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
+  //     handleClose()
+  //   },
+  //   onError: (erro) => {
+  //     setError(erro?.response?.data)
+  //     enqueueSnackbar('Falha ao atualizar instrumento, tente novamente!', {
+  //       variant: 'error'
+  //     });
+  //   }
+  // })
 
   const createInstrument = async (form) => {
     const data = formatedData(form)
@@ -167,8 +165,9 @@ function useAssetMutations(handleCleanCreateForm, handleClose,handleCloseCreateI
   } = useMutation({
     mutationFn: createInstrumentClient,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['setores'] })
-      handleCloseCreateInstrument('create')
+      const queryKey = adminPreview ? ['instrumentos'] : ['setores'];
+      queryClient.invalidateQueries({ queryKey, })
+      handleClose('create')
       enqueueSnackbar('Instrumento criado com sucesso!', {
         variant: 'success'
       });
@@ -223,7 +222,7 @@ function useAssetMutations(handleCleanCreateForm, handleClose,handleCloseCreateI
       if (variables?.previousSetorId !== variables?.setor) {
         queryClient.invalidateQueries({ queryKey: ['setores'] })
       }
-      handleCloseCreateInstrument('edit')
+      handleClose('edit')
     },
     onError: (erro) => {
       enqueueSnackbar(getErrorMessage(erro?.response?.status), {
@@ -296,9 +295,9 @@ function useAssetMutations(handleCleanCreateForm, handleClose,handleCloseCreateI
     isDeleting,
     mutateCriticalAnalisys,
     isLoadingCriticalAnalisys,
-    mutateUpdate, 
+    // mutateUpdate, 
+    // isLoadingUpdate, 
     mutateCreate, 
-    isLoadingUpdate, 
     isLoadingCreate,
     error,
     setError,

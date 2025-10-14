@@ -9,19 +9,8 @@ import EmptyYet from '../../components/EmptyYet';
 import { dateDistanceText, findDateStatusColor } from '../../utils/date';
 import InstrumentPosition from './InstrumentPosition';
 import LockIcon from '@mui/icons-material/Lock';
-import { frequenceCriterion } from '../../utils/assets';
+import { frequenceCriterion, tipoSinalMap, tipoServicoMap } from '../../utils/assets';
 
-
-const tipoSinalMap = {
-  A: 'Analógico',
-  D: 'Digital',
-};
-
-const tipoServicoMap = {
-  A: 'Acreditado',
-  NA: 'Não acreditado',
-  I: 'Interno',
-};
 
 const posicaoMap = {
   U: { label: 'Em uso', color: 'success' },

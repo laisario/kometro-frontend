@@ -6,8 +6,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import ClientInformation from '../components/ClientInformation';
 import ClientInstrumentInformation from '../components/ClientInstrumentInformation';
 import useClientVM from '../viewModels/useClientVM';
-import EditAsset from '../../components/EditAsset';
 import EmptyYet from '../../components/EmptyYet'
+import CreateInstrument from '../../assets/components/CreateInstrument';
+
 
 function ClientDetailsPage() {
   const { id } = useParams();
@@ -16,9 +17,12 @@ function ClientDetailsPage() {
     isMobile,
     search,
     setSearch,
-    handleOpenFormCreate,
-    handleCloseFormCreate,
-    openFormCreate,
+    handleOpenCreateForm,
+    handleCloseCreateForm,
+    handleOpenEditForm,
+    handleCloseEditForm,
+    openCreateForm,
+    editFormState,
     isLoadingClient,
     rowsPerPage,
     page,
@@ -27,9 +31,19 @@ function ClientDetailsPage() {
     isDeleting,
     mutateDelete,
     isLoadingAssets,
-    assets
+    assets,
+    defaultAssets, 
+    isFetching, 
+    search: searchDA, 
+    setSearch: setSearchDA, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage,
+    mutateCreateClient,
+    mutateUpdateClient: mutateEditInstrument,
+    error,
+    setError, 
   } = useClientVM(id);
-
 
   return (
     <>
@@ -37,14 +51,9 @@ function ClientDetailsPage() {
         <title>Cliente | Kometro </title>
       </Helmet>
       <Container>
-        <Stack direction="column" alignItems="flex-start" justifyContent="center" mb={5}>
-          <Typography variant="h4" gutterBottom>
-            Informações cliente
-          </Typography>
-          <Typography variant="h6" gutterBottom>
-            {client?.empresa?.razaoSocial || client?.nome || client?.usuario?.username}
-          </Typography>
-        </Stack>
+        <Typography variant="h4" mb={5} gutterBottom>
+          Informações cliente
+        </Typography>
         {isLoadingClient 
           ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -53,7 +62,7 @@ function ClientDetailsPage() {
             ) 
           : <ClientInformation data={client} isMobile={isMobile} />}
         <br />
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2} useFlexGap sx={{ flexWrap: 'wrap' }}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}  sx={{ flexWrap: 'wrap' }}>
           <Typography variant="h4" gutterBottom>
             Instrumentos
           </Typography>
@@ -63,7 +72,6 @@ function ClientDetailsPage() {
               size='small'
               label="Busque um instrumento"
               variant="outlined"
-              sx={{ width: '60%' }}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               InputProps={{
@@ -76,17 +84,26 @@ function ClientDetailsPage() {
             />
             <Button 
               variant='contained' 
-              onClick={handleOpenFormCreate} 
+              onClick={handleOpenCreateForm} 
               size={isMobile ? 'small' : 'medium'} 
             >
               Novo instrumento
             </Button>
-            <EditAsset
-              create
-              clientId={id}
-              handleClose={handleCloseFormCreate}
-              open={openFormCreate}
-              isMobile={isMobile}
+            <CreateInstrument
+              handleClose={handleCloseCreateForm}
+              open={openCreateForm}
+              defaultAssets={defaultAssets}
+              searchDA={searchDA}
+              setSearchDA={setSearchDA}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+              cliente={id}
+              mutate={mutateCreateClient}
+              isFetching={isFetching}
+              error={error}
+              setError={setError}
+              adminPreview
             />
           </Stack>
         </Stack>
@@ -104,6 +121,20 @@ function ClientDetailsPage() {
                 isMobile={isMobile}
                 isDeleting={isDeleting}
                 mutateDelete={mutateDelete}
+                cliente={client?.id}
+                defaultAssets={defaultAssets}
+                search={searchDA}
+                setSearch={setSearchDA}
+                fetchNextPage={fetchNextPage}
+                hasNextPage={hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+                mutateEditInstrument={mutateEditInstrument}
+                isFetching={isFetching}
+                error={error}
+                setError={setError}
+                editFormState={editFormState}
+                handleCloseFormEdit={handleCloseEditForm}
+                handleOpenFormEdit={handleOpenEditForm}
               />
             ))
               : <EmptyYet content="instrumento" isMobile={isMobile} />

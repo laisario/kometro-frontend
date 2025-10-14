@@ -35,7 +35,7 @@ const getInstrumentoLabel = (instrumento) => {
   return info ? `${info}${faixa}` : '';
 };
 
-const InstrumentOption = ({ index, style, data }) => {
+const InstrumentOption = ({ index, style, data, adminPreview }) => {
   const { options, onSelect, selectedValue } = data;
   const option = options[index];
 
@@ -59,6 +59,8 @@ const InstrumentOption = ({ index, style, data }) => {
   const unidade = option?.unidade || '—';
   const capacidade = option?.capacidadeDeMedicao?.valor || '—';
   const unidadeCapacidade = option?.capacidadeDeMedicao?.unidade || '—';
+  const precoCalibracaoNoCliente = option?.precoCalibracaoNoCliente || '—';
+  const precoCalibracaoNoLaboratorio = option?.precoCalibracaoNoLaboratorio || '—';
 
   const isSelected = selectedValue?.id === option?.id;
 
@@ -102,6 +104,16 @@ const InstrumentOption = ({ index, style, data }) => {
           <Typography variant="body2" color="text.secondary">
             Capacidade de medição: {capacidade} {unidadeCapacidade}
           </Typography>
+          {adminPreview && (
+            <>
+              <Typography variant="body2" color="text.secondary">
+                Preço de calibração no cliente: R${precoCalibracaoNoCliente}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Preço de calibração no laboratório: R${precoCalibracaoNoLaboratorio}
+              </Typography>
+            </>
+          )}
         </Box>
       </ListItemButton>
       <Divider />
@@ -121,14 +133,14 @@ const VirtualizedInstrumentAutocomplete = ({
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
+  adminPreview = false,
   ...props
 }) => {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const listRef = useRef(null);
 
-  // Fixed item size that accommodates all content
-  const ITEM_HEIGHT = 200; // Generous fixed height for all items
+  const ITEM_HEIGHT = 200;
 
   const handleInputChange = useCallback((event) => {
     const newValue = event.target.value;
@@ -156,7 +168,6 @@ const VirtualizedInstrumentAutocomplete = ({
     setOpen(false);
   }, []);
 
-  // Update input value when value prop changes
   useEffect(() => {
     if (value) {
       setInputValue(getInstrumentoLabel(value));
@@ -172,21 +183,18 @@ const VirtualizedInstrumentAutocomplete = ({
   }), [options, handleSelect, value]);
 
   const handleItemsRendered = useCallback(({ visibleStopIndex }) => {
-    // Load more when we're near the end
     if (hasNextPage && !isFetchingNextPage && visibleStopIndex >= options.length - 2) {
       fetchNextPage?.();
     }
   }, [hasNextPage, isFetchingNextPage, options.length, fetchNextPage]);
 
   const handleScroll = useCallback(({ scrollTop, scrollHeight, clientHeight }) => {
-    // Alternative scroll-based loading trigger
     const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
     if (isNearBottom && hasNextPage && !isFetchingNextPage) {
       fetchNextPage?.();
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Calculate total height with fixed item size
   const totalHeight = useMemo(() => {
     const itemCount = options.length + (isFetchingNextPage ? 1 : 0);
     return Math.min(400, itemCount * ITEM_HEIGHT);
@@ -267,7 +275,7 @@ const VirtualizedInstrumentAutocomplete = ({
                     </div>
                   );
                 }
-                return <InstrumentOption index={index} style={style} data={data} />;
+                return <InstrumentOption adminPreview={adminPreview} index={index} style={style} data={data} />;
               }}
             </VirtualizedList>
           )}

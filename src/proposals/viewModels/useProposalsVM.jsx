@@ -2,9 +2,10 @@ import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 import useAuth from '../../auth/hooks/useAuth';
 import useResponsive from '../../theme/hooks/useResponsive';
-import ProposalsContext from '../context';
-import  ClientsContext from '../../clients/context';
 import { axios } from '../../api';
+import useProposals from '../hooks/useProposals';
+import useProposalMutations from '../hooks/useProposalMutations';
+import useClients from '../../clients/hooks/useClients';
 
 function useProposalsVM() {
   const [selectedOrders, setSelectedOrders] = useState([]);
@@ -20,22 +21,25 @@ function useProposalsVM() {
     handleChangePage,
     handleChangeRowsPerPage,
     formFilter,
-    deleteOrder,
     isLoadingProposals,
     formCreateProposal,
-    mutateCreateProposal,
     error,
     setError,
     open, 
     setOpen,
     handleOpen,
     handleClose
-  } = useContext(ProposalsContext);
+  } = useProposals();
+
+  const {
+    deleteOrder,
+    mutateCreateProposal,
+  } = useProposalMutations(formCreateProposal, handleClose, setError);
 
   const {
     clients,
     isLoadingClients,
-  } = useContext(ClientsContext);
+  } = useClients(user)
 
   const navigate = useNavigate()
 
@@ -96,7 +100,8 @@ function useProposalsVM() {
     error,
     setError,
     exportOrders,
-    csvContent
+    csvContent,
+    user,
   }
 }
 

@@ -3,9 +3,11 @@ import useClient from '../hooks/useClient';
 import useResponsive from '../../theme/hooks/useResponsive';
 import useClientAssets from '../../assets/hooks/useClientAsset';
 import useAssetMutations from '../../assets/hooks/useAssetMutations';
+import useDefaultAssets from '../../assets/hooks/useDefaultAssets';
 
 function useClientVM(id) {
-  const [openFormCreate, setOpenFormCreate] = useState(false);
+  const [openCreateForm, setOpenCreateForm] = useState(false);
+  const [editFormState, setEditFormState] = useState({ open: false, instrument: null });
 
   const {
     client, 
@@ -28,10 +30,45 @@ function useClientVM(id) {
     isDeleting,
     mutateDelete,
   } = useAssetMutations();
+
+  const { 
+    defaultAssets, 
+    isFetching, 
+    search: searchDA, 
+    setSearch: setSearchDA, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage 
+  } = useDefaultAssets();
+
+  const handleCloseCreateForm = () => setOpenCreateForm(false);
+  const handleCloseEditForm = () => {
+    setEditFormState({ open: false, instrument: null });
+  };
+
+  const handleClose = (type) => {
+    if (type === 'edit') {
+      handleCloseEditForm();
+    } else {
+      handleCloseCreateForm();
+    }
+  };
+
+  const { 
+    mutateCreateClient,
+    mutateUpdateClient,
+    isLoadingUpdateClient,
+    mutateDeleteClient,
+    error,
+    setError,
+  } = useAssetMutations(handleClose, true);
   
   const isMobile = useResponsive('down', 'md');
-  const handleCloseFormCreate = () => setOpenFormCreate(false);
-  const handleOpenFormCreate = () => setOpenFormCreate(true);
+  
+  const handleOpenCreateForm = () => setOpenCreateForm(true);
+  const handleOpenEditForm = (instrument) => {
+    setEditFormState({ open: true, instrument });
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -47,19 +84,35 @@ function useClientVM(id) {
     errorClient, 
     isLoadingClient,
     isMobile,
-    handleOpenFormCreate,
-    handleCloseFormCreate,
+    handleOpenCreateForm,
+    handleCloseCreateForm,
+    handleOpenEditForm,
+    handleCloseEditForm,
     handleChangePage,
     handleChangeRowsPerPage,
     search,
     setSearch,
     isDeleting,
     mutateDelete,
-    openFormCreate,
+    openCreateForm,
+    editFormState,
     assets,
     isLoadingAssets,
     rowsPerPage,
     page,
+    defaultAssets, 
+    isFetching, 
+    searchDA, 
+    setSearchDA, 
+    fetchNextPage, 
+    hasNextPage, 
+    isFetchingNextPage,
+    mutateCreateClient,
+    mutateUpdateClient,
+    isLoadingUpdateClient,
+    mutateDeleteClient,
+    error,
+    setError,
   }
 }
 

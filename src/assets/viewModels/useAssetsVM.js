@@ -51,8 +51,6 @@ const useAssetsVm = (id, idSetor) => {
     setOpenPreferenceForm(false);
   };
 
-  const { sectors, isLoadingSectors } = useContext(AssetsContext);
-  
   const {user, hasEditPermission} = useAuth()
   const { asset, isLoadingAsset } = useAsset(selectedItem?.type === 'instrument' ? selectedItem?.id?.split("-")[1]  : null);
   const { 
@@ -60,7 +58,11 @@ const useAssetsVm = (id, idSetor) => {
     search, 
     setSearch, 
     assetFilterForm,
-    isFetchingAssets
+    isFetchingAssets,
+    page,
+    rowsPerPage,
+    handleChangePage,
+    handleChangeRowsPerPage,
   } = useAssets();
   
   const handleCloseCreateSector = () => setOpenCreateSectorId(null);
@@ -99,7 +101,7 @@ const useAssetsVm = (id, idSetor) => {
     setError,
     mutateChangePosition,
     duplicateInstrument
-  } = useAssetMutations(null,null,handleCloseCreateInstrument);
+  } = useAssetMutations(handleCloseCreateInstrument);
 
   const handleCreate = (selectedItem) => {
     const params = {
@@ -171,11 +173,9 @@ const useAssetsVm = (id, idSetor) => {
     handleCheckboxSelectAll,
     handleChangeCheckbox,
     isMobile,
-    isLoadingSectors,
     open,
     error,
     setError,
-    sectors, 
     search, 
     setSearch,
     selectAll,
@@ -225,7 +225,11 @@ const useAssetsVm = (id, idSetor) => {
     openPreferenceForm,
     handleOpenPreferenceForm,
     handleClosePreferenceForm,
-    hasEditPermission
+    hasEditPermission,
+    page,
+    rowsPerPage,
+    handleChangePage,
+    handleChangeRowsPerPage,
   }
 }
 

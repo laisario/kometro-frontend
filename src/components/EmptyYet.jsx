@@ -95,6 +95,11 @@ function EmptyYet({
         Tudo certo! Nenhuma revisão para aprovar.
       </Typography>
     ),
+    instrumentosCliente: (
+      <Typography variant="h6" color={theme.palette.info.main}>
+        Ops, parece que não tem nenhum instrumento cadastrado nessa cliente. Que tal adicionar um?
+      </Typography>
+    ),
   };
 
   return (

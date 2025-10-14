@@ -28,9 +28,30 @@ function useClientMutations(handleClose) {
         })
       }
     })
+
+    const { 
+      mutate: deleteClients, 
+      isLoading: isDeleting 
+    } = useMutation({
+      mutationFn: async (ids) => Promise.all(ids?.map((id) => axios.delete(`/clientes/${id}/`))),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['clientes'] });
+        enqueueSnackbar('Cliente deletado com sucesso!', {
+          variant: 'success'
+        });
+      },
+      onError: (error) => {
+        console.log(error)
+        enqueueSnackbar('Erro ao deletar cliente. Tente novamente!', {
+          variant: 'error'
+        });
+      }
+    })
   
   return {
-    updateCriterion
+    updateCriterion,
+    deleteClients,
+    isDeleting
   }
 }
 
