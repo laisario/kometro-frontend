@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { Helmet } from 'react-helmet-async';
-import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Container, Grid, Stack, Typography } from '@mui/material';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ExportFilter from '../components/ExportFilter';
 import Loading from '../../components/Loading';
@@ -239,9 +239,9 @@ function AssetsPage() {
                           overflowY: 'auto',
                         }}
                       >
-                        <Card>
-                          <CardContent>
-                            <RecordList asset={asset} adminPreview />
+                        <Card >
+                          <CardContent sx={{ padding: 2 }}>
+                            <RecordList asset={asset} />
                           </CardContent>
                         </Card>
                       </Box>

@@ -38,7 +38,7 @@ const messageTooltip = {
   '4': EXPORT_ACTION,
 }
 
-function RecordList({asset, adminPreview}) {
+function RecordList({asset, adminPreview = false}) {
   const isMobile = useResponsive('down', 'md');
   const [value, setValue] = useState('1');
   const {
