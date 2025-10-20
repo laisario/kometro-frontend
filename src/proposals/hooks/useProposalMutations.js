@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from "react-query";
 import { axios } from "../../api";
 import { enqueueSnackbar } from "notistack";
+import dayjs from 'dayjs';
 
-const useProposalMutations = (formCreateProposal, handleClose, setError) => {
+const useProposalMutations = (formCreateProposal, handleClose, setError, id) => {
   const queryClient = useQueryClient();
 
   const createProposal = async (data) => {

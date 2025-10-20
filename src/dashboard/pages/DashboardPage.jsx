@@ -49,31 +49,16 @@ export default function DashboardPage() {
               />
             </Grid>
 
-            {user?.admin
-              ? (
-                <Grid item xs={12} sm={6} md={3}>
-                  <Link to="/admin/documentos?vencido=True" style={{ textDecoration: 'none' }}>
-                    <AppWidgetSummary
-                      title="Documentos vencidos"
-                      total={data?.documentosVencidos || 0}
-                      color="info"
-                      icon={'mdi:file-document-alert-outline'}
-                    />
-                  </Link>
-                </Grid>
-              )
-              : (
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Link to="/dashboard/instrumentos" style={{ textDecoration: 'none' }}>
-                      <AppWidgetSummary
-                        title="Instrumentos cadastrados"
-                        total={data?.instrumentosCadastrados || 0}
-                        color="info"
-                        icon={'fluent-mdl2:total'}
-                        />
-                    </Link>
-                  </Grid>
-              )}
+            <Grid item xs={12} sm={6} md={3}>
+              <Link to="/dashboard/documentos?vencido=True" style={{ textDecoration: 'none' }}>
+                <AppWidgetSummary
+                  title="Documentos vencidos"
+                  total={data?.documentosVencidos || 0}
+                  color="info"
+                  icon={'mdi:file-document-alert-outline'}
+                />
+              </Link>
+            </Grid>
 
             {user?.admin ? (
               <Grid item xs={12} sm={6} md={3}>
@@ -99,11 +84,13 @@ export default function DashboardPage() {
               </Grid>
             )}
 
+
             <Grid item xs={12} md={7} lg={8}>
               <AppListItems
-                title={user?.admin ? "Aprovações pendentes" : "Instrumentos recentes"}
-                list={user?.admin ? documents : instruments}
-                document={user?.admin}
+                title="Aprovações pendentes"
+                list={documents}
+                document
+                admin={user?.admin}
               />
             </Grid>
 
@@ -120,6 +107,15 @@ export default function DashboardPage() {
                 }))}
               />
             </Grid>
+
+            {!user?.admin && <Grid item xs={12} md={7} lg={8}>
+              <AppListItems
+                title="Instrumentos recentes"
+                list={instruments}
+                admin={user?.admin}
+                instrumentsCount={data?.instrumentosCadastrados || 0}
+              />
+            </Grid>}
           </Grid>
         )}
       </Container>

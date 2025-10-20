@@ -34,8 +34,8 @@ function ClientDetailsPage() {
     assets,
     defaultAssets, 
     isFetching, 
-    search: searchDA, 
-    setSearch: setSearchDA, 
+    searchDA, 
+    setSearchDA, 
     fetchNextPage, 
     hasNextPage, 
     isFetchingNextPage,
@@ -93,8 +93,8 @@ function ClientDetailsPage() {
               handleClose={handleCloseCreateForm}
               open={openCreateForm}
               defaultAssets={defaultAssets}
-              searchDA={searchDA}
-              setSearchDA={setSearchDA}
+              search={searchDA}
+              setSearch={setSearchDA}
               fetchNextPage={fetchNextPage}
               hasNextPage={hasNextPage}
               isFetchingNextPage={isFetchingNextPage}
@@ -118,7 +118,6 @@ function ClientDetailsPage() {
               <ClientInstrumentInformation
                 key={index + instrument?.id}
                 instrument={instrument}
-                isMobile={isMobile}
                 isDeleting={isDeleting}
                 mutateDelete={mutateDelete}
                 cliente={client?.id}

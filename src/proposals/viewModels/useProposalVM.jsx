@@ -14,20 +14,11 @@ const useProposalVM = () => {
   const { user } = useAuth();
   const navigate = useNavigate()
 
-  const { deleteOrder, isDeleting } = useProposalMutations()
-  
-  const deleteOrderAndNavigate = () => {
-    deleteOrder([id])
-    navigate('/admin/propostas', { replace: true });
-  }
-
-  const {
+  const { 
+    deleteOrder, 
+    isDeleting,
     removeInstrumentProposal,
     isRemoving,
-    proposal, 
-    errorProposal, 
-    isLoadingProposal, 
-    refetchProposal,
     sendProposalToEmail, 
     isLoadingSendProposal,
     aproveProposal, 
@@ -41,6 +32,17 @@ const useProposalVM = () => {
     isSuccessElaborate,
     isApprovingBilling,
     approveBilling,
+  } = useProposalMutations(null, null, null, id)
+  
+  const deleteOrderAndNavigate = () => {
+    deleteOrder([id])
+    navigate('/admin/propostas', { replace: true });
+  }
+
+  const {
+    proposal, 
+    errorProposal, 
+    isLoadingProposal, 
   } = useProposal(id, idClient,);
 
   const isMobile = useResponsive('down', 'md');
@@ -52,7 +54,6 @@ const useProposalVM = () => {
     proposal, 
     errorProposal, 
     isLoadingProposal, 
-    refetchProposal,
     sendProposalToEmail, 
     isLoadingSendProposal,
     aproveProposal, 

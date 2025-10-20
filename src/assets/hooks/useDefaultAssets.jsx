@@ -19,7 +19,7 @@ function useDefaultAssets() {
     queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get(`/instrumentos-empresa/`, { params: { 
         page: pageParam,
-        page_size: 5,  
+        page_size: 20,  
         search: debouncedSearch 
       }});
       return response?.data;
@@ -33,7 +33,7 @@ function useDefaultAssets() {
     refetchOnWindowFocus: false,
   });
 
-  const handleSearch = debounce((value) => setDebouncedSearch(value));
+  const handleSearch = debounce((value) => setDebouncedSearch(value), 1500);
   useEffect(() => { handleSearch(search) }, [search, handleSearch]);
   
   const allResults = data?.pages?.flatMap(page => page.results) || [];

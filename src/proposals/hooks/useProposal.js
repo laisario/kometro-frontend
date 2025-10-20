@@ -6,8 +6,7 @@ const useProposal = (id, cliente) => {
   const { 
     data: proposal, 
     error: errorProposal, 
-    isLoading: isLoadingProposal, 
-    refetch: refetchProposal,
+    isFetching: isLoadingProposal, 
   } = useQuery({
     queryKey: ['propostas', id], 
     queryFn: async () => {
@@ -28,7 +27,6 @@ const useProposal = (id, cliente) => {
     proposal, 
     errorProposal, 
     isLoadingProposal, 
-    refetchProposal,
   }
 }
 

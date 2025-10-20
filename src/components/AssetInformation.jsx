@@ -33,6 +33,9 @@ function AssetInformation({instrument, isMobile}) {
         {!!instrument?.posicao && (
           <ContentRow title="Posição" value={<Label color={colorPositionInstrument[instrument?.posicao]}>{positionLabels[instrument?.posicao]}</Label>} />
         )}
+        {!!instrument?.setor && (
+          <ContentRow title="Setor" value={instrument?.setor?.caminhoHierarquia} />
+        )}
         
         <Typography variant="body2" fontWeight="bold" gutterBottom color="primary" sx={{ mt: 2 }}>
           Instrumento Base

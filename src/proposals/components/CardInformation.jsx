@@ -1,27 +1,13 @@
 import { useTheme } from '@emotion/react';
 import { Box, Card, CardActions, CardContent, Chip, Typography } from '@mui/material';
-import { useState } from 'react';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { fDate } from '../../utils/formatTime';
-import EditAsset from '../../components/EditAsset';
 import ButtonTooltip from '../../components/ButtonTooltip';
-import { colorPositionInstrument, localLabels, positionLabels } from '../../utils/assets'
+import { colorPositionInstrument, positionLabels } from '../../utils/assets'
 import ContentRow from '../../components/ContentRowCard';
 
 
 function CardInformation({ instrument, isMobile, admin, removeInstrumentProposal }) {
-  const [edit, setEdit] = useState(false)
   const theme = useTheme();
-
-  const priceOptions = {
-    "C": instrument?.instrumento?.precoCalibracaoNoCliente,
-    "T": instrument?.instrumento?.precoCalibracaoNoCliente,
-    "P": instrument?.instrumento?.precoCalibracaoNoLaboratorio,
-  }
-  const handleClose = () => {
-    setEdit(false)
-  }
 
   return (
     <Card sx={{
@@ -33,8 +19,6 @@ function CardInformation({ instrument, isMobile, admin, removeInstrumentProposal
       scroll: "auto",
       mb: 2,
     }}>
-      <EditAsset handleClose={handleClose} open={edit} instrument={instrument} isMobile={isMobile} />
-    
       <CardContent p={2} sx={{ padding: 2, maxHeight: '180px',overflow: 'auto' }}>
         <Box display="flex" justifyContent="space-between" gap={2} mb={1}>
           {!!instrument?.instrumento?.tipoDeInstrumento?.descricao && (
@@ -80,7 +64,6 @@ function CardInformation({ instrument, isMobile, admin, removeInstrumentProposal
         )}
         {admin && (
           <Box display="flex">
-            <ButtonTooltip title="Editar conteúdo" action={() => setEdit((old) => !old)} icon={<EditIcon />} />
             <ButtonTooltip title="Remover instrumento da proposta" action={() => removeInstrumentProposal(instrument.id)} icon={<DeleteIcon />} />
           </Box>
         )}

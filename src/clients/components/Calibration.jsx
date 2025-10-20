@@ -64,11 +64,15 @@ function Calibration(props) {
   });
   const { hasCreatePermission, hasEditPermission, hasDeletePermission } = useAuth()
 
+  const handleClose = () => {
+    setSelectedCalibration({})
+    setOpenEdit(false)
+  }
 
   const { 
     mutateCriticalAnalisys, 
     isLoadingCriticalAnalisys, 
-  } = useAssetMutations();
+  } = useAssetMutations(handleClose);
 
   const toggleReadMore = (field, readMore, readUntil = 15) => {
     setReadMore((prevValues) => ({
@@ -79,7 +83,6 @@ function Calibration(props) {
   
   const handleConfirmationAnalysis = (analiseCritica) => {
     mutateCriticalAnalisys({ idCalibration: calibration?.id, analiseCliente: analiseCritica });
-    handleClose();
   };
   
   const handleChange = (event) => {
@@ -93,11 +96,6 @@ function Calibration(props) {
 
   const readMoreCriticalAnalisys = () => toggleReadMore('readMoreCriticalAnalisys', true);
   const readLessCriticalAnalisys = () => toggleReadMore('readMoreCriticalAnalisys', false);
-
-  const handleClose = () => {
-    setSelectedCalibration({})
-    setOpenEdit(false)
-  }
 
   const handleOpenEdit = () => setOpenEdit(true)
   const handleCloseCertificate = () => setOpenCreateCertificate(false)

@@ -18,11 +18,7 @@ export const useDocumentsVM = () => {
   const isMobile = useResponsive('down', 'md');
   const { user } = useAuth();
 
-  const handleClose = () => {
-    form.reset()
-    setOpen(false);
-  };
-
+  
   const {
     data,
     page,
@@ -36,6 +32,15 @@ export const useDocumentsVM = () => {
     setPage,
     setRowsPerPage,
   } = useDocuments();
+  
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleCloseAndClean = () => {
+    form.reset()
+    setOpen(false);
+  };
 
   const {
     mutateCreate,
@@ -44,7 +49,7 @@ export const useDocumentsVM = () => {
     errorCreate,
     deleteDocumentos,
     isDeleting,
-  } = useDocumentMutations(handleClose, setError);
+  } = useDocumentMutations(handleCloseAndClean, setError);
 
 
 
@@ -90,6 +95,7 @@ export const useDocumentsVM = () => {
   const exportDocuments = async () => {
     try {
       const resposta = await axios.post('/documentos/exportar/', { documentos_selecionados: selectedDocuments });;
+      console.log(selectedDocuments, resposta)
       if (resposta.status === 200) {
         setCsvContent(resposta?.data)
       } else {
@@ -136,5 +142,6 @@ export const useDocumentsVM = () => {
     handleClose,
     user,
     expiredDocuments,
+    handleCloseAndClean
   }
 }

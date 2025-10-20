@@ -1,21 +1,23 @@
-import { useMutation } from "react-query";
-import { axios } from "../../api";
+import { useMutation, useQueryClient } from "react-query";
+import { axios, axiosForFiles } from "../../api";
 import { enqueueSnackbar } from "notistack";
 
 const useDocumentMutations = (handleClose, setError) => {
+  const queryClient = useQueryClient();
+  
   const create = async (form) => {
+    const formData = new FormData()
     const response = await axios.post('/documentos/', form);
-    if (response?.data?.id) {
-      const formData = new FormData()
+    if (response?.data?.id && form?.arquivo) {
       formData.append("arquivo", form?.arquivo)
-      await axios.patch(`/documentos/${response?.data?.id}/anexar/`, formData)
+      await axiosForFiles.patch(`/documentos/${response?.data?.id}/anexar/`, formData)
     }
-    return response
+    return response?.data
   }
 
   const { 
   mutate: mutateCreate, 
-  isLoading: isCreating, 
+  isFetching: isCreating, 
   isSuccess: isSuccessCreate, 
   error: errorCreate 
   } = useMutation({
@@ -30,7 +32,7 @@ const useDocumentMutations = (handleClose, setError) => {
   onError: (error) => {
     const erros = error?.response?.data
     setError(erros)
-    enqueueSnackbar('Falha ao criar documento, tente novamente!', {
+    enqueueSnackbar(errorMessage(error?.response?.status), {
     variant: 'error'
     });
   }
@@ -38,7 +40,7 @@ const useDocumentMutations = (handleClose, setError) => {
 
   const { 
   mutate: deleteDocumentos, 
-  isLoading: isDeleting 
+  isFetching: isDeleting 
   } = useMutation(async (ids) => Promise.all(ids?.map((id) => axios.delete(`/documentos/${id}/`))), {
   onSuccess: () => {
     enqueueSnackbar('Documento deletado com sucesso!', {

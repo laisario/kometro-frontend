@@ -42,7 +42,7 @@ function FormCreateProposal(props) {
             options={clients?.results || []}
             isOptionEqualToValue={(option, value) => option?.id === value?.id}
             getOptionLabel={
-              (client) => client?.empresa?.razaoSocial || client?.nome
+              (client) => client?.empresa
             }
             loading={isLoadingClients}
             name="cliente"

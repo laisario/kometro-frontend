@@ -24,7 +24,6 @@ import RecordList from '../../assets/components/RecordList';
 function ClientInstrumentInformation(props) {
   const { 
     instrument, 
-    isMobile, 
     mutateDelete, 
     isDeleting, 
     defaultAssets,
@@ -41,26 +40,7 @@ function ClientInstrumentInformation(props) {
     handleCloseFormEdit,
     handleOpenFormEdit,
   } = props;
-  const [valueTab, setValueTab] = useState('information');
-  const handleChangeTab = (event, newValue) => setValueTab(newValue);
 
-  const {
-    mutateEdit,
-    isLoadingEdit,
-    mutateAddCertificate,
-    isLoadingAddCertificate,
-    mutateDeleteCertificate,
-    isLoadingDeleteCertificate, 
-    selectedCalibration,
-    setSelectedCalibration,
-    form,
-    openEdit,
-    setOpenEdit,
-    openCreateCertificate,
-    setOpenCreateCertificate,
-    checagem,
-    debouncedSearch,
-  } = useCalibrationMutation();
 
   return (
     <Accordion>

@@ -83,9 +83,9 @@ function ProposalDetailsPage() {
                 Proposta número: {proposal?.numero}
               </Typography>
             }
-            {user?.admin ? (!!proposal?.cliente?.empresa?.razaoSocial || !!proposal?.cliente?.nome) &&
+            {user?.admin ? 
               <Typography variant="h6" gutterBottom>
-                {proposal?.cliente?.nome && proposal?.cliente?.empresa?.razaoSocial ? `${proposal?.cliente?.empresa?.razaoSocial} - ${proposal?.cliente?.nome}` : proposal?.cliente?.empresa?.razaoSocial || proposal?.cliente?.nome}
+                {proposal?.cliente?.empresa?.razaoSocial}
               </Typography>
               : !!proposal?.dataCriacao &&
               <Typography variant="h6" gutterBottom>
@@ -177,6 +177,7 @@ function ProposalDetailsPage() {
           isMobile={isMobile}
           isApprovingBilling={isApprovingBilling}
           approveBilling={approveBilling}
+          proposal={proposal}
         />
 
         <SendEmailForm 

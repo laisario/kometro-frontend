@@ -31,7 +31,6 @@ const StyledSwiper = styled(Swiper)`
 
 export default function DocumentDetailPage() {
   const [swiper, setSwiper] = useState(null);
-
   const { id, idRevisao } = useParams();
 
   const {

@@ -31,6 +31,7 @@ export default function CsvViewer({ csvContent, fileName }) {
       worker: true,
       skipEmptyLines: true,
       complete: (results) => {
+        console.log(results, "results")
         if (results?.errors?.length) console.log("deu ruim")
         setParsedCsv(results?.data)
       }
@@ -41,7 +42,6 @@ export default function CsvViewer({ csvContent, fileName }) {
     if (!parsedCsv) return;
     window.print()
   };
-
   if (!parsedCsv) return null
 
   return (
@@ -52,7 +52,7 @@ export default function CsvViewer({ csvContent, fileName }) {
           <Table id="table" sx={{ minWidth: 1200 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                {Object.keys(parsedCsv[0]).map(key => <TableCell key={key}>{key}</TableCell>)}
+                {!!parsedCsv?.length && Object.keys(parsedCsv[0]).map(key => <TableCell key={key}>{key}</TableCell>)}
               </TableRow>
             </TableHead>
             <TableBody>

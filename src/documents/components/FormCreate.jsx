@@ -44,6 +44,7 @@ export default function FormCreate(props) {
     setError,
     form,
     handleClose,
+    handleCloseAndClean,
   } = props;
 
   const isMobile = useResponsive('down', 'md');
@@ -54,9 +55,9 @@ export default function FormCreate(props) {
   const handleChange = (event) => {
     const { name, files } = event.target;
     if (error['arquivo']) setError((prevError) => delete prevError?.arquivo)
-      if (name === 'arquivo') {
-        form.setValue("arquivo", files[0]);
-      }
+    if (name === 'arquivo') {
+      form.setValue("arquivo", files[0]);
+    }
   };
     
   const {
@@ -69,7 +70,6 @@ export default function FormCreate(props) {
     frequencia,
     arquivo,
   } = useWatch({ control: form.control })
-  
   const { usersWithPermission } = useUserWithPermission(client?.usuarios)
 
   
@@ -304,7 +304,7 @@ export default function FormCreate(props) {
           <DialogActions>
             <Grid container justifyContent="space-between">
               <Grid item>
-                <Button onClick={handleClose}>Cancelar</Button>
+                <Button onClick={handleCloseAndClean}>Cancelar</Button>
               </Grid>
               <Grid item>
                 {isCreating 

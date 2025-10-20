@@ -25,11 +25,11 @@ import {
 import 'dayjs/locale/pt-br';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CloseIcon from '@mui/icons-material/Close';
 import { useForm, useWatch } from 'react-hook-form';
-import dayjs from 'dayjs';
 import { axiosForFiles } from '../../api';
 import Iconify from '../../components/Iconify';
 import FormAdress from '../../auth/components/FormAddress';
@@ -59,13 +59,6 @@ function FormElaborate(props) {
     prazoDePagamento: data?.prazoDePagamento || null,
     responsavel: data?.responsavel?.id || null,
     diasUteis: data?.diasUteis || null,
-    CEP: data?.enderecoDeEntrega?.cep || "",
-    rua: data?.enderecoDeEntrega?.logradouro || "",
-    numero: data?.enderecoDeEntrega?.numero || "",
-    bairro: data?.enderecoDeEntrega?.bairro?.nome || "",
-    cidade: data?.enderecoDeEntrega?.bairro?.cidade || "",
-    estado: data?.enderecoDeEntrega?.estado || "",
-    complemento: data?.enderecoDeEntrega?.complemento || "",
     total: total || 0,
     descontoPercentual: Number(data?.descontoPercentual).toFixed(0) || 0,
     local: data?.local || 'P'
@@ -86,7 +79,6 @@ function FormElaborate(props) {
     responsavel,
     local
   } = useWatch({ control: form.control })
-  
   useEffect(() => {
     const getValue = (item) => {
       if (item?.precoAlternativoCalibracao) {
@@ -150,6 +142,8 @@ function FormElaborate(props) {
     form.setValue('total', totalComDesconto)
   }
 
+  const userValue = (user) => user?.firstName || user?.username;
+  console.log(data, "data?.cliente?.endereco?.id")
 
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -227,10 +221,14 @@ function FormElaborate(props) {
                 name="responsavel"
                 label="Responsável"
                 fullWidth
-                {...form.register("responsavel")}
-                value={responsavel}
+                value={form.watch("responsavel") || ""}
+                onChange={(e) => form.setValue("responsavel", e.target.value)}
               >
-                {users?.map((user) => <MenuItem key={user?.id} value={user?.id}>{user?.username}</MenuItem>)}
+                {users?.map((user) => (
+                  <MenuItem key={user?.id} value={user?.id}>
+                    {userValue(user)}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
             <TextField
@@ -329,6 +327,7 @@ function FormElaborate(props) {
             onClick={() => {
               form.handleSubmit((submitData) => elaborateProposal({
                 addressClient: data?.cliente?.endereco?.id,
+                responsavel: submitData?.responsavel,
                 data: submitData, 
               }))()
               handleClose()

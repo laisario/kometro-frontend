@@ -27,12 +27,12 @@ AppListItems.propTypes = {
   list: PropTypes.array.isRequired,
 };
 
-export default function AppListItems({ title, subheader, list, document, ...other }) {
+export default function AppListItems({ title, subheader, list, document, admin, instrumentsCount = 0, ...other }) {
   const navigate = useNavigate();
   const isMobile = useResponsive('down', 'md');
   return (
     <Card>
-      <CardHeader title={title} subheader={subheader} />
+      <CardHeader title={title} subheader={subheader} action={!document && <Typography variant="caption"> {instrumentsCount} instrumentos cadastrados</Typography>} />
       <CardContent 
         sx={{
           '& .MuiTimelineItem-missingOppositeContent:before': {
@@ -46,7 +46,7 @@ export default function AppListItems({ title, subheader, list, document, ...othe
         {list?.length ?
           <Stack spacing={2}>
             {list?.map((data) => (
-              <ListItem key={data?.id} isDocument={document} data={data} />
+              <ListItem key={data?.id} isDocument={document} admin={admin} data={data} />
             ))}
           </Stack>
         : <EmptyYet onClick={() => navigate(document ? '/admin/documentos' : '/dashboard/instrumentos')} showKaka={false} isDashboard content={document ? 'revisao' : 'instrumento'} isMobile={isMobile} /> }
@@ -77,12 +77,12 @@ ListItem.propTypes = {
   }),
 };
 
-const formatData = (data, isDocument) => {
+const formatData = (data, isDocument, admin) => {
   if (isDocument) {
     return {
       title: `${data?.tipo === 'revalidar' ? 'Revalidação' : 'Revisão'}: ${data?.documento?.titulo}`,
       subtitle: data?.alteracao,
-      url: `/admin/documento/${data?.documento?.id}/${data?.id}`,
+      url: `/${admin ? 'admin' : 'dashboard'}/documento/${data?.documento?.id}/${data?.id}`,
       ...data,
     }
   }
@@ -96,8 +96,8 @@ const formatData = (data, isDocument) => {
 }
 
 
-function ListItem({ data, isDocument }) {
-  const formattedData = formatData(data, isDocument)
+function ListItem({ data, isDocument, admin }) {
+  const formattedData = formatData(data, isDocument, admin)
   return (
     <Stack direction="row" alignItems="center" spacing={2}>
       <Box

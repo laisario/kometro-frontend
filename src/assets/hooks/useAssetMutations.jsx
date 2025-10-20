@@ -10,7 +10,6 @@ function useAssetMutations(handleClose, adminPreview) {
   const [error, setError] = useState({});
   const queryClient = useQueryClient();
 
-
   const deleteAsset = async (id) => {
     await axios.delete(`/instrumentos/${id}/`);
   };
@@ -54,13 +53,15 @@ function useAssetMutations(handleClose, adminPreview) {
       enqueueSnackbar('Ánalise criada com sucesso!', {
         variant: 'success'
       });
-      queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
+      // queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
       queryClient.invalidateQueries({ queryKey: ['calibracoes'] })
+      handleClose()
     },
     onError: (erro) => {
       setError(erro?.response?.data)
-      enqueueSnackbar('Ocorreu um erro ao criar sua ánalise. Tente mais tarde!', {
-        variant: 'error'
+      enqueueSnackbar(getErrorMessage(erro?.response?.status), {
+        variant: 'error',
+        autoHideDuration: 2000
       });
     },
   })
@@ -99,31 +100,6 @@ function useAssetMutations(handleClose, adminPreview) {
     observacoes: form?.observacoes,
     cliente: form?.client,
   })
-
-  const updateInstrument = async (data) => {
-    const response = await axios.patch(`/instrumentos/${data?.id}/`, data);
-    return response;
-  }
-
-  // const { 
-  //   mutate: mutateUpdate, 
-  //   isLoading: isLoadingUpdate, 
-  // } = useMutation({
-  //   mutationFn: updateInstrument,
-  //   onSuccess: () => {
-  //     enqueueSnackbar('Instrumento atualizado com sucesso!', {
-  //       variant: 'success'
-  //     });
-  //     queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
-  //     handleClose()
-  //   },
-  //   onError: (erro) => {
-  //     setError(erro?.response?.data)
-  //     enqueueSnackbar('Falha ao atualizar instrumento, tente novamente!', {
-  //       variant: 'error'
-  //     });
-  //   }
-  // })
 
   const createInstrument = async (form) => {
     const data = formatedData(form)

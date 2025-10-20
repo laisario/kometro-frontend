@@ -51,6 +51,8 @@ export default function DocumentsPage() {
     form,
     handleClose,
     user,
+    errorCreate,
+    handleCloseAndClean,
   } = useDocumentsVM();
   const { hasCreatePermission } = useAuth()
 
@@ -94,6 +96,7 @@ export default function DocumentsPage() {
           isSuccessCreate={isSuccessCreate}
           form={form}
           handleClose={handleClose}
+          handleCloseAndClean={handleCloseAndClean}
         />
 
         {isLoading 

@@ -117,6 +117,7 @@ function CreateInstrument(props) {
       dataUltimaChecagem: asset?.dataUltimaChecagem ? asset?.dataUltimaChecagem : null,
       criteriosAceitacao: asset?.criteriosAceitacao?.length ? asset?.criteriosAceitacao : [],
       criterioFrequencia: asset?.criterioFrequencia || '',
+      setor: asset?.setor?.caminhoHierarquia || '',
     }
   });
 
@@ -142,19 +143,30 @@ function CreateInstrument(props) {
     if (!payload.frequenciaChecagem?.quantidade) {
       delete payload.frequenciaChecagem;
     }
+    
+    
     if (asset?.id) {
-      mutate({
-        id: asset.id,
+      const adminPayload = {
+        ...payload,
+        id: asset?.id,
+      }
+      
+      const clientPayload = {
+        id: asset?.id,
         setor: setorId,
         previousSetorId: asset?.setor?.id,
         ...payload
-      });
+      }
+      
+      const paramEdit = adminPreview ? adminPayload : clientPayload
+      mutate(paramEdit);
     } else {
-      mutate({
+      const paramCreate = adminPreview ? payload : ({
         ...payload,
         previousSetorId: null,
         setor: setor?.type === 'sector' ? Number(setor?.id) : Number(setor?.parentId),
-      });
+      })
+      mutate(paramCreate);
     }
   }
 
@@ -172,7 +184,6 @@ function CreateInstrument(props) {
   const podeMostrarChecagem = useMemo(() => criterioFrequencia === 'S' || asset?.criterioFrequencia === "S"
     ? posicao === 'U'
     : !asset?.checagens?.length, [criterioFrequencia, posicao])
-
   console.log(asset)
   return (
     <Dialog onClose={() => {handleClose()}} open={open} fullScreen={isMobile}>
@@ -561,6 +572,27 @@ function CreateInstrument(props) {
               {asset?.setor?.id && (
                 <Typography variant="body2" sx={{ mt: 1 }}>
                   Setor atual: <strong>{asset?.setor?.nome}</strong>
+                </Typography>
+              )}
+            </AccordionDetails>
+        </Accordion>}
+        {adminPreview && <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="subtitle1" color="text.secondary" gutterBottom mt={2}>
+                Setor
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <TextField
+                label="Setor (Formato: pai/filho)"
+                size="small"
+                fullWidth
+                {...form.register('setor')}
+                helperText="Caminho hierárquico completo do setor, separado por '/' (ex: Produção/Qualidade/Controle)"
+              />
+              {asset?.setor?.id && (
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  Setor atual: <strong>{asset?.setor?.caminhoHierarquia}</strong>
                 </Typography>
               )}
             </AccordionDetails>

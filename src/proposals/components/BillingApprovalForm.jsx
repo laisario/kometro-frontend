@@ -8,20 +8,21 @@ import React from 'react'
 import { useForm, useWatch } from 'react-hook-form';
 import Iconify from '../../components/Iconify';
 
-function BillingApprovalForm({ open, onClose, isMobile, approveBilling }) {
+function BillingApprovalForm({ open, onClose, isMobile, approveBilling, proposal }) {
   const form = useForm({
     defaultValues: {
-      realizado: false,
-      dataLiberacaoFaturamento: new Date().toISOString().slice(0, 16),
-      nfEntrada: '',
-      nf: '',
-      observacao: '',
-      usuarioLiberouFaturamento: '',
+      realizado: proposal?.realizado || false,
+      dataLiberacaoFaturamento: proposal?.dataLiberacaoFaturamento ? dayjs(proposal.dataLiberacaoFaturamento) : dayjs(),
+      nfEntrada: proposal?.nfEntrada || '',
+      nf: proposal?.nf || '',
+      observacao: proposal?.observacao || '',
+      usuarioLiberouFaturamento: proposal?.usuarioLiberouFaturamento || '',
     }
   });
 
   const {
-    dataLiberacao
+    dataLiberacaoFaturamento,
+    realizado,
   } = useWatch({ control: form.control })
 
   return (
@@ -30,16 +31,15 @@ function BillingApprovalForm({ open, onClose, isMobile, approveBilling }) {
       <DialogContent>
         <Box display="flex" flexDirection="column" gap={2} mt={1}>
           <FormControlLabel
-            control={<Checkbox {...form.register("realizado")} />}
+            control={<Checkbox {...form.register("realizado")} checked={realizado} />}
             label="Realizado"
           />
           <Stack direction={isMobile ? 'column' : "row"} gap={2}>
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
               <DatePicker
                 label="Data de liberaração"
-                {...form.register("dataLiberacaoFaturamento")}
-                value={dataLiberacao? dayjs(dataLiberacao) : null}
-                onChange={newValue => form.setValue("dataLiberacao", newValue)}
+                value={dataLiberacaoFaturamento}
+                onChange={newValue => form.setValue("dataLiberacaoFaturamento", newValue)}
                 sx={{ width: isMobile ? '100%' : '40%' }}
               />
             </LocalizationProvider>
@@ -79,7 +79,15 @@ function BillingApprovalForm({ open, onClose, isMobile, approveBilling }) {
           <Button onClick={onClose} color="secondary">Cancelar</Button>
           <Button 
             endIcon={<Iconify icon={'eva:arrow-ios-forward-fill'} />} 
-            onClick={form.handleSubmit((data) => {approveBilling(data); form.reset();  onClose()})} 
+            onClick={form.handleSubmit((data) => {
+              const formattedData = {
+                ...data,
+                dataLiberacaoFaturamento: data.dataLiberacaoFaturamento?.toISOString()
+              };
+              approveBilling(formattedData); 
+              form.reset();  
+              onClose();
+            })} 
             variant="contained" 
             color="primary"
           >

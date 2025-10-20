@@ -10,6 +10,7 @@ function FormAddInstrument(props) {
     isLoadingAdd,
   } = props;
   const [instruments, setInstruments] = useState([])
+  console.log(data, "data")
 
   const submit = async () => {
     addInstrumentProposal(instruments)

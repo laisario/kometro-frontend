@@ -64,7 +64,6 @@ function ProposalsPage() {
   const isFiltering = formFilter?.formState?.isDirty
   const { hasCreatePermission } = useAuth()
   const hasProposals = useMemo(() => !!allProposals?.results?.length , [allProposals])
-  console.log(allProposals, rowsPerPage, page)
   return (
     <>
       <Helmet>

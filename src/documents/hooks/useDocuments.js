@@ -24,14 +24,14 @@ const useDocuments = () => {
 
   const form = useForm({
     defaultValues: {
-      codigo: '',
+      codigo: null,
       identificador: '',
       titulo: '',
-      status: '',
+      status: "V",
       elaborador: '',
       frequencia: null,
       arquivo: null,
-      dataValidade: '',
+      dataValidade: null,
     }
   })
 

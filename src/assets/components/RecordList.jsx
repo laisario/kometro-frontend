@@ -38,9 +38,14 @@ const messageTooltip = {
   '4': EXPORT_ACTION,
 }
 
+const movimentacoes = '4'
+const informacoes = '1'
+const calibracoes = '2'
+const checagem = '3'
+
 function RecordList({asset, adminPreview = false}) {
   const isMobile = useResponsive('down', 'md');
-  const [value, setValue] = useState('1');
+  const [value, setValue] = useState(adminPreview ? '1' : '2');
   const {
     mutateDeleteCalibration,
     isDeletingCalibration,
@@ -68,7 +73,7 @@ function RecordList({asset, adminPreview = false}) {
     formCertificate,
     exportMovements,
     debouncedSearch,
-  } = useCalibrationsMutations(null, asset?.id, value === "2")
+  } = useCalibrationsMutations(null, asset?.id, value === checagem)
 
   const { hasCreatePermission } = useAuth()
 
@@ -76,10 +81,6 @@ function RecordList({asset, adminPreview = false}) {
     setValue(newValue);
     setSelectedCalibration({});
   };
-  const movimentacoes = '4'
-  const informacoes = '1'
-  const calibracoes = '2'
-  const checagem = '3'
 
   return (
     <TabContext value={value}>
@@ -110,7 +111,7 @@ function RecordList({asset, adminPreview = false}) {
           error={error}
           setError={setError}
           formCertificate={formCertificate}
-          checagem={value === '2'}
+          checagem={value === checagem}
           criterios={asset?.criteriosAceitacao}
         />
         {value !== informacoes && <Tooltip placement="top-start" title={hasCreatePermission ? value === movimentacoes && messageTooltip[movimentacoes] : messageTooltip[value]}>
