@@ -143,7 +143,6 @@ function FormElaborate(props) {
   }
 
   const userValue = (user) => user?.firstName || user?.username;
-  console.log(data, "data?.cliente?.endereco?.id")
 
   return (
     <Dialog open={open} onClose={handleClose}>

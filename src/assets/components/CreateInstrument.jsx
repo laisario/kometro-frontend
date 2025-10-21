@@ -184,7 +184,6 @@ function CreateInstrument(props) {
   const podeMostrarChecagem = useMemo(() => criterioFrequencia === 'S' || asset?.criterioFrequencia === "S"
     ? posicao === 'U'
     : !asset?.checagens?.length, [criterioFrequencia, posicao])
-  console.log(asset)
   return (
     <Dialog onClose={() => {handleClose()}} open={open} fullScreen={isMobile}>
       <DialogTitle>{asset ? 'Editar instrumento' : 'Crie seu instrumento'}</DialogTitle>

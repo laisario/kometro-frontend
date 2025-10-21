@@ -31,7 +31,6 @@ export default function CsvViewer({ csvContent, fileName }) {
       worker: true,
       skipEmptyLines: true,
       complete: (results) => {
-        console.log(results, "results")
         if (results?.errors?.length) console.log("deu ruim")
         setParsedCsv(results?.data)
       }

@@ -58,7 +58,6 @@ const InstrumentoTable = forwardRef(({
     }
     return instrumentos
   }, [csvContent])
-  console.log(instrumentos)
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>

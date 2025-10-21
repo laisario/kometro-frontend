@@ -42,8 +42,6 @@ function ClientsPage() {
 
   const areThereClients = useMemo(() => !!clients?.results?.length, [clients?.results]);
   
-  console.log(clients?.results)
-  
   return (
     <>
       <Helmet>

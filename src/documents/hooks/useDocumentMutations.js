@@ -17,7 +17,7 @@ const useDocumentMutations = (handleClose, setError) => {
 
   const { 
   mutate: mutateCreate, 
-  isFetching: isCreating, 
+  isLoading: isCreating, 
   isSuccess: isSuccessCreate, 
   error: errorCreate 
   } = useMutation({
@@ -40,7 +40,7 @@ const useDocumentMutations = (handleClose, setError) => {
 
   const { 
   mutate: deleteDocumentos, 
-  isFetching: isDeleting 
+  isLoading: isDeleting 
   } = useMutation(async (ids) => Promise.all(ids?.map((id) => axios.delete(`/documentos/${id}/`))), {
   onSuccess: () => {
     enqueueSnackbar('Documento deletado com sucesso!', {

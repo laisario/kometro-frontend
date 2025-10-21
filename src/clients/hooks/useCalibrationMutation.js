@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import _, {debounce} from 'lodash';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import dayjs from 'dayjs';
 import { axios, axiosForFiles } from '../../api';
 import { enqueueSnackbar } from 'notistack';
 import { useForm } from 'react-hook-form';
-import useCalibration from './useCalibration';
 
 
 const useCalibrationsMutations = (id, instrumento, checagem) => {
@@ -17,6 +16,8 @@ const useCalibrationsMutations = (id, instrumento, checagem) => {
   const [openCreateCertificate, setOpenCreateCertificate] = useState(false);
   const [error, setError] = useState({});
   const queryClient = useQueryClient();
+
+  useEffect(() => { setSelectedCalibration({}) }, [instrumento])
 
   
   const handleSearchOS = debounce((value) => setDebouncedSearch(value));

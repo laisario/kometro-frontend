@@ -29,7 +29,6 @@ function CalibrationPanel(props) {
     debouncedSearch,
     assetId
   } = props;
-  console.log(checagem, "checagem")
   
   const { data: calibrations, isLoadingCalibrations } = useCalibration(null, debouncedSearch, assetId, checagem)
   

@@ -41,9 +41,9 @@ function useClientMutations(handleClose) {
         });
       },
       onError: (error) => {
-        console.log(error)
-        enqueueSnackbar('Erro ao deletar cliente. Tente novamente!', {
-          variant: 'error'
+        enqueueSnackbar(getErrorMessage(error?.status), {
+          variant: 'error',
+          autoHideDuration: 2000
         });
       }
     })
