@@ -16,32 +16,40 @@ import {
 import { useForm } from 'react-hook-form';
 import useDefaultAssetMutations from '../hooks/useDefaultAssetMutations';
 
-function FormDefaultAsset({open, onClose, setInstrumentoSelecionado, adminPreview}) {
+function FormDefaultAsset({open, onClose, setInstrumentoSelecionado, adminPreview, asset, clientId}) {
   const form = useForm({ defaultValues: {
-    descricao: '',
-    modelo: '',
-    fabricante: '',
-    procedimentoRelacionado: '',
-    tipoDeServico: "",
-    minimo: null,
-    maximo: null,
-    unidade: '',
-    resolucao: null,
-    tipoSinal: '',
-    capacidadeMedicao: null,
-    unidadeCapacidade: '',
-    precoCalibracaoNoCliente: null,
-    precoCalibracaoNoLaboratorio: null,
+    descricao: asset?.tipoDeInstrumento?.descricao || '',
+    modelo: asset?.tipoDeInstrumento?.modelo || '',
+    fabricante: asset?.tipoDeInstrumento?.fabricante || '',
+    procedimentoRelacionado: asset?.procedimentoRelacionado?.codigo || '',
+    tipoDeServico: asset?.tipoDeServico || '',
+    minimo: asset?.minimo || null,
+    maximo: asset?.maximo || null,
+    unidade: asset?.unidade || '',
+    resolucao: asset?.tipoDeInstrumento?.resolucao || null,
+    tipoSinal: asset?.tipoSinal || '',
+    capacidadeMedicao: asset?.capacidadeDeMedicao?.valor || null,
+    unidadeCapacidade: asset?.capacidadeDeMedicao?.unidade || '',
+    precoCalibracaoNoCliente: adminPreview ? asset?.precoCalibracaoNoCliente || null : null,
+    precoCalibracaoNoLaboratorio: adminPreview ? asset?.precoCalibracaoNoLaboratorio || null : null,
   }});
-  const { mutateCreateDefaultAsset, errorDefaultAsset, setError } = useDefaultAssetMutations(onClose, form, setInstrumentoSelecionado)
-
+  const { 
+    mutateCreateDefaultAsset, 
+    errorDefaultAsset, 
+    setError, 
+    mutateUpdateDefaultAsset,
+  } = useDefaultAssetMutations(onClose, form, setInstrumentoSelecionado)
   const onSubmit = (data) => {
-    mutateCreateDefaultAsset(data)
+    const payload = adminPreview ? { ...data, cliente: clientId } : data
+    if (asset?.id) {
+      mutateUpdateDefaultAsset({ id: asset?.id, data: payload })
+    } else {
+      mutateCreateDefaultAsset(payload)
+    }
   }
-
   return (
     <Dialog open={open} maxWidth="md" fullWidth>
-      <DialogTitle>Cadastrar Novo Instrumento</DialogTitle>
+      <DialogTitle>{asset?.id ? 'Editar Instrumento' : 'Cadastrar Novo Instrumento'}</DialogTitle>
       <DialogContent>
         <TextField
           sx={{ mt: 1 }}
@@ -68,9 +76,9 @@ function FormDefaultAsset({open, onClose, setInstrumentoSelecionado, adminPrevie
             label="Tipo de Serviço"
             select
             fullWidth
-            defaultValue=""
+            value={form.watch("tipoDeServico") || ''}
             {...form.register("tipoDeServico", {
-              onChange: () => {
+              onChange: (e) => {
                 if (errorDefaultAsset?.tipo_de_servico) setError({});
               }
             })}
@@ -139,9 +147,9 @@ function FormDefaultAsset({open, onClose, setInstrumentoSelecionado, adminPrevie
             label="Tipo de Sinal"
             select
             fullWidth
-            defaultValue=""
+            value={form.watch("tipoSinal") || ''}
             {...form.register("tipoSinal", {
-              onChange: () => {
+              onChange: (e) => {
                 if (errorDefaultAsset?.tipo_sinal) setError({});
               }
             })}
@@ -200,7 +208,7 @@ function FormDefaultAsset({open, onClose, setInstrumentoSelecionado, adminPrevie
     
       <DialogActions sx={{ justifyContent: 'space-between' }}>
         <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={() => {form.handleSubmit(onSubmit)();}} variant="contained">Criar Instrumento</Button>
+        <Button onClick={() => {form.handleSubmit(onSubmit)();}} variant="contained">{asset?.id ? 'Editar Instrumento' : 'Criar Instrumento'}</Button>
       </DialogActions>
     </Dialog>
   );

@@ -70,6 +70,8 @@ function AssetsPage() {
     rowsPerPage,
     handleChangePage,
     handleChangeRowsPerPage,
+    search,
+    setSearch,
   } = useAssetsVm(id, idSetor);
 
   const { sectors, isLoadingSectors } = useSectorTree();
@@ -102,8 +104,11 @@ function AssetsPage() {
             }}
           >
             <SearchWithDropdown 
+              isFetching={isFetchingAssets}
+              search={search}
+              setSearch={setSearch}
               data={assets} 
-              onSelect={(item) =>  { setSelectedItem({id: `instrument-${item?.id}`, type: 'instrument', parentId: item?.setor?.id}); setExpandedItems(prevState => [...prevState, item?.setor?.id])}} 
+              onSelect={(item) =>  { setSelectedItem({id: `instrument-${item?.id}`, type: 'instrument', parentId: item?.setor?.id}); setExpandedItems(prevState => [...prevState, String(item?.setor?.id)])}} 
             />
             <Button
               variant="contained" 

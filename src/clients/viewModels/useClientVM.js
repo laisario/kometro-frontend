@@ -39,7 +39,7 @@ function useClientVM(id) {
     fetchNextPage, 
     hasNextPage, 
     isFetchingNextPage 
-  } = useDefaultAssets();
+  } = useDefaultAssets(id);
 
   const handleCloseCreateForm = () => setOpenCreateForm(false);
   const handleCloseEditForm = () => {

@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { Grid, Container, CircularProgress } from '@mui/material';
+import { Grid, Container, CircularProgress, Button } from '@mui/material';
 import { 
   AppOrderTimeline, 
   AppWidgetSummary, 
@@ -16,6 +16,8 @@ export default function DashboardPage() {
     instruments,
     user,
     documents,
+    mutateUpdateStats, 
+    isLoadingUpdateStats
   } = useDashboardVM()
 
   return (
@@ -31,6 +33,11 @@ export default function DashboardPage() {
           </Grid>
         ) : (
           <Grid container spacing={3}>
+            <Grid item display="flex" justifyContent="flex-end" alignItems="flex-end" xs={12} sm={12} md={12}>
+              <Button variant="outlined" size='small' color="primary" onClick={mutateUpdateStats} disabled={isLoadingUpdateStats}>
+                {isLoadingUpdateStats ? <CircularProgress size="20px" color="inherit" /> : 'Atualizar Estatísticas'}
+              </Button>
+            </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <AppWidgetSummary
                 title="Instrumentos vencidos"

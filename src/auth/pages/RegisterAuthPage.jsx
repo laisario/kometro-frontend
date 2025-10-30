@@ -20,6 +20,8 @@ export default function RegisterAuthPage() {
     verifyError,
     name,
     setName,
+    termsAccepted,
+    setTermsAccepted,
   } = useAuthInfoVM()
   return (
     <>
@@ -51,7 +53,11 @@ export default function RegisterAuthPage() {
           verifyError={verifyError}
           name={name}
           setName={setName}
+          termsAccepted={termsAccepted}
+          setTermsAccepted={setTermsAccepted}
         />
+
+        
       </Container>
     </>
   );

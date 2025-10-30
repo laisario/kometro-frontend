@@ -3,7 +3,7 @@ import { axios } from "../../api";
 import _, {debounce} from 'lodash';
 import { useQuery, useInfiniteQuery } from "react-query";
 
-function useDefaultAssets() {
+function useDefaultAssets(cliente_id = null) {
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [search, setSearch] = useState('')
   
@@ -15,13 +15,20 @@ function useDefaultAssets() {
     hasNextPage,
     isFetchingNextPage
   } = useInfiniteQuery({
-    queryKey: ['instrumentos-empresa', debouncedSearch], 
+    queryKey: ['instrumentos-empresa', debouncedSearch, cliente_id], 
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await axios.get(`/instrumentos-empresa/`, { params: { 
+      const params = { 
         page: pageParam,
         page_size: 20,  
         search: debouncedSearch 
-      }});
+      };
+      
+      // Add cliente_id to params if provided
+      if (cliente_id) {
+        params.cliente_id = cliente_id;
+      }
+      
+      const response = await axios.get(`/instrumentos-empresa/`, { params });
       return response?.data;
     },
     getNextPageParam: (lastPage) => {

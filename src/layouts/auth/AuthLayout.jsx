@@ -6,18 +6,18 @@ import Logo from '../../components/Logo';
 
 const StyledRoot = styled(Container)(({ theme }) => ({
     display: 'flex',
+    backgroundColor: theme.palette.background.paper,
     flex: 1,
     height: '100vh',
     flexDirection: 'column',
     justifyContent: 'center',
-    marginTop: 20,
     paddingBottom: 20,
     [theme.breakpoints.up('md')]: {
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
       flex: 1
-    }
+    },
   }));
   
   const LogoBox = styled(Box)(({ theme }) => ({
@@ -33,14 +33,14 @@ const StyledRoot = styled(Container)(({ theme }) => ({
 
 export default function AuthLayout() {
   return (
-    <StyledRoot maxWidth="lg">
+    <div sx={{ backgroundColor: 'background.paper' }}>
+
+    <StyledRoot >
       <LogoBox>
         <Logo sx={{ maxWidth: 300 }} disabledLink />
-        <Typography color="grey.700" align="center" variant="h3">
-          Gestão Metrológica
-        </Typography>
       </LogoBox>
       <Outlet />
     </StyledRoot>
+    </div>
   );
 }

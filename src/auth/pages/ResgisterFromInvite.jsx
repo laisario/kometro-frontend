@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router";
 import { verifyError } from "../../utils/error";
-import { TextField, Stack, IconButton, InputAdornment, Typography, Container } from '@mui/material';
+import { Alert, TextField, Stack, IconButton, InputAdornment, Typography, Container } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import Iconify from '../../components/Iconify';
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
+import TermsAndConditions from '../components/TermsAndConditions';
 import { axios } from "../../api";
 import { enqueueSnackbar } from "notistack";
 import { jwtDecode } from "jwt-decode";
@@ -18,8 +19,8 @@ export default function RegisterFromInvite() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [clientId, setClientId] = useState(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const { client } = useClient(clientId)
-
   const navigate = useNavigate();
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -28,8 +29,13 @@ export default function RegisterFromInvite() {
     setClientId(decoded?.cliente_id)
 
   }, [])
-  
+
   const handleRegister = async () => {
+    if (!termsAccepted) {
+      setError({ terms: 'Você deve aceitar os termos e condições para continuar' });
+      return;
+    }
+    
     try {
       setLoading(true)
       const res = await axios.post(`/invites/register/${token}/`, form);
@@ -51,7 +57,6 @@ export default function RegisterFromInvite() {
   };
 
   const company = client?.empresa?.razaoSocial || client?.empresa?.nomeFantasia
-
   return (
     <Container maxWidth="sm">
       <Typography variant="h3" gutterBottom>
@@ -101,6 +106,17 @@ export default function RegisterFromInvite() {
           sx={{ marginBottom: 0 }}
         />
         <PasswordStrengthMeter password={form?.password} />
+        <TermsAndConditions
+          checked={termsAccepted}
+          onChange={(e) => setTermsAccepted(e.target.checked)}
+          error={!!error?.terms}
+          helperText={error?.terms}
+        />
+        {error?.error && (
+          <Alert severity="error">
+            {error?.error}
+          </Alert>
+        )}
         <LoadingButton
           loading={loading} 
           variant="contained"

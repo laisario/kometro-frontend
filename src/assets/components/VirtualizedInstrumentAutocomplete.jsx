@@ -8,10 +8,18 @@ import {
   IconButton,
   Paper,
   ListItemButton,
-  Divider
+  Divider,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button
 } from '@mui/material';
 import { FixedSizeList as VirtualizedList } from 'react-window';
-import { Clear as ClearIcon } from '@mui/icons-material';
+import { Clear as ClearIcon, Edit, Delete } from '@mui/icons-material';
+import useDefaultAssetMutations from '../hooks/useDefaultAssetMutations';
+import FormDefaultAsset from './FormDefaultAsset';
 
 const getInstrumentoLabel = (instrumento) => {
   if (!instrumento || typeof instrumento !== 'object') return '';
@@ -35,10 +43,11 @@ const getInstrumentoLabel = (instrumento) => {
   return info ? `${info}${faixa}` : '';
 };
 
-const InstrumentOption = ({ index, style, data, adminPreview }) => {
+const InstrumentOption = ({ index, style, data, adminPreview, onDelete, setInstrumentoSelecionado }) => {
   const { options, onSelect, selectedValue } = data;
   const option = options[index];
-
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showFormNewAsset, setShowFormNewAsset] = useState(false);
   if (!option) return null;
 
   const tipo = option?.tipoDeInstrumento || {};
@@ -64,13 +73,28 @@ const InstrumentOption = ({ index, style, data, adminPreview }) => {
 
   const isSelected = selectedValue?.id === option?.id;
 
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = () => {
+    onDelete(option?.id);
+    setShowDeleteDialog(false);
+  };
+
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    setShowFormNewAsset(true);
+  };
+
   return (
     <div style={style}>
       <ListItemButton
         onClick={() => onSelect(option)}
         selected={isSelected}
         sx={{
-          display: 'block',
+          display: 'flex',
           alignItems: 'start',
           whiteSpace: 'normal',
           minHeight: 120,
@@ -85,7 +109,7 @@ const InstrumentOption = ({ index, style, data, adminPreview }) => {
           },
         }}
       >
-        <Box>
+        <Box sx={{ flex: 1 }}>
           <Typography fontWeight="bold" variant="subtitle1">
             {`${descricao} - ${modelo} / ${fabricante}`}
           </Typography>
@@ -115,7 +139,61 @@ const InstrumentOption = ({ index, style, data, adminPreview }) => {
             </>
           )}
         </Box>
+        
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, ml: 2 }}>
+          <Tooltip title="Editar instrumento">
+            <IconButton
+              size="small"
+              onClick={handleEdit}
+              sx={{ color: 'primary.main' }}
+            >
+              <Edit fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Excluir instrumento">
+            <IconButton
+              size="small"
+              onClick={handleDelete}
+              sx={{ color: 'error.main' }}
+            >
+              <Delete fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </ListItemButton>
+      
+      <FormDefaultAsset 
+        open={showFormNewAsset}
+        onClose={() => setShowFormNewAsset(false)}
+        setInstrumentoSelecionado={setInstrumentoSelecionado}
+        adminPreview={adminPreview}
+        asset={option}
+      />
+
+      <Dialog
+        open={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Confirmar exclusão</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Tem certeza que deseja excluir o instrumento "{descricao} - {modelo}"?
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Esta ação não pode ser desfeita.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowDeleteDialog(false)}>
+            Cancelar
+          </Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">
+            Excluir
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Divider />
     </div>
   );
@@ -134,11 +212,22 @@ const VirtualizedInstrumentAutocomplete = ({
   hasNextPage,
   isFetchingNextPage,
   adminPreview = false,
+  onEdit,
+  setInstrumentoSelecionado,
+  clientId,
   ...props
 }) => {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const listRef = useRef(null);
+  
+  const handleClose = useCallback(() => {
+    setOpen(false);
+  }, []);
+
+  const {
+    mutateRemoveFromClient,
+  } = useDefaultAssetMutations(handleClose);
 
   const ITEM_HEIGHT = 200;
 
@@ -164,9 +253,15 @@ const VirtualizedInstrumentAutocomplete = ({
     setOpen(true);
   }, []);
 
-  const handleClose = useCallback(() => {
-    setOpen(false);
-  }, []);
+
+
+  const handleDelete = (id) => {
+    const payload = {
+      id,
+      cliente: clientId
+    }
+    mutateRemoveFromClient(adminPreview ? payload : {id,});
+  };
 
   useEffect(() => {
     if (value) {
@@ -275,7 +370,14 @@ const VirtualizedInstrumentAutocomplete = ({
                     </div>
                   );
                 }
-                return <InstrumentOption adminPreview={adminPreview} index={index} style={style} data={data} />;
+                return <InstrumentOption 
+                  adminPreview={adminPreview} 
+                  index={index} 
+                  style={style} 
+                  data={data} 
+                  onDelete={handleDelete}
+                  setInstrumentoSelecionado={setInstrumentoSelecionado}
+                />;
               }}
             </VirtualizedList>
           )}

@@ -6,6 +6,7 @@ function useAuthInfoVM() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   
   const { 
     registerAuthMutation, 
@@ -18,8 +19,16 @@ function useAuthInfoVM() {
     e.preventDefault();
     const isEmailValid = validateEmail(email);
 
+    if (!termsAccepted) {
+      setError((prevErrors) => ({
+        ...prevErrors,
+        terms: 'Você deve aceitar os termos e condições para continuar',
+      }));
+      return;
+    }
+
     if (isEmailValid) {
-      registerAuthMutation({ email, password, name})
+      registerAuthMutation({ email, password, name, termsAccepted})
     }
   };
 
@@ -56,7 +65,9 @@ function useAuthInfoVM() {
     handlePasswordChange,
     verifyError,
     name,
-    setName
+    setName,
+    termsAccepted,
+    setTermsAccepted
   }
 }
 

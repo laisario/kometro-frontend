@@ -1,9 +1,12 @@
 import useAuth from '../../auth/hooks/useAuth'
 import { useDashboard } from '../hooks/useDashboard'
+import useDashboardMutations from '../hooks/useDashboardMutations'
 
 export const useDashboardVM = () => {
   const { user } = useAuth()
   const { data } = useDashboard()
+
+  const { mutateUpdateStats, isLoadingUpdateStats } = useDashboardMutations()
   
   const instruments = data?.instrumentosRecentes?.map((instrumento) => ({
     id: instrumento?.id,
@@ -28,5 +31,7 @@ export const useDashboardVM = () => {
     data,
     instruments,
     documents,
+    mutateUpdateStats, 
+    isLoadingUpdateStats
   }
 }

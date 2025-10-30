@@ -3,6 +3,7 @@ import { Box, Stack, IconButton, InputAdornment, TextField, Alert, Link, Typogra
 import { LoadingButton } from '@mui/lab';
 import Iconify from '../../components/Iconify';
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
+import TermsAndConditions from '../components/TermsAndConditions';
 
 
 export default function AuthInformation(props) {
@@ -19,7 +20,9 @@ export default function AuthInformation(props) {
     handlePasswordChange,
     verifyError,
     name,
-    setName
+    setName,
+    termsAccepted,
+    setTermsAccepted
   } = props;
   
   return (
@@ -34,12 +37,12 @@ export default function AuthInformation(props) {
           onChange={(e) => { verifyError('first_name',error,setError); setName(e.target.value) }} 
         />
         <TextField 
-          error={!!error?.email}
-          helperText={error?.email}
+          error={!!error?.username}
+          helperText={error?.username}
           name="email"
           label="Email" 
           value={email} 
-          onChange={(e) => { verifyError('email',error,setError); setEmail(e.target.value) }} 
+          onChange={(e) => { verifyError('username',error,setError); setEmail(e.target.value) }} 
         />
         <TextField
           fullWidth
@@ -62,6 +65,12 @@ export default function AuthInformation(props) {
           sx={{ marginBottom: 0 }}
         />
         <PasswordStrengthMeter password={password} />
+        <TermsAndConditions
+          checked={termsAccepted}
+          onChange={(e) => setTermsAccepted(e.target.checked)}
+          error={!!error?.terms}
+          helperText={error?.terms}
+        />
       </Stack>
 
       <Box display="flex" alignItems="center" justifyContent="space-between" mt={4}>

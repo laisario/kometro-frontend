@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   List,
@@ -7,38 +7,23 @@ import {
   Paper,
   ClickAwayListener,
   TextField,
-  InputAdornment
+  InputAdornment,
+  CircularProgress
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 
-export default function InstrumentSearch({ data = [], onSelect }) {
-  const [search, setSearch] = useState('');
+export default function InstrumentSearch({ data = [], onSelect, search, setSearch, isFetching }) {
   const [open, setOpen] = useState(false);
-  const [filtered, setFiltered] = useState([]);
 
   const handleChange = (e) => {
     const value = e.target.value;
-    setSearch(value);
-
-    if (value.trim().length > 0) {
-      const result = data?.results.filter((item) => {
-        const tag = item.tag?.toLowerCase() || '';
-        const tipo = item.instrumento?.tipoDeInstrumento?.descricao?.toLowerCase() || '';
-        const serie = item.numeroDeSerie?.toLowerCase() || '';
-        return (
-          tag.includes(value.toLowerCase()) ||
-          tipo.includes(value.toLowerCase()) ||
-          serie.includes(value.toLowerCase())
-        );
-      });
-      setFiltered(result);
-      setOpen(true);
-    } else {
-      setOpen(false);
-      setFiltered([]);
-    }
+    setSearch(value?.trim() || '');
   };
+
+  useEffect(() => {
+    setOpen(!!data?.results?.length);
+  }, [search]);
 
   const handleClickItem = (item) => {
     onSelect(item);
@@ -55,16 +40,16 @@ export default function InstrumentSearch({ data = [], onSelect }) {
           value={search}
           onChange={handleChange}
           InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
+            endAdornment: (
+              <InputAdornment position="end">
+                {isFetching ? <CircularProgress size={20} /> : <SearchIcon />}
               </InputAdornment>
             ),
           }}
           variant="outlined"
           size="small"
         />
-        {open && filtered.length > 0 && (
+        {open && data?.results?.length > 0 && (
           <Paper
             sx={{
               position: 'absolute',
@@ -77,7 +62,7 @@ export default function InstrumentSearch({ data = [], onSelect }) {
             }}
             >
             <List>
-              {filtered.map((item) => {
+              {data?.results?.map((item) => {
                 const tipo = item.instrumento?.tipoDeInstrumento?.descricao || 'Tipo desconhecido';
                 const tag = item.tag || 'Sem tag';
                 return (

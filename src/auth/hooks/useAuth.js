@@ -128,8 +128,8 @@ export default function useAuth() {
   );
 
 
-  const registerAuth = async ({ password, email, name }) => {
-    const payload = { clienteId, password, username: email, firstName: name };
+  const registerAuth = async ({ password, email, name, termsAccepted }) => {
+    const payload = { clienteId, password, username: email, firstName: name, termsAccepted: termsAccepted };
     const response = await axios.post('/register/auth/', payload);
     return response;
   };
@@ -150,7 +150,7 @@ export default function useAuth() {
         setError(erros)
 
         const errMsg = handleErrorRegister(error);
-        enqueueSnackbar(errMsg, {
+        enqueueSnackbar(getErrorMessage(error?.response?.status), {
           variant: 'error'
         });
       },

@@ -152,11 +152,12 @@ function CreateInstrument(props) {
       }
       
       const clientPayload = {
+        ...payload,
         id: asset?.id,
         setor: setorId,
         previousSetorId: asset?.setor?.id,
-        ...payload
       }
+
       
       const paramEdit = adminPreview ? adminPayload : clientPayload
       mutate(paramEdit);
@@ -227,6 +228,8 @@ function CreateInstrument(props) {
               hasNextPage={hasNextPage}
               isFetchingNextPage={isFetchingNextPage}
               adminPreview={adminPreview}
+              clientId={cliente || null}
+              setInstrumentoSelecionado={setInstrumentoSelecionado}
             />
             {asset?.instrumento && (
               <Typography color='warning' variant="body1" sx={{ mt: 1 }}>
@@ -245,6 +248,7 @@ function CreateInstrument(props) {
               onClose={() => setShowFormNewAsset(false)}
               setInstrumentoSelecionado={setInstrumentoSelecionado}
               adminPreview={adminPreview}
+              clientId={cliente}
             />
           </AccordionDetails>
         </Accordion>

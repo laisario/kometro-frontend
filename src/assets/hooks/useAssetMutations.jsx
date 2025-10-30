@@ -195,9 +195,8 @@ function useAssetMutations(handleClose, adminPreview) {
         variant: 'success'
       });
       queryClient.invalidateQueries({ queryKey: ['instrumentos'] })
-      if (variables?.previousSetorId !== variables?.setor) {
-        queryClient.invalidateQueries({ queryKey: ['setores'] })
-      }
+      queryClient.invalidateQueries({ queryKey: ['setores'] })
+      
       handleClose('edit')
     },
     onError: (erro) => {
@@ -271,8 +270,6 @@ function useAssetMutations(handleClose, adminPreview) {
     isDeleting,
     mutateCriticalAnalisys,
     isLoadingCriticalAnalisys,
-    // mutateUpdate, 
-    // isLoadingUpdate, 
     mutateCreate, 
     isLoadingCreate,
     error,

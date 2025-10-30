@@ -1,4 +1,16 @@
-import { Card, CardContent, Typography, Chip, Stack, IconButton, MenuItem, Menu, CardHeader, Grid, useTheme, Box, Tooltip, ListItemIcon } from '@mui/material';
+import { 
+  Card, 
+  CardContent, 
+  Typography, 
+  Chip, 
+  Stack, 
+  IconButton, 
+  MenuItem, 
+  Menu, 
+  Grid,
+  Box,
+  ListItemIcon
+} from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import React, { useState } from 'react'
 import useAuth from '../../auth/hooks/useAuth';
@@ -181,7 +193,6 @@ function InstrumentDetails({
   }
  
   const tipoDeInstrumento = instrumento?.instrumento?.tipoDeInstrumento;
-  const theme = useTheme()
   return (
     <Card>
       <CardContent>
@@ -195,7 +206,7 @@ function InstrumentDetails({
               label={`Vence ${dateDistanceText(instrumento?.dataProximaCalibracao)}`}
               variant="filled"
               color={findDateStatusColor(instrumento?.dataProximaCalibracao)}
-              sx={{ color: theme.palette.common.white }}
+              sx={{ color: '#fff' }}
               />
             )}
             <InstrumentPosition mutateChangePosition={mutateChangePosition} positionMap={posicaoMap} instrumento={instrumento} />
